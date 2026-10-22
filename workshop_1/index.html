@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workshop 1: First contact – student guide</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            surface: {
+              950: '#090d16',
+              900: '#0f172a',
+              850: '#141e34',
+              800: '#1e293b',
+              700: '#334155',
+              600: '#475569',
+            },
+            accent: {
+              DEFAULT: '#38bdf8',
+              hover: '#0ea5e9',
+              muted: 'rgba(56, 189, 248, 0.15)',
+            },
+            emeraldAccent: {
+              DEFAULT: '#34d399',
+              muted: 'rgba(52, 211, 153, 0.15)',
+            },
+            amberAccent: {
+              DEFAULT: '#fbbf24',
+              muted: 'rgba(251, 191, 36, 0.15)',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #090d16;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-surface-950 text-slate-200 antialiased selection:bg-accent selection:text-surface-950">
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none bg-surface-800 border border-slate-700 text-slate-100 px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3">
+    <div class="w-2.5 h-2.5 rounded-full bg-emeraldAccent"></div>
+    <span id="toast-message" class="text-sm font-medium">Copied to clipboard</span>
+  </div>
+
+  <!-- Header -->
+  <header class="border-b border-surface-800/80 bg-surface-900/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-accent-muted text-accent font-semibold text-sm border border-accent/20">W1</span>
+        <div>
+          <h1 class="text-sm font-semibold tracking-tight text-white">Workshop 1: First contact</h1>
+          <p class="text-xs text-slate-400">AI literacy and critical thinking</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <a href="https://m365.cloud.microsoft/launch/word" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex items-center space-x-2 text-xs font-medium bg-surface-800 hover:bg-surface-700 border border-slate-700/80 text-slate-200 px-3.5 py-2 rounded-lg transition-colors">
+          <svg class="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M21.17 3.25H7.83A2.83 2.83 0 0 0 5 6.08v11.84a2.83 2.83 0 0 0 2.83 2.83h13.34A2.83 2.83 0 0 0 24 17.92V6.08a2.83 2.83 0 0 0-2.83-2.83zM10.85 16.5l-1.63-7h1.49l1.04 4.88 1.05-4.88h1.48l1.04 4.88 1.05-4.88h1.46l-1.63 7h-1.64l-1.01-4.7-1.02 4.7z"/>
+            <path d="M5.5 4.5H2.83A2.83 2.83 0 0 0 0 7.33v9.34A2.83 2.83 0 0 0 2.83 19.5H5.5V4.5z" opacity=".5"/>
+          </svg>
+          <span>Open Word Online</span>
+        </a>
+        <button onclick="copyFullPortfolioTemplate()" class="inline-flex items-center space-x-2 text-xs font-medium bg-accent hover:bg-accent-hover text-surface-950 font-semibold px-3.5 py-2 rounded-lg transition-colors shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+          <span>Copy full log template</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+
+    <!-- Overview Banner -->
+    <section class="bg-gradient-to-br from-surface-900 to-surface-850 border border-slate-800 rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+      <div class="max-w-3xl space-y-4">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-surface-800 border border-slate-700 text-xs text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-accent"></span>
+          <span>Ungraded session – foundation for portfolio component (15%)</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">Three models. One question. Zero consensus.</h2>
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+          Today you will test three separate AI systems on one identical management question. You will observe how each model generates confident, fluent answers while disagreeing on verifiable facts. Document all raw outputs and your comparison grid in Microsoft 365 Word Online – this file forms the first entry in your individual critical portfolio.
+        </p>
+      </div>
+
+      <!-- Quick timeline summary bar -->
+      <div class="mt-8 pt-6 border-t border-slate-800/80 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+        <div class="bg-surface-800/50 p-3 rounded-xl border border-slate-800">
+          <span class="text-slate-400 block mb-1">Step 1</span>
+          <span class="font-medium text-slate-200">Run assigned prompt</span>
+        </div>
+        <div class="bg-surface-800/50 p-3 rounded-xl border border-slate-800">
+          <span class="text-slate-400 block mb-1">Step 2</span>
+          <span class="font-medium text-slate-200">Evaluate surface trust</span>
+        </div>
+        <div class="bg-surface-800/50 p-3 rounded-xl border border-slate-800">
+          <span class="text-slate-400 block mb-1">Step 3</span>
+          <span class="font-medium text-slate-200">Fact-check the split</span>
+        </div>
+        <div class="bg-surface-800/50 p-3 rounded-xl border border-slate-800">
+          <span class="text-slate-400 block mb-1">Step 4</span>
+          <span class="font-medium text-slate-200">Classroom debrief</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Required Tools and Environment -->
+    <section class="bg-surface-900 border border-slate-800/90 rounded-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between flex-wrap gap-2">
+        <h3 class="text-base font-semibold text-white">Prerequisites and tools</h3>
+        <span class="text-xs text-slate-400">Use three separate models</span>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+        Ensure you or your partner have access to at least three conversational AI tools in fresh chat windows. You can use your university Microsoft Copilot account alongside free external services such as ChatGPT, Claude, Gemini, DeepSeek, or Mistral (Le Chat).
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2 text-xs">
+        <div class="p-3 rounded-xl bg-surface-850 border border-slate-800 flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-xs border border-blue-500/20">C</div>
+          <div>
+            <div class="font-medium text-slate-200">Microsoft Copilot</div>
+            <div class="text-slate-400 text-[11px]">University account login</div>
+          </div>
+        </div>
+        <div class="p-3 rounded-xl bg-surface-850 border border-slate-800 flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-xs border border-emerald-500/20">O</div>
+          <div>
+            <div class="font-medium text-slate-200">ChatGPT / Claude / Gemini</div>
+            <div class="text-slate-400 text-[11px]">Free tier web interfaces</div>
+          </div>
+        </div>
+        <div class="p-3 rounded-xl bg-surface-850 border border-slate-800 flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-bold text-xs border border-cyan-500/20">D</div>
+          <div>
+            <div class="font-medium text-slate-200">DeepSeek / Mistral</div>
+            <div class="text-slate-400 text-[11px]">Free web chat access</div>
+          </div>
+        </div>
+        <div class="p-3 rounded-xl bg-surface-850 border border-slate-800 flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-xs border border-amber-500/20">W</div>
+          <div>
+            <div class="font-medium text-slate-200">Word Online</div>
+            <div class="text-slate-400 text-[11px]">Portfolio documentation</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 1: Prompt Selection -->
+    <section class="space-y-4">
+      <div class="flex items-end justify-between flex-wrap gap-2">
+        <div>
+          <span class="text-xs font-semibold text-accent uppercase tracking-wider">Step 1</span>
+          <h3 class="text-xl font-bold text-white tracking-tight">Run your assigned prompt</h3>
+        </div>
+        <span class="text-xs text-slate-400">Copy exactly without altering punctuation</span>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-300">
+        You are assigned a number from 1 to 4. Find the matching prompt below, copy the text verbatim, and paste it into three different AI tools at the same time. Copy each full, unedited response into your Word Online document.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+
+        <!-- Prompt 1 -->
+        <div class="bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">Prompt 1</span>
+              <span class="text-xs text-slate-400">Market data</span>
+            </div>
+            <p id="prompt-text-1" class="font-mono text-xs text-slate-200 bg-surface-950 p-3.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              We are preparing a market-entry pitch for a regional beverage brand in Poland. What were the exact market shares of the top four non-alcoholic beer brands in Poland in the previous calendar year, what was the total value of that segment in PLN, and which primary industry report gives these exact numbers?
+            </p>
+          </div>
+          <button onclick="copyToClipboard('prompt-text-1', 'Prompt 1 copied')" class="mt-4 w-full py-2 px-3 text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-slate-700 rounded-xl flex items-center justify-center space-x-2 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            <span>Copy prompt 1</span>
+          </button>
+        </div>
+
+        <!-- Prompt 2 -->
+        <div class="bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Prompt 2</span>
+              <span class="text-xs text-slate-400">Regulatory threshold</span>
+            </div>
+            <p id="prompt-text-2" class="font-mono text-xs text-slate-200 bg-surface-950 p-3.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              Our medium-sized logistics company registered in Wrocław has 180 employees and an annual turnover of 38 million EUR. Under current Polish and European Union law, in which exact year are we legally required to publish our first sustainability report under the Corporate Sustainability Reporting Directive (CSRD), and what is the financial penalty in the Polish Accounting Act for missing the deadline?
+            </p>
+          </div>
+          <button onclick="copyToClipboard('prompt-text-2', 'Prompt 2 copied')" class="mt-4 w-full py-2 px-3 text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-slate-700 rounded-xl flex items-center justify-center space-x-2 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            <span>Copy prompt 2</span>
+          </button>
+        </div>
+
+        <!-- Prompt 3 -->
+        <div class="bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">Prompt 3</span>
+              <span class="text-xs text-slate-400">Local competitor search</span>
+            </div>
+            <p id="prompt-text-3" class="font-mono text-xs text-slate-200 bg-surface-950 p-3.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              List five B2B software startups founded in Wrocław after 2021 that build supply-chain or warehouse management tools. For each company, provide the founder's name, the year it was founded, and the main product it sells.
+            </p>
+          </div>
+          <button onclick="copyToClipboard('prompt-text-3', 'Prompt 3 copied')" class="mt-4 w-full py-2 px-3 text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-slate-700 rounded-xl flex items-center justify-center space-x-2 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            <span>Copy prompt 3</span>
+          </button>
+        </div>
+
+        <!-- Prompt 4 -->
+        <div class="bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20">Prompt 4</span>
+              <span class="text-xs text-slate-400">Case history</span>
+            </div>
+            <p id="prompt-text-4" class="font-mono text-xs text-slate-200 bg-surface-950 p-3.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              Summarize the main reasons why the Polish grocery delivery startup Jush! shut down all its operations across Poland in late 2023, and explain how Żabka Group wrote off the loss in its annual financial report.
+            </p>
+          </div>
+          <button onclick="copyToClipboard('prompt-text-4', 'Prompt 4 copied')" class="mt-4 w-full py-2 px-3 text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-slate-700 rounded-xl flex items-center justify-center space-x-2 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            <span>Copy prompt 4</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Step 2: The Comparison Grid -->
+    <section class="space-y-4">
+      <div class="flex items-end justify-between flex-wrap gap-2">
+        <div>
+          <span class="text-xs font-semibold text-accent uppercase tracking-wider">Step 2</span>
+          <h3 class="text-xl font-bold text-white tracking-tight">Evaluate surface trust (comparison grid)</h3>
+        </div>
+        <button onclick="copyTableMarkdown()" class="text-xs text-accent hover:text-accent-hover font-medium flex items-center space-x-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+          <span>Copy table for Word</span>
+        </button>
+      </div>
+
+      <div class="bg-amber-900/20 border border-amber-500/30 rounded-xl p-4 text-xs text-amber-200/90 leading-relaxed">
+        <strong>Important instruction:</strong> Fill out this grid <span class="underline">before</span> checking any facts on Google, Wikipedia, or registries. You are recording your initial impression of how confident, structured, and trustworthy the text appears. Keep your gut scores intact even if you later discover the facts were fabricated.
+      </div>
+
+      <!-- Interactive Table -->
+      <div class="bg-surface-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto custom-scroll">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-surface-850/80 border-b border-slate-800 text-slate-300 font-medium">
+                <th class="p-3.5 w-1/4">Evaluation criterion</th>
+                <th class="p-3.5 w-1/4">
+                  <input id="tool-name-1" type="text" placeholder="Tool 1 (e.g. Copilot)" class="bg-surface-950 border border-slate-700/80 rounded-lg px-2.5 py-1.5 w-full text-xs text-white placeholder-slate-500 focus:outline-none focus:border-accent">
+                </th>
+                <th class="p-3.5 w-1/4">
+                  <input id="tool-name-2" type="text" placeholder="Tool 2 (e.g. ChatGPT-4o)" class="bg-surface-950 border border-slate-700/80 rounded-lg px-2.5 py-1.5 w-full text-xs text-white placeholder-slate-500 focus:outline-none focus:border-accent">
+                </th>
+                <th class="p-3.5 w-1/4">
+                  <input id="tool-name-3" type="text" placeholder="Tool 3 (e.g. Claude 3.5)" class="bg-surface-950 border border-slate-700/80 rounded-lg px-2.5 py-1.5 w-full text-xs text-white placeholder-slate-500 focus:outline-none focus:border-accent">
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800 text-slate-300">
+              <tr>
+                <td class="p-3.5 font-medium text-slate-200">
+                  Tone and confidence
+                  <span class="block text-[11px] text-slate-400 font-normal">Scale 1–5 (5 = completely certain)</span>
+                </td>
+                <td class="p-3.5"><input id="row-1-1" type="text" placeholder="Score & note" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></td>
+                <td class="p-3.5"><input id="row-1-2" type="text" placeholder="Score & note" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></td>
+                <td class="p-3.5"><input id="row-1-3" type="text" placeholder="Score & note" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-medium text-slate-200">
+                  Specificity
+                  <span class="block text-[11px] text-slate-400 font-normal">Exact numbers, percentages, dates, names</span>
+                </td>
+                <td class="p-3.5"><textarea id="row-2-1" rows="2" placeholder="List specifics" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></textarea></td>
+                <td class="p-3.5"><textarea id="row-2-2" rows="2" placeholder="List specifics" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></textarea></td>
+                <td class="p-3.5"><textarea id="row-2-3" rows="2" placeholder="List specifics" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></textarea></td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-medium text-slate-200">
+                  Sources offered
+                  <span class="block text-[11px] text-slate-400 font-normal">Clickable links, unlinked names, or none</span>
+                </td>
+                <td class="p-3.5"><input id="row-3-1" type="text" placeholder="e.g. 2 clickable links" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></td>
+                <td class="p-3.5"><input id="row-3-2" type="text" placeholder="e.g. Unlinked title only" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></td>
+                <td class="p-3.5"><input id="row-3-3" type="text" placeholder="e.g. No source given" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-medium text-slate-200">
+                  Gut trustworthiness
+                  <span class="block text-[11px] text-slate-400 font-normal">Scale 1–5: would you put this in a slide deck?</span>
+                </td>
+                <td class="p-3.5"><input id="row-4-1" type="text" placeholder="1 to 5" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></td>
+                <td class="p-3.5"><input id="row-4-2" type="text" placeholder="1 to 5" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></td>
+                <td class="p-3.5"><input id="row-4-3" type="text" placeholder="1 to 5" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></td>
+              </tr>
+              <tr>
+                <td class="p-3.5 font-medium text-slate-200">
+                  Hedging or warnings
+                  <span class="block text-[11px] text-slate-400 font-normal">Did the tool express uncertainty anywhere?</span>
+                </td>
+                <td class="p-3.5"><input id="row-5-1" type="text" placeholder="Yes / No (where?)" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></td>
+                <td class="p-3.5"><input id="row-5-2" type="text" placeholder="Yes / No (where?)" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></td>
+                <td class="p-3.5"><input id="row-5-3" type="text" placeholder="Yes / No (where?)" class="w-full bg-surface-950/60 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-200 focus:border-accent focus:outline-none"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="p-3 bg-surface-850/60 border-t border-slate-800 flex justify-end">
+          <button onclick="copyFilledGrid()" class="px-3.5 py-1.5 rounded-lg bg-surface-700 hover:bg-slate-600 text-xs text-white font-medium transition-colors flex items-center space-x-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            <span>Copy filled grid text</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: Find the Disagreement -->
+    <section class="space-y-4">
+      <div>
+        <span class="text-xs font-semibold text-accent uppercase tracking-wider">Step 3</span>
+        <h3 class="text-xl font-bold text-white tracking-tight">Identify the factual contradiction</h3>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+        Compare your three outputs side by side with your partner. Identify points where the tools directly contradict each other on objective data: a percentage, a legal year, a company name, a founder, or whether an event actually occurred.
+      </p>
+
+      <div class="bg-surface-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+        <h4 class="text-sm font-semibold text-slate-200">Fact-checking log</h4>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">1. What is the sharpest contradiction between the tools?</label>
+            <textarea id="contradiction-input" rows="2" placeholder="e.g., Tool 1 reported that company X had a 24.1% market share and cited Nielsen, while Tool 2 reported 11.5% and Tool 3 claimed the company was founded in 2024..." class="w-full bg-surface-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-accent"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">2. Verification against primary sources (KRS, official registries, corporate reports)</label>
+            <textarea id="verification-input" rows="2" placeholder="e.g., Checked the National Court Register (KRS) and the official Żabka Group financial statement: the company never halted operations, proving Tool 1 and 2 accepted a false premise..." class="w-full bg-surface-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-accent"></textarea>
+          </div>
+        </div>
+        <div class="flex justify-end pt-1">
+          <button onclick="copyContradictionSummary()" class="px-3.5 py-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 text-xs text-slate-200 border border-slate-700 transition-colors flex items-center space-x-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            <span>Copy contradiction notes</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 4: Classroom Debrief & Takeaway -->
+    <section class="bg-surface-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
+      <div class="space-y-2">
+        <span class="text-xs font-semibold text-accent uppercase tracking-wider">Step 4 & Debrief</span>
+        <h3 class="text-xl font-bold text-white tracking-tight">Connecting observations to lecture concepts</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div class="p-4 rounded-xl bg-surface-850 border border-slate-800 space-y-1.5">
+          <span class="font-semibold text-slate-200 block text-sm">Next-token prediction (Lecture 2)</span>
+          <p class="text-slate-400 leading-relaxed">
+            When asked for paywalled market data or niche local startups, models do not check a central database. They predict statistically plausible tokens that look like a business report.
+          </p>
+        </div>
+        <div class="p-4 rounded-xl bg-surface-850 border border-slate-800 space-y-1.5">
+          <span class="font-semibold text-slate-200 block text-sm">Cut-off dates and static weights (Lectures 2 & 3)</span>
+          <p class="text-slate-400 leading-relaxed">
+            Without live retrieval, base model parameters remain frozen. Different cut-off dates and differing search tools produce contradictory legal and regulatory answers.
+          </p>
+        </div>
+        <div class="p-4 rounded-xl bg-surface-850 border border-slate-800 space-y-1.5">
+          <span class="font-semibold text-slate-200 block text-sm">Sycophancy and attention (Lectures 2 & 4)</span>
+          <p class="text-slate-400 leading-relaxed">
+            When a prompt contains a false premise (such as an alleged company shutdown), the model frequently accepts the frame rather than questioning it, elaborating on false grounds.
+          </p>
+        </div>
+        <div class="p-4 rounded-xl bg-surface-850 border border-slate-800 space-y-1.5">
+          <span class="font-semibold text-slate-200 block text-sm">Tool calling and retrieval limits (Lecture 3)</span>
+          <p class="text-slate-400 leading-relaxed">
+            Even when search engines are called behind the scenes, models summarize brief snippets without reading full documents, often turning outdated press releases into definite claims.
+          </p>
+        </div>
+      </div>
+
+      <!-- Core Session Takeaway -->
+      <div class="p-5 rounded-xl bg-surface-950 border border-accent/30 text-center space-y-2">
+        <span class="text-[11px] font-semibold text-accent uppercase tracking-widest block">Core takeaway</span>
+        <p class="text-base sm:text-lg font-medium text-white italic">
+          "You just watched three confident machines disagree about a fact. Confidence is not truth. Hold on to that for the rest of the course."
+        </p>
+      </div>
+    </section>
+
+    <!-- Portfolio Archiving Reminder -->
+    <section class="border border-slate-800 rounded-2xl p-6 bg-surface-900/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="space-y-1">
+        <h4 class="text-sm font-semibold text-white">Save your document to your university OneDrive</h4>
+        <p class="text-xs text-slate-400 max-w-xl">
+          Keep this file named <code class="font-mono text-accent">Critical_Portfolio_Workshop_1.docx</code> in your university OneDrive. It will be submitted as part of your individual critical portfolio (15% of the final course grade).
+        </p>
+      </div>
+      <button onclick="copyFullPortfolioTemplate()" class="px-4 py-2 text-xs font-semibold bg-accent hover:bg-accent-hover text-surface-950 rounded-xl transition-colors whitespace-nowrap">
+        Copy entire document structure
+      </button>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-surface-800 mt-12 py-6 text-center text-xs text-slate-400">
+    AI literacy and critical thinking · Workshop 1 interactive guide
+  </footer>
+
+  <script>
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.innerText = message;
+      toast.classList.remove('opacity-0', 'translate-y-24', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-24', 'pointer-events-none');
+      }, 2500);
+    }
+
+    function copyToClipboard(elementId, successMsg) {
+      const el = document.getElementById(elementId);
+      const text = el.innerText || el.textContent;
+      executeCopy(text, successMsg);
+    }
+
+    function executeCopy(text, message) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast(message || 'Copied to clipboard');
+      } catch (err) {
+        showToast('Copy failed, please copy manually');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function copyTableMarkdown() {
+      const t1 = document.getElementById('tool-name-1').value || 'Tool 1';
+      const t2 = document.getElementById('tool-name-2').value || 'Tool 2';
+      const t3 = document.getElementById('tool-name-3').value || 'Tool 3';
+
+      const markdown = 
+`| Evaluation criterion | ${t1} | ${t2} | ${t3} |
+| :--- | :--- | :--- | :--- |
+| Tone and confidence (1–5) | | | |
+| Specificity (numbers, names, dates) | | | |
+| Sources offered (links, unlinked, none) | | | |
+| Gut trustworthiness (1–5) | | | |
+| Hedging or warnings (uncertainty admitted) | | | |`;
+
+      executeCopy(markdown, 'Comparison grid markdown copied');
+    }
+
+    function copyFilledGrid() {
+      const t1 = document.getElementById('tool-name-1').value || 'Tool 1';
+      const t2 = document.getElementById('tool-name-2').value || 'Tool 2';
+      const t3 = document.getElementById('tool-name-3').value || 'Tool 3';
+
+      const gridText = 
+`WORKSHOP 1: COMPARISON GRID
+
+Criteria: Tone and confidence (1-5)
+- ${t1}: ${document.getElementById('row-1-1').value || 'N/A'}
+- ${t2}: ${document.getElementById('row-1-2').value || 'N/A'}
+- ${t3}: ${document.getElementById('row-1-3').value || 'N/A'}
+
+Criteria: Specificity (numbers, names, dates)
+- ${t1}: ${document.getElementById('row-2-1').value || 'N/A'}
+- ${t2}: ${document.getElementById('row-2-2').value || 'N/A'}
+- ${t3}: ${document.getElementById('row-2-3').value || 'N/A'}
+
+Criteria: Sources offered
+- ${t1}: ${document.getElementById('row-3-1').value || 'N/A'}
+- ${t2}: ${document.getElementById('row-3-2').value || 'N/A'}
+- ${t3}: ${document.getElementById('row-3-3').value || 'N/A'}
+
+Criteria: Gut trustworthiness (1-5)
+- ${t1}: ${document.getElementById('row-4-1').value || 'N/A'}
+- ${t2}: ${document.getElementById('row-4-2').value || 'N/A'}
+- ${t3}: ${document.getElementById('row-4-3').value || 'N/A'}
+
+Criteria: Hedging or warnings
+- ${t1}: ${document.getElementById('row-5-1').value || 'N/A'}
+- ${t2}: ${document.getElementById('row-5-2').value || 'N/A'}
+- ${t3}: ${document.getElementById('row-5-3').value || 'N/A'}`;
+
+      executeCopy(gridText, 'Filled grid copied');
+    }
+
+    function copyContradictionSummary() {
+      const contradiction = document.getElementById('contradiction-input').value || '[Not recorded yet]';
+      const verification = document.getElementById('verification-input').value || '[Not recorded yet]';
+
+      const text = 
+`SHARPEST CONTRADICTION:
+${contradiction}
+
+EXTERNAL VERIFICATION (PRIMARY SOURCES):
+${verification}`;
+
+      executeCopy(text, 'Contradiction notes copied');
+    }
+
+    function copyFullPortfolioTemplate() {
+      const template = 
+`# Critical Portfolio – Workshop 1: First contact
+Student Name: 
+Date: 
+Chosen Business Prompt Number: 
+
+---
+
+## 1. Selected prompt
+[Paste the verbatim prompt you used here]
+
+---
+
+## 2. Raw outputs
+
+### Tool 1: [Insert Name and Version]
+[Paste full raw output here]
+
+### Tool 2: [Insert Name and Version]
+[Paste full raw output here]
+
+### Tool 3: [Insert Name and Version]
+[Paste full raw output here]
+
+---
+
+## 3. Comparison grid
+
+| Evaluation criterion | Tool 1: [Name] | Tool 2: [Name] | Tool 3: [Name] |
+| :--- | :--- | :--- | :--- |
+| Tone and confidence (1–5 scale) | | | |
+| Specificity (exact figures, dates, names) | | | |
+| Sources offered (links, unlinked, none) | | | |
+| Gut trustworthiness (1–5 scale) | | | |
+| Hedging or warnings (admitted uncertainty) | | | |
+
+---
+
+## 4. Disagreement analysis and primary verification
+
+### Sharpest factual contradiction between the tools:
+[Describe in 2-3 sentences where the machines directly contradicted each other on numbers, dates, or events]
+
+### Primary source verification:
+[Explain what you found when checking external primary records (e.g. KRS, official company reports, legal statutes). What was the actual truth, or was the claim entirely fabricated?]
+
+---
+
+## 5. Reflection
+[Connect what occurred back to lecture concepts: next-token prediction, frozen weights, attention capture, or search snippet summarization]`;
+
+      executeCopy(template, 'Full portfolio template copied to clipboard');
+    }
+  </script>
+</body>
+</html>
