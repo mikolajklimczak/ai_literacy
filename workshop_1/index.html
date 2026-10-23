@@ -71,6 +71,31 @@
     <span id="toast-message" class="text-sm font-medium">Copied to clipboard</span>
   </div>
 
+  <!-- Reset Confirmation Modal -->
+  <div id="reset-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-surface-900 border border-slate-700 rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4 transform scale-95 transition-transform duration-200" id="reset-modal-box">
+      <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      </div>
+      <div>
+        <h4 class="text-base font-semibold text-white">Reset all form entries?</h4>
+        <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+          This will clear all entries in your comparison grid, tool names, and contradiction notes, as well as saved local drafts. This action cannot be undone.
+        </p>
+      </div>
+      <div class="flex items-center justify-end space-x-3 pt-2">
+        <button type="button" onclick="closeResetModal()" class="px-4 py-2 text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 rounded-xl border border-slate-700 transition-colors">
+          Cancel
+        </button>
+        <button type="button" onclick="executeResetForm()" class="px-4 py-2 text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white rounded-xl transition-colors">
+          Yes, reset form
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Header -->
   <header class="border-b border-surface-800/80 bg-surface-900/80 backdrop-blur sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -82,18 +107,33 @@
         </div>
       </div>
       <div class="flex items-center space-x-3">
+        <div id="autosave-indicator" class="hidden sm:inline-flex items-center space-x-1.5 text-xs text-slate-400 px-2 py-1 rounded bg-surface-850 border border-slate-800">
+          <span class="w-1.5 h-1.5 rounded-full bg-emeraldAccent animate-pulse"></span>
+          <span id="autosave-text">Draft saved</span>
+        </div>
+        <button type="button" onclick="openResetModal()" title="Clear form inputs" class="hidden sm:inline-flex items-center text-xs text-slate-400 hover:text-rose-400 px-2.5 py-1.5 rounded-lg border border-transparent hover:border-slate-800 transition-colors">
+          Reset form
+        </button>
         <a href="https://m365.cloud.microsoft/launch/word" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-flex items-center space-x-2 text-xs font-medium bg-surface-800 hover:bg-surface-700 border border-slate-700/80 text-slate-200 px-3.5 py-2 rounded-lg transition-colors">
           <svg class="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M21.17 3.25H7.83A2.83 2.83 0 0 0 5 6.08v11.84a2.83 2.83 0 0 0 2.83 2.83h13.34A2.83 2.83 0 0 0 24 17.92V6.08a2.83 2.83 0 0 0-2.83-2.83zM10.85 16.5l-1.63-7h1.49l1.04 4.88 1.05-4.88h1.48l1.04 4.88 1.05-4.88h1.46l-1.63 7h-1.64l-1.01-4.7-1.02 4.7z"/>
+            <path d="M21.17 3.25H7.83A2.83 2.83 0 0 0 5 6.08v11.84a2.83 2.83 0 0 0 2.83 2.83h13.34A2.83 2.83 0 0 0 24 17.92V6.08a2.83 2.83 0 0 0-2.83-2.83zM10.85 16.5l-1.63-7h1.49l1.04 4.88 1.05-4.88h1.46l-1.63 7h-1.64l-1.01-4.7-1.02 4.7z"/>
             <path d="M5.5 4.5H2.83A2.83 2.83 0 0 0 0 7.33v9.34A2.83 2.83 0 0 0 2.83 19.5H5.5V4.5z" opacity=".5"/>
           </svg>
           <span>Open Word Online</span>
         </a>
-        <button onclick="copyFullPortfolioTemplate()" class="inline-flex items-center space-x-2 text-xs font-medium bg-accent hover:bg-accent-hover text-surface-950 font-semibold px-3.5 py-2 rounded-lg transition-colors shadow-sm">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button onclick="copyFullPortfolioTemplate()" class="inline-flex items-center space-x-2 text-xs font-medium bg-surface-800 hover:bg-surface-700 border border-slate-700 text-slate-200 px-3.5 py-2 rounded-lg transition-colors shadow-sm">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
           </svg>
-          <span>Copy full log template</span>
+          <span class="hidden md:inline">Copy blank template</span>
+          <span class="md:hidden">Template</span>
+        </button>
+        <button onclick="copyFilledReport()" class="inline-flex items-center space-x-2 text-xs font-semibold bg-accent hover:bg-accent-hover text-surface-950 px-3.5 py-2 rounded-lg transition-colors shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+          </svg>
+          <span class="hidden sm:inline">Copy completed log</span>
+          <span class="sm:hidden">Copy log</span>
         </button>
       </div>
     </div>
@@ -108,9 +148,9 @@
           <span class="w-2 h-2 rounded-full bg-accent"></span>
           <span>Ungraded session – foundation for portfolio component (15%)</span>
         </div>
-        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">Comparing model responses to identical business questions</h2>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">Comparing model responses to identical questions</h2>
         <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-          Today you will test three separate AI systems on one identical management question. You will observe how each model generates confident, fluent answers while disagreeing on verifiable facts. Document all raw outputs and your comparison grid in Microsoft 365 Word Online – this file forms the first entry in your individual critical portfolio.
+          Today you will test three separate AI systems on one identical question. You will observe how each model generates confident, fluent answers while disagreeing on verifiable facts. Document all raw outputs and your comparison grid in Microsoft 365 Word Online – this file forms the first entry in your individual critical portfolio.
         </p>
       </div>
 
@@ -186,13 +226,46 @@
         <span class="text-xs text-slate-400">Copy exactly without altering punctuation</span>
       </div>
       <p class="text-xs sm:text-sm text-slate-300">
-        You are assigned a number from 1 to 4. Find the matching prompt below, copy the text verbatim, and paste it into three different AI tools at the same time. Copy each full, unedited response into your Word Online document.
+        You are assigned a number from 1 to 8. Select your assigned number from the selector below to view your prompt text. Paste it verbatim into three different AI tools simultaneously, then copy the raw responses into your Word document.
       </p>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+      <!-- Prompt selector dropdown -->
+      <div class="bg-surface-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <label for="prompt-selector" class="text-xs font-medium text-slate-300 flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full bg-accent"></span>
+          <span>Assigned prompt:</span>
+        </label>
+        <select id="prompt-selector" onchange="switchPromptView(this.value)" class="bg-surface-950 border border-slate-700 text-xs text-white rounded-xl px-3 py-2 focus:outline-none focus:border-accent custom-scroll">
+          <option value="" selected>Choose your assigned prompt (1–8)...</option>
+          <option value="1">Prompt 1: Market data (non-alcoholic beer shares)</option>
+          <option value="2">Prompt 2: Regulatory threshold (CSRD logistics company)</option>
+          <option value="3">Prompt 3: Local competitor search (Wrocław B2B software)</option>
+          <option value="4">Prompt 4: Case history (Jush! startup operations)</option>
+          <option value="5">Prompt 5: Trip budget (Karpacz student weekend)</option>
+          <option value="6">Prompt 6: Heating costs (93 m² house in Siechnice)</option>
+          <option value="7">Prompt 7: Student rental law (Wrocław lease dispute)</option>
+          <option value="8">Prompt 8: Refurbished laptop (student study under 2,200 PLN)</option>
+        </select>
+      </div>
+
+      <!-- Single prompt display container -->
+      <div id="prompts-container" class="pt-2">
+
+        <!-- Default placeholder card -->
+        <div id="prompt-placeholder" class="bg-surface-900 border border-dashed border-slate-800 rounded-2xl p-8 text-center space-y-2">
+          <div class="w-10 h-10 rounded-xl bg-surface-850 border border-slate-800 flex items-center justify-center mx-auto text-accent">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/>
+            </svg>
+          </div>
+          <h4 class="text-sm font-semibold text-white">No prompt selected yet</h4>
+          <p class="text-xs text-slate-400 max-w-md mx-auto">
+            Choose your assigned number (1–8) from the dropdown list above to view and copy your prompt text.
+          </p>
+        </div>
 
         <!-- Prompt 1 -->
-        <div class="bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
+        <div id="prompt-card-1" class="prompt-card hidden bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20">Prompt 1</span>
@@ -211,7 +284,7 @@
         </div>
 
         <!-- Prompt 2 -->
-        <div class="bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
+        <div id="prompt-card-2" class="prompt-card hidden bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Prompt 2</span>
@@ -230,7 +303,7 @@
         </div>
 
         <!-- Prompt 3 -->
-        <div class="bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
+        <div id="prompt-card-3" class="prompt-card hidden bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20">Prompt 3</span>
@@ -249,7 +322,7 @@
         </div>
 
         <!-- Prompt 4 -->
-        <div class="bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
+        <div id="prompt-card-4" class="prompt-card hidden bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20">Prompt 4</span>
@@ -267,22 +340,90 @@
           </button>
         </div>
 
+        <!-- Prompt 5 -->
+        <div id="prompt-card-5" class="prompt-card hidden bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-teal-500/10 text-teal-400 border border-teal-500/20">Prompt 5</span>
+              <span class="text-xs text-slate-400">Trip budget (Karpacz)</span>
+            </div>
+            <p id="prompt-text-5" class="font-mono text-xs text-slate-200 bg-surface-950 p-3.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              A group of four students is planning a four-day weekend trip to Karpacz from Wrocław by bus. Accommodation is already booked and paid for. Calculate the exact budget in PLN that each student needs to bring to cover three meals per day, drinks, and the entry tickets for three specific attractions: Karkonosze National Park, Wang Church, and the cable car to Kopa. Provide the individual ticket prices and the total sum per person.
+            </p>
+          </div>
+          <button onclick="copyToClipboard('prompt-text-5', 'Prompt 5 copied')" class="mt-4 w-full py-2 px-3 text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-slate-700 rounded-xl flex items-center justify-center space-x-2 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            <span>Copy prompt 5</span>
+          </button>
+        </div>
+
+        <!-- Prompt 6 -->
+        <div id="prompt-card-6" class="prompt-card hidden bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20">Prompt 6</span>
+              <span class="text-xs text-slate-400">Heating costs (Siechnice)</span>
+            </div>
+            <p id="prompt-text-6" class="font-mono text-xs text-slate-200 bg-surface-950 p-3.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              I am building a single-story house with an area of 93 square meters in Siechnice near Wrocław. In order to minimize annual heating costs, what heating system should I install: an air-source heat pump, a natural gas condensing boiler, or an electric underfloor heating system? Provide the estimated annual heating cost in PLN for each option, state the current local electricity and gas unit prices in Siechnice, and name the cheapest system.
+            </p>
+          </div>
+          <button onclick="copyToClipboard('prompt-text-6', 'Prompt 6 copied')" class="mt-4 w-full py-2 px-3 text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-slate-700 rounded-xl flex items-center justify-center space-x-2 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            <span>Copy prompt 6</span>
+          </button>
+        </div>
+
+        <!-- Prompt 7 -->
+        <div id="prompt-card-7" class="prompt-card hidden bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-sky-500/10 text-sky-400 border border-sky-500/20">Prompt 7</span>
+              <span class="text-xs text-slate-400">Student rental law</span>
+            </div>
+            <p id="prompt-text-7" class="font-mono text-xs text-slate-200 bg-surface-950 p-3.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              Two students rent an apartment in Wrocław under a standard one-year fixed-term lease ending June 30. On May 15, the landlord notifies them by email that their rent increases by 25% starting June 1, and that their 3,000 PLN security deposit will not be refunded because of normal wear on the walls. Under the Polish Tenancy Act (ustawa o ochronie praw lokatorów), can the landlord raise the rent this way on a fixed-term lease, and what is the legal deadline for returning the deposit?
+            </p>
+          </div>
+          <button onclick="copyToClipboard('prompt-text-7', 'Prompt 7 copied')" class="mt-4 w-full py-2 px-3 text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-slate-700 rounded-xl flex items-center justify-center space-x-2 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            <span>Copy prompt 7</span>
+          </button>
+        </div>
+
+        <!-- Prompt 8 -->
+        <div id="prompt-card-8" class="prompt-card hidden bg-surface-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition-colors">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Prompt 8</span>
+              <span class="text-xs text-slate-400">Used study laptop</span>
+            </div>
+            <p id="prompt-text-8" class="font-mono text-xs text-slate-200 bg-surface-950 p-3.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              I am a first-year university student in Poland with a strict budget of 2,200 PLN looking for a refurbished business laptop for studies and data analysis. Name the single best refurbished model to buy in this price bracket. State its exact processor generation, the maximum amount of RAM the motherboard can physically take, whether the RAM is soldered or socketed, and its typical battery runtime in hours during office work.
+            </p>
+          </div>
+          <button onclick="copyToClipboard('prompt-text-8', 'Prompt 8 copied')" class="mt-4 w-full py-2 px-3 text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-slate-700 rounded-xl flex items-center justify-center space-x-2 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            <span>Copy prompt 8</span>
+          </button>
+        </div>
+
       </div>
     </section>
 
     <!-- Step 2: The Comparison Grid -->
     <section class="space-y-4">
-      <div class="flex items-end justify-between flex-wrap gap-2">
-        <div>
-          <span class="text-xs font-semibold text-accent uppercase tracking-wider">Step 2</span>
-          <h3 class="text-xl font-bold text-white tracking-tight">Evaluate surface trust (comparison grid)</h3>
-        </div>
-        <button onclick="copyTableMarkdown()" class="text-xs text-accent hover:text-accent-hover font-medium flex items-center space-x-1">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-          </svg>
-          <span>Copy table for Word</span>
-        </button>
+      <div>
+        <span class="text-xs font-semibold text-accent uppercase tracking-wider">Step 2</span>
+        <h3 class="text-xl font-bold text-white tracking-tight">Evaluate surface trust (comparison grid)</h3>
       </div>
 
       <div class="bg-amber-900/20 border border-amber-500/30 rounded-xl p-4 text-xs text-amber-200/90 leading-relaxed">
@@ -292,7 +433,7 @@
       <!-- Interactive Table -->
       <div class="bg-surface-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
         <div class="overflow-x-auto custom-scroll">
-          <table class="w-full text-left border-collapse text-xs">
+          <table id="evaluation-table" class="w-full text-left border-collapse text-xs">
             <thead>
               <tr class="bg-surface-850/80 border-b border-slate-800 text-slate-300 font-medium">
                 <th class="p-3.5 w-1/4">Evaluation criterion</th>
@@ -357,11 +498,11 @@
           </table>
         </div>
         <div class="p-3 bg-surface-850/60 border-t border-slate-800 flex justify-end">
-          <button onclick="copyFilledGrid()" class="px-3.5 py-1.5 rounded-lg bg-surface-700 hover:bg-slate-600 text-xs text-white font-medium transition-colors flex items-center space-x-1.5">
+          <button onclick="copyFormattedTable()" class="px-3.5 py-1.5 rounded-lg bg-surface-700 hover:bg-slate-600 text-xs text-white font-medium transition-colors flex items-center space-x-1.5">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
             </svg>
-            <span>Copy filled grid text</span>
+            <span>Copy table for Word</span>
           </button>
         </div>
       </div>
@@ -388,14 +529,6 @@
             <label class="block text-xs font-medium text-slate-300 mb-1">2. Verification against primary sources (KRS, official registries, corporate reports)</label>
             <textarea id="verification-input" rows="2" placeholder="e.g., Checked the National Court Register (KRS) and the official Żabka Group financial statement: the company never halted operations, proving Tool 1 and 2 accepted a false premise..." class="w-full bg-surface-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-accent"></textarea>
           </div>
-        </div>
-        <div class="flex justify-end pt-1">
-          <button onclick="copyContradictionSummary()" class="px-3.5 py-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 text-xs text-slate-200 border border-slate-700 transition-colors flex items-center space-x-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
-            </svg>
-            <span>Copy contradiction notes</span>
-          </button>
         </div>
       </div>
     </section>
@@ -451,8 +584,8 @@
           Keep this file named <code class="font-mono text-accent">Critical_Portfolio_Workshop_1.docx</code> in your university OneDrive. It will be submitted as part of your individual critical portfolio (15% of the final course grade).
         </p>
       </div>
-      <button onclick="copyFullPortfolioTemplate()" class="px-4 py-2 text-xs font-semibold bg-accent hover:bg-accent-hover text-surface-950 rounded-xl transition-colors whitespace-nowrap">
-        Copy entire document structure
+      <button onclick="copyFilledReport()" class="px-4 py-2 text-xs font-semibold bg-accent hover:bg-accent-hover text-surface-950 rounded-xl transition-colors whitespace-nowrap">
+        Copy completed log
       </button>
     </section>
 
@@ -473,6 +606,23 @@
         toast.classList.remove('opacity-100', 'translate-y-0');
         toast.classList.add('opacity-0', 'translate-y-24', 'pointer-events-none');
       }, 2500);
+    }
+
+    function switchPromptView(promptNum) {
+      const placeholder = document.getElementById('prompt-placeholder');
+      const cards = document.querySelectorAll('.prompt-card');
+      cards.forEach(card => card.classList.add('hidden'));
+
+      if (!promptNum) {
+        if (placeholder) placeholder.classList.remove('hidden');
+        return;
+      }
+
+      if (placeholder) placeholder.classList.add('hidden');
+      const activeCard = document.getElementById('prompt-card-' + promptNum);
+      if (activeCard) {
+        activeCard.classList.remove('hidden');
+      }
     }
 
     function copyToClipboard(elementId, successMsg) {
@@ -497,71 +647,61 @@
       document.body.removeChild(textarea);
     }
 
-    function copyTableMarkdown() {
+    function copyFormattedTable() {
       const t1 = document.getElementById('tool-name-1').value || 'Tool 1';
       const t2 = document.getElementById('tool-name-2').value || 'Tool 2';
       const t3 = document.getElementById('tool-name-3').value || 'Tool 3';
 
+      const rows = [
+        { label: 'Tone and confidence (1–5 scale)', c1: document.getElementById('row-1-1').value, c2: document.getElementById('row-1-2').value, c3: document.getElementById('row-1-3').value },
+        { label: 'Specificity (exact numbers, dates, names)', c1: document.getElementById('row-2-1').value, c2: document.getElementById('row-2-2').value, c3: document.getElementById('row-2-3').value },
+        { label: 'Sources offered (links, unlinked, none)', c1: document.getElementById('row-3-1').value, c2: document.getElementById('row-3-2').value, c3: document.getElementById('row-3-3').value },
+        { label: 'Gut trustworthiness (1–5 scale)', c1: document.getElementById('row-4-1').value, c2: document.getElementById('row-4-2').value, c3: document.getElementById('row-4-3').value },
+        { label: 'Hedging or warnings (uncertainty admitted)', c1: document.getElementById('row-5-1').value, c2: document.getElementById('row-5-2').value, c3: document.getElementById('row-5-3').value }
+      ];
+
+      // Formatted HTML table with inline border styling for Microsoft Word paste
+      let htmlTable = `<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; font-family: Calibri, sans-serif; font-size: 11pt; width: 100%;">
+        <thead>
+          <tr style="background-color: #f1f5f9;">
+            <th style="border: 1px solid #94a3b8; text-align: left; padding: 8px;">Evaluation criterion</th>
+            <th style="border: 1px solid #94a3b8; text-align: left; padding: 8px;">${t1}</th>
+            <th style="border: 1px solid #94a3b8; text-align: left; padding: 8px;">${t2}</th>
+            <th style="border: 1px solid #94a3b8; text-align: left; padding: 8px;">${t3}</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      rows.forEach(r => {
+        htmlTable += `<tr>
+          <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;">${r.label}</td>
+          <td style="border: 1px solid #cbd5e1; padding: 8px;">${r.c1 || ''}</td>
+          <td style="border: 1px solid #cbd5e1; padding: 8px;">${r.c2 || ''}</td>
+          <td style="border: 1px solid #cbd5e1; padding: 8px;">${r.c3 || ''}</td>
+        </tr>`;
+      });
+      htmlTable += `</tbody></table>`;
+
+      // Markdown fallback
       const markdown = 
 `| Evaluation criterion | ${t1} | ${t2} | ${t3} |
 | :--- | :--- | :--- | :--- |
-| Tone and confidence (1–5) | | | |
-| Specificity (numbers, names, dates) | | | |
-| Sources offered (links, unlinked, none) | | | |
-| Gut trustworthiness (1–5) | | | |
-| Hedging or warnings (uncertainty admitted) | | | |`;
+| Tone and confidence (1–5 scale) | ${rows[0].c1 || ''} | ${rows[0].c2 || ''} | ${rows[0].c3 || ''} |
+| Specificity (exact numbers, dates, names) | ${rows[1].c1 || ''} | ${rows[1].c2 || ''} | ${rows[1].c3 || ''} |
+| Sources offered (links, unlinked, none) | ${rows[2].c1 || ''} | ${rows[2].c2 || ''} | ${rows[2].c3 || ''} |
+| Gut trustworthiness (1–5 scale) | ${rows[3].c1 || ''} | ${rows[3].c2 || ''} | ${rows[3].c3 || ''} |
+| Hedging or warnings (uncertainty admitted) | ${rows[4].c1 || ''} | ${rows[4].c2 || ''} | ${rows[4].c3 || ''} |`;
 
-      executeCopy(markdown, 'Comparison grid markdown copied');
-    }
-
-    function copyFilledGrid() {
-      const t1 = document.getElementById('tool-name-1').value || 'Tool 1';
-      const t2 = document.getElementById('tool-name-2').value || 'Tool 2';
-      const t3 = document.getElementById('tool-name-3').value || 'Tool 3';
-
-      const gridText = 
-`WORKSHOP 1: COMPARISON GRID
-
-Criteria: Tone and confidence (1-5)
-- ${t1}: ${document.getElementById('row-1-1').value || 'N/A'}
-- ${t2}: ${document.getElementById('row-1-2').value || 'N/A'}
-- ${t3}: ${document.getElementById('row-1-3').value || 'N/A'}
-
-Criteria: Specificity (numbers, names, dates)
-- ${t1}: ${document.getElementById('row-2-1').value || 'N/A'}
-- ${t2}: ${document.getElementById('row-2-2').value || 'N/A'}
-- ${t3}: ${document.getElementById('row-2-3').value || 'N/A'}
-
-Criteria: Sources offered
-- ${t1}: ${document.getElementById('row-3-1').value || 'N/A'}
-- ${t2}: ${document.getElementById('row-3-2').value || 'N/A'}
-- ${t3}: ${document.getElementById('row-3-3').value || 'N/A'}
-
-Criteria: Gut trustworthiness (1-5)
-- ${t1}: ${document.getElementById('row-4-1').value || 'N/A'}
-- ${t2}: ${document.getElementById('row-4-2').value || 'N/A'}
-- ${t3}: ${document.getElementById('row-4-3').value || 'N/A'}
-
-Criteria: Hedging or warnings
-- ${t1}: ${document.getElementById('row-5-1').value || 'N/A'}
-- ${t2}: ${document.getElementById('row-5-2').value || 'N/A'}
-- ${t3}: ${document.getElementById('row-5-3').value || 'N/A'}`;
-
-      executeCopy(gridText, 'Filled grid copied');
-    }
-
-    function copyContradictionSummary() {
-      const contradiction = document.getElementById('contradiction-input').value || '[Not recorded yet]';
-      const verification = document.getElementById('verification-input').value || '[Not recorded yet]';
-
-      const text = 
-`SHARPEST CONTRADICTION:
-${contradiction}
-
-EXTERNAL VERIFICATION (PRIMARY SOURCES):
-${verification}`;
-
-      executeCopy(text, 'Contradiction notes copied');
+      // Copy rich HTML into clipboard with fallback to text
+      const listener = function(e) {
+        e.clipboardData.setData('text/html', htmlTable);
+        e.clipboardData.setData('text/plain', markdown);
+        e.preventDefault();
+      };
+      document.addEventListener('copy', listener);
+      document.execCommand('copy');
+      document.removeEventListener('copy', listener);
+      showToast('Formatted table copied for Word');
     }
 
     function copyFullPortfolioTemplate() {
@@ -569,7 +709,7 @@ ${verification}`;
 `# Critical Portfolio – Workshop 1: First contact
 Student Name: 
 Date: 
-Chosen Business Prompt Number: 
+Chosen Prompt Number: 
 
 ---
 
@@ -609,15 +749,417 @@ Chosen Business Prompt Number:
 [Describe in 2-3 sentences where the machines directly contradicted each other on numbers, dates, or events]
 
 ### Primary source verification:
-[Explain what you found when checking external primary records (e.g. KRS, official company reports, legal statutes). What was the actual truth, or was the claim entirely fabricated?]
+[Explain what you found when checking external primary records (such as KRS, official company reports, legal statutes). What was the actual truth, or was the claim entirely fabricated?]
 
 ---
 
 ## 5. Reflection
 [Connect what occurred back to lecture concepts: next-token prediction, frozen weights, attention capture, or search snippet summarization]`;
 
-      executeCopy(template, 'Full portfolio template copied to clipboard');
+      const htmlTemplate = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family: Calibri, 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #1e293b; line-height: 1.5;">
+  <h1 style="font-size: 18pt; color: #0f172a; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; margin-bottom: 12px;">Critical Portfolio – Workshop 1: First contact</h1>
+  <p style="margin: 4px 0;"><strong>Student Name:</strong> </p>
+  <p style="margin: 4px 0;"><strong>Date:</strong> </p>
+  <p style="margin: 4px 0 16px 0;"><strong>Chosen Prompt Number:</strong> </p>
+  <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 16px 0;" />
+
+  <h2 style="font-size: 14pt; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">1. Selected prompt</h2>
+  <p style="color: #64748b; font-style: italic; background-color: #f8fafc; padding: 8px; border-left: 3px solid #cbd5e1;">[Paste the verbatim prompt you used here]</p>
+  <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 16px 0;" />
+
+  <h2 style="font-size: 14pt; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">2. Raw outputs</h2>
+  <h3 style="font-size: 12pt; color: #1e293b; margin-top: 12px; margin-bottom: 4px;">Tool 1: [Insert Name and Version]</h3>
+  <p style="color: #64748b; font-style: italic;">[Paste full raw output here]</p>
+  <h3 style="font-size: 12pt; color: #1e293b; margin-top: 12px; margin-bottom: 4px;">Tool 2: [Insert Name and Version]</h3>
+  <p style="color: #64748b; font-style: italic;">[Paste full raw output here]</p>
+  <h3 style="font-size: 12pt; color: #1e293b; margin-top: 12px; margin-bottom: 4px;">Tool 3: [Insert Name and Version]</h3>
+  <p style="color: #64748b; font-style: italic;">[Paste full raw output here]</p>
+  <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 16px 0;" />
+
+  <h2 style="font-size: 14pt; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">3. Comparison grid</h2>
+  <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; width: 100%; margin-top: 8px; margin-bottom: 16px; font-size: 10.5pt;">
+    <thead>
+      <tr style="background-color: #f1f5f9;">
+        <th style="border: 1px solid #94a3b8; text-align: left; padding: 8px; width: 34%;">Evaluation criterion</th>
+        <th style="border: 1px solid #94a3b8; text-align: left; padding: 8px; width: 22%;">Tool 1: [Name]</th>
+        <th style="border: 1px solid #94a3b8; text-align: left; padding: 8px; width: 22%;">Tool 2: [Name]</th>
+        <th style="border: 1px solid #94a3b8; text-align: left; padding: 8px; width: 22%;">Tool 3: [Name]</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;">Tone and confidence (1–5 scale)</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;">Specificity (exact figures, dates, names)</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;">Sources offered (links, unlinked, none)</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;">Gut trustworthiness (1–5 scale)</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;">Hedging or warnings (admitted uncertainty)</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;"></td>
+      </tr>
+    </tbody>
+  </table>
+  <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 16px 0;" />
+
+  <h2 style="font-size: 14pt; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">4. Disagreement analysis and primary verification</h2>
+  <h3 style="font-size: 11pt; color: #1e293b; margin-top: 10px; margin-bottom: 4px;">Sharpest factual contradiction between the tools:</h3>
+  <p style="color: #64748b; font-style: italic;">[Describe in 2-3 sentences where the machines directly contradicted each other on numbers, dates, or events]</p>
+  <h3 style="font-size: 11pt; color: #1e293b; margin-top: 10px; margin-bottom: 4px;">Primary source verification:</h3>
+  <p style="color: #64748b; font-style: italic;">[Explain what you found when checking external primary records (such as KRS, official company reports, legal statutes). What was the actual truth, or was the claim entirely fabricated?]</p>
+  <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 16px 0;" />
+
+  <h2 style="font-size: 14pt; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">5. Reflection</h2>
+  <p style="color: #64748b; font-style: italic;">[Connect what occurred back to lecture concepts: next-token prediction, frozen weights, attention capture, or search snippet summarization]</p>
+</body>
+</html>`;
+
+      copyRichData(htmlTemplate, template, 'Blank template copied');
     }
+
+    function copyFilledReport() {
+      const promptNum = document.getElementById('prompt-selector').value;
+      let promptText = '';
+      if (promptNum) {
+        const promptTextEl = document.getElementById('prompt-text-' + promptNum);
+        promptText = promptTextEl ? (promptTextEl.innerText || promptTextEl.textContent).trim() : '';
+      } else {
+        promptText = '[No prompt selected from dropdown]';
+      }
+
+      const t1 = document.getElementById('tool-name-1').value || 'Tool 1';
+      const t2 = document.getElementById('tool-name-2').value || 'Tool 2';
+      const t3 = document.getElementById('tool-name-3').value || 'Tool 3';
+
+      const r1 = [document.getElementById('row-1-1').value || '', document.getElementById('row-1-2').value || '', document.getElementById('row-1-3').value || ''];
+      const r2 = [document.getElementById('row-2-1').value || '', document.getElementById('row-2-2').value || '', document.getElementById('row-2-3').value || ''];
+      const r3 = [document.getElementById('row-3-1').value || '', document.getElementById('row-3-2').value || '', document.getElementById('row-3-3').value || ''];
+      const r4 = [document.getElementById('row-4-1').value || '', document.getElementById('row-4-2').value || '', document.getElementById('row-4-3').value || ''];
+      const r5 = [document.getElementById('row-5-1').value || '', document.getElementById('row-5-2').value || '', document.getElementById('row-5-3').value || ''];
+
+      const contradiction = document.getElementById('contradiction-input').value || '[Not recorded yet]';
+      const verification = document.getElementById('verification-input').value || '[Not recorded yet]';
+
+      const reportMarkdown = 
+`# Critical Portfolio – Workshop 1: First contact
+Student Name: 
+Date: 
+Assigned Prompt Number: ${promptNum || 'Unassigned'}
+
+---
+
+## 1. Selected prompt
+${promptText}
+
+---
+
+## 2. Raw outputs
+
+### Tool 1: ${t1}
+[Paste raw output here]
+
+### Tool 2: ${t2}
+[Paste raw output here]
+
+### Tool 3: ${t3}
+[Paste raw output here]
+
+---
+
+## 3. Comparison grid
+
+| Evaluation criterion | ${t1} | ${t2} | ${t3} |
+| :--- | :--- | :--- | :--- |
+| Tone and confidence (1–5 scale) | ${r1[0]} | ${r1[1]} | ${r1[2]} |
+| Specificity (exact numbers, dates, names) | ${r2[0]} | ${r2[1]} | ${r2[2]} |
+| Sources offered (links, unlinked, none) | ${r3[0]} | ${r3[1]} | ${r3[2]} |
+| Gut trustworthiness (1–5 scale) | ${r4[0]} | ${r4[1]} | ${r4[2]} |
+| Hedging or warnings (admitted uncertainty) | ${r5[0]} | ${r5[1]} | ${r5[2]} |
+
+---
+
+## 4. Disagreement analysis and primary verification
+
+### Sharpest factual contradiction between the tools:
+${contradiction}
+
+### Primary source verification:
+${verification}
+
+---
+
+## 5. Reflection
+[Connect what occurred back to lecture concepts: next-token prediction, frozen weights, attention capture, or search snippet summarization]`;
+
+      const escapeHtml = (str) => {
+        return (str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/\n/g, '<br/>');
+      };
+
+      const reportHtml = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family: Calibri, 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #1e293b; line-height: 1.5;">
+  <h1 style="font-size: 18pt; color: #0f172a; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; margin-bottom: 12px;">Critical Portfolio – Workshop 1: First contact</h1>
+  <p style="margin: 4px 0;"><strong>Student Name:</strong> </p>
+  <p style="margin: 4px 0;"><strong>Date:</strong> </p>
+  <p style="margin: 4px 0 16px 0;"><strong>Assigned Prompt Number:</strong> ${escapeHtml(promptNum || 'Unassigned')}</p>
+  <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 16px 0;" />
+
+  <h2 style="font-size: 14pt; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">1. Selected prompt</h2>
+  <div style="background-color: #f8fafc; border-left: 3px solid #0284c7; padding: 10px 14px; margin-bottom: 16px; font-size: 10.5pt; color: #334155;">
+    ${escapeHtml(promptText)}
+  </div>
+  <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 16px 0;" />
+
+  <h2 style="font-size: 14pt; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">2. Raw outputs</h2>
+  <h3 style="font-size: 12pt; color: #1e293b; margin-top: 12px; margin-bottom: 4px;">Tool 1: ${escapeHtml(t1)}</h3>
+  <p style="color: #64748b; font-style: italic;">[Paste raw output here]</p>
+  <h3 style="font-size: 12pt; color: #1e293b; margin-top: 12px; margin-bottom: 4px;">Tool 2: ${escapeHtml(t2)}</h3>
+  <p style="color: #64748b; font-style: italic;">[Paste raw output here]</p>
+  <h3 style="font-size: 12pt; color: #1e293b; margin-top: 12px; margin-bottom: 4px;">Tool 3: ${escapeHtml(t3)}</h3>
+  <p style="color: #64748b; font-style: italic;">[Paste raw output here]</p>
+  <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 16px 0;" />
+
+  <h2 style="font-size: 14pt; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">3. Comparison grid</h2>
+  <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; width: 100%; margin-top: 8px; margin-bottom: 16px; font-size: 10.5pt;">
+    <thead>
+      <tr style="background-color: #f1f5f9;">
+        <th style="border: 1px solid #94a3b8; text-align: left; padding: 8px; width: 34%;">Evaluation criterion</th>
+        <th style="border: 1px solid #94a3b8; text-align: left; padding: 8px; width: 22%;">${escapeHtml(t1)}</th>
+        <th style="border: 1px solid #94a3b8; text-align: left; padding: 8px; width: 22%;">${escapeHtml(t2)}</th>
+        <th style="border: 1px solid #94a3b8; text-align: left; padding: 8px; width: 22%;">${escapeHtml(t3)}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;">Tone and confidence (1–5 scale)</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r1[0])}</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r1[1])}</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r1[2])}</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;">Specificity (exact numbers, dates, names)</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r2[0])}</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r2[1])}</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r2[2])}</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;">Sources offered (links, unlinked, none)</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r3[0])}</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r3[1])}</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r3[2])}</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;">Gut trustworthiness (1–5 scale)</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r4[0])}</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r4[1])}</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r4[2])}</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;">Hedging or warnings (admitted uncertainty)</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r5[0])}</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r5[1])}</td>
+        <td style="border: 1px solid #cbd5e1; padding: 8px;">${escapeHtml(r5[2])}</td>
+      </tr>
+    </tbody>
+  </table>
+  <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 16px 0;" />
+
+  <h2 style="font-size: 14pt; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">4. Disagreement analysis and primary verification</h2>
+  <h3 style="font-size: 11pt; color: #1e293b; margin-top: 10px; margin-bottom: 4px;">Sharpest factual contradiction between the tools:</h3>
+  <p style="margin: 4px 0 12px 0;">${escapeHtml(contradiction)}</p>
+  <h3 style="font-size: 11pt; color: #1e293b; margin-top: 10px; margin-bottom: 4px;">Primary source verification:</h3>
+  <p style="margin: 4px 0 12px 0;">${escapeHtml(verification)}</p>
+  <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 16px 0;" />
+
+  <h2 style="font-size: 14pt; color: #0f172a; margin-top: 16px; margin-bottom: 8px;">5. Reflection</h2>
+  <p style="color: #64748b; font-style: italic;">[Connect what occurred back to lecture concepts: next-token prediction, frozen weights, attention capture, or search snippet summarization]</p>
+</body>
+</html>`;
+
+      copyRichData(reportHtml, reportMarkdown, 'Completed log copied for Word');
+    }
+
+    function copyRichData(htmlContent, plainTextContent, successMsg) {
+      const listener = function(e) {
+        e.clipboardData.setData('text/html', htmlContent);
+        e.clipboardData.setData('text/plain', plainTextContent);
+        e.preventDefault();
+      };
+      document.addEventListener('copy', listener);
+      document.execCommand('copy');
+      document.removeEventListener('copy', listener);
+      showToast(successMsg || 'Copied to clipboard');
+    }
+
+    const STORAGE_KEY = 'workshop_1_portfolio_draft';
+
+    const inputFieldIds = [
+      'prompt-selector',
+      'tool-name-1', 'tool-name-2', 'tool-name-3',
+      'row-1-1', 'row-1-2', 'row-1-3',
+      'row-2-1', 'row-2-2', 'row-2-3',
+      'row-3-1', 'row-3-2', 'row-3-3',
+      'row-4-1', 'row-4-2', 'row-4-3',
+      'row-5-1', 'row-5-2', 'row-5-3',
+      'contradiction-input',
+      'verification-input'
+    ];
+
+    let saveTimeout = null;
+
+    function saveDraft() {
+      const data = {};
+      inputFieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          data[id] = el.value;
+        }
+      });
+
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        const indicator = document.getElementById('autosave-text');
+        if (indicator) {
+          indicator.innerText = 'Draft saved';
+        }
+      } catch (err) {
+        // Fallback if local storage quota exceeded
+      }
+    }
+
+    function triggerAutoSave() {
+      const indicator = document.getElementById('autosave-text');
+      if (indicator) {
+        indicator.innerText = 'Saving...';
+      }
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(saveDraft, 300);
+    }
+
+    function restoreDraft() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+
+        inputFieldIds.forEach(id => {
+          if (data[id] !== undefined) {
+            const el = document.getElementById(id);
+            if (el) {
+              el.value = data[id];
+            }
+          }
+        });
+
+        const promptVal = data['prompt-selector'];
+        if (promptVal) {
+          switchPromptView(promptVal);
+        }
+      } catch (err) {
+        // Ignore parse issues
+      }
+    }
+
+    function hasUnsavedContent() {
+      return inputFieldIds.some(id => {
+        const el = document.getElementById(id);
+        return el && el.value && el.value.trim().length > 0;
+      });
+    }
+
+    function openResetModal() {
+      if (!hasUnsavedContent()) {
+        showToast('Form is already empty');
+        return;
+      }
+      const modal = document.getElementById('reset-modal');
+      const box = document.getElementById('reset-modal-box');
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      box.classList.remove('scale-95');
+      box.classList.add('scale-100');
+    }
+
+    function closeResetModal() {
+      const modal = document.getElementById('reset-modal');
+      const box = document.getElementById('reset-modal-box');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      box.classList.remove('scale-100');
+      box.classList.add('scale-95');
+    }
+
+    function executeResetForm() {
+      closeResetModal();
+
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {
+        // Fallback for storage errors
+      }
+
+      inputFieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.value = '';
+        }
+      });
+
+      switchPromptView('');
+
+      const indicator = document.getElementById('autosave-text');
+      if (indicator) {
+        indicator.innerText = 'Draft saved';
+      }
+
+      showToast('Form reset successfully');
+    }
+
+    // Attach listeners for changes and unload warning
+    window.addEventListener('DOMContentLoaded', () => {
+      restoreDraft();
+
+      inputFieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', triggerAutoSave);
+          el.addEventListener('change', triggerAutoSave);
+        }
+      });
+
+      window.addEventListener('beforeunload', (e) => {
+        if (hasUnsavedContent()) {
+          e.preventDefault();
+          e.returnValue = '';
+        }
+      });
+    });
   </script>
 </body>
 </html>
