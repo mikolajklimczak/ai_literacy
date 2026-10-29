@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workshop 2: The craft of asking (prompting)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#151f32',
+                            900: '#0f172a',
+                            950: '#080d1a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #080d1a;
+            color: #e2e8f0;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .step-badge {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-emerald-500/30 selection:text-emerald-200 min-h-screen flex flex-col">
+
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden flex items-center gap-2.5 bg-emerald-950/95 border border-emerald-500/50 text-emerald-200 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md transition-all duration-200">
+        <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span id="toast-text" class="text-sm font-medium">Copied to clipboard</span>
+    </div>
+
+    <div id="reset-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <div class="flex items-start gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center shrink-0 text-rose-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-semibold text-white">Reset all workshop fields?</h3>
+                    <p class="text-sm text-slate-400 mt-1.5 leading-relaxed">
+                        This action clears all prompts, outputs, diagnoses, and partner notes saved in your browser. Make sure you have copied your work to Word if you want to keep it.
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-2.5 mt-6">
+                <button onclick="closeResetModal()" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors">
+                    Cancel
+                </button>
+                <button onclick="executeResetForm()" class="px-4 py-2 rounded-lg text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 transition-colors">
+                    Yes, reset form
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <header class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    WORKSHOP 2 • GRADED (5%)
+                </span>
+                <h1 class="text-sm sm:text-base font-semibold text-slate-100">The craft of asking (prompting)</h1>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+                <div class="flex items-center gap-2 mr-1 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800">
+                    <span id="autosave-dot" class="w-2 h-2 rounded-full bg-slate-500"></span>
+                    <span id="autosave-status" class="text-[11px] font-mono text-slate-400">Ready</span>
+                    <button onclick="openResetModal()" class="text-[11px] text-slate-400 hover:text-rose-400 underline ml-1.5 transition-colors">
+                        Reset form
+                    </button>
+                </div>
+
+                <button onclick="copyBlankTemplate()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors">
+                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                    Copy blank template
+                </button>
+
+                <button onclick="copyFilledReport()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Copy completed log
+                </button>
+
+                <a href="https://www.office.com/launch/word" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 transition-colors">
+                    <span>Open Word Online</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-10 flex-1">
+
+        <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+            <div class="max-w-3xl">
+                <p class="text-xs font-mono uppercase tracking-wider text-emerald-400 mb-2">Week 5 • Steering the machine</p>
+                <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Steering model outputs through structured iteration</h2>
+                <p class="text-slate-300 mt-3 text-sm sm:text-base leading-relaxed">
+                    In Workshop 1, you saw that language models predict the next word based on probabilities and often disagree on facts. In this graded session, you will test how the structure of your input controls the quality of the output. Instead of typing a short one-liner and accepting generic filler, you will take a realistic problem, diagnose why the initial output fails, and steer the model across four documented rounds of revision.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 mt-6 pt-6 border-t border-slate-800/80">
+                <a href="#step-1" class="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 transition-colors">
+                    <span class="text-[11px] font-mono text-emerald-400">Step 1</span>
+                    <p class="text-xs font-semibold text-slate-200 mt-0.5">The bad prompt</p>
+                </a>
+                <a href="#step-2" class="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 transition-colors">
+                    <span class="text-[11px] font-mono text-emerald-400">Step 2</span>
+                    <p class="text-xs font-semibold text-slate-200 mt-0.5">The teardown</p>
+                </a>
+                <a href="#step-3" class="p-3 rounded-xl bg-slate-950/60 border border-emerald-500/30 hover:border-emerald-500/50 transition-colors">
+                    <span class="text-[11px] font-mono text-amber-400">Step 3 • Graded</span>
+                    <p class="text-xs font-semibold text-white mt-0.5">Iterate to useful</p>
+                </a>
+                <a href="#step-4" class="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 transition-colors">
+                    <span class="text-[11px] font-mono text-emerald-400">Step 4</span>
+                    <p class="text-xs font-semibold text-slate-200 mt-0.5">Prompt duel</p>
+                </a>
+                <a href="#step-5" class="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 transition-colors">
+                    <span class="text-[11px] font-mono text-emerald-400">Step 5</span>
+                    <p class="text-xs font-semibold text-slate-200 mt-0.5">Debrief</p>
+                </a>
+                <a href="#step-6" class="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 transition-colors">
+                    <span class="text-[11px] font-mono text-cyan-400">Step 6 • Home</span>
+                    <p class="text-xs font-semibold text-slate-200 mt-0.5">Portfolio critique</p>
+                </a>
+            </div>
+
+            <div class="mt-6 bg-slate-950/70 border border-slate-800 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">Tools and grading rules</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Use one conversational AI model consistently across all four rounds so you can isolate how your prompt changes alter the output (e.g., university Microsoft Copilot, ChatGPT, Claude, Gemini, DeepSeek, or Mistral Le Chat). You are graded on visible iteration across four genuine rounds, the specificity of your failure diagnosis, and the reusability of your final prompt.
+                    </p>
+                </div>
+                <div class="shrink-0 w-full sm:w-64">
+                    <label for="student-model" class="block text-[11px] font-mono text-slate-400 mb-1">AI model used in this session</label>
+                    <input type="text" id="student-model" placeholder="e.g., Copilot, Claude 3.5, ChatGPT-4o" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                </div>
+            </div>
+        </section>
+
+        <section id="step-1" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
+            <div class="flex items-center gap-3">
+                <span class="step-badge px-3 py-1 rounded-full text-xs font-mono font-semibold text-emerald-300">Step 1</span>
+                <h2 class="text-xl font-bold text-white">The bad prompt</h2>
+            </div>
+
+            <p class="text-sm text-slate-300 leading-relaxed">
+                Select your assigned task number (1 to 8) from the list below. Each task has two parts: a deliberately vague one-liner and a realistic scenario brief containing the actual facts, numbers, and rules you need to solve the problem. For Step 1, copy only the vague one-liner, run it in your AI tool, and paste the output below.
+            </p>
+
+            <div class="max-w-md">
+                <label for="prompt-selector" class="block text-xs font-medium text-slate-300 mb-1.5">Select your assigned task (1–8)</label>
+                <select id="prompt-selector" onchange="switchPromptView(this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+                    <option value="">Choose your assigned task (1–8)...</option>
+                    <option value="1">Task 1: Café shift scheduling and staff conflict (business)</option>
+                    <option value="2">Task 2: Late component delivery to a B2B client (business)</option>
+                    <option value="3">Task 3: Onboarding plan for a junior marketing intern (business)</option>
+                    <option value="4">Task 4: Cutting a project event budget by 25% (business)</option>
+                    <option value="5">Task 5: Shared student flat electricity bill dispute (relatable)</option>
+                    <option value="6">Task 6: Pitching a company sponsor for a student event (relatable)</option>
+                    <option value="7">Task 7: Reallocating work in a failing university group project (relatable)</option>
+                    <option value="8">Task 8: Study schedule for three overlapping exam weeks (relatable)</option>
+                </select>
+            </div>
+
+            <div id="prompt-placeholder" class="bg-slate-950/60 border border-dashed border-slate-800 rounded-xl p-6 text-center">
+                <p class="text-sm text-slate-400">Select your assigned task number (1–8) from the dropdown list above to display your initial prompt and scenario brief.</p>
+            </div>
+
+            <div id="prompt-card-display" class="hidden bg-slate-950 border border-slate-800 rounded-xl p-5 space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+                    <div>
+                        <span id="card-badge" class="text-xs font-mono text-emerald-400">Task 1</span>
+                        <h3 id="card-title" class="text-base font-semibold text-white mt-0.5">Title</h3>
+                    </div>
+                    <button onclick="copyBadPrompt()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        Copy bad one-liner for Step 1
+                    </button>
+                </div>
+
+                <div class="bg-rose-950/20 border border-rose-500/30 rounded-lg p-3.5">
+                    <span class="text-[11px] font-mono uppercase tracking-wider text-rose-300 block mb-1">The bad prompt (use this in Step 1 / Round 1)</span>
+                    <p id="card-bad-prompt" class="text-sm font-mono text-slate-100"></p>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 rounded-lg p-4">
+                    <span class="text-[11px] font-mono uppercase tracking-wider text-cyan-400 block mb-1.5">Real scenario brief and constraints (use these facts in Step 3)</span>
+                    <p id="card-scenario" class="text-xs sm:text-sm text-slate-300 leading-relaxed"></p>
+                </div>
+            </div>
+
+            <div class="pt-2 space-y-4">
+                <div>
+                    <label for="round1-output" class="block text-xs font-medium text-slate-300 mb-1.5">
+                        Paste the raw AI response to the bad prompt (Round 1 output)
+                    </label>
+                    <textarea id="round1-output" rows="5" placeholder="Paste the generic AI output produced by the one-liner here..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div>
+                    <label for="round1-diagnosis" class="block text-xs font-medium text-slate-300 mb-1.5">
+                        Initial failure diagnosis (Round 1): If you sent or used this output right now without rewriting it, what specific problems would it cause?
+                    </label>
+                    <textarea id="round1-diagnosis" rows="3" placeholder="Name the exact missing facts, invented assumptions, wrong tone, or useless filler in the Round 1 output..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <section id="step-2" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
+            <div class="flex items-center gap-3">
+                <span class="step-badge px-3 py-1 rounded-full text-xs font-mono font-semibold text-emerald-300">Step 2</span>
+                <h2 class="text-xl font-bold text-white">The teardown and steering framework</h2>
+            </div>
+
+            <p class="text-sm text-slate-300 leading-relaxed">
+                A language model does not know your workplace, your budget, or your flatmates. When you type a ten-word prompt, the model calculates the most statistically probable words that follow those ten words across millions of internet documents. The statistical average of the internet is polite, vague filler. To steer the probability distribution, use the five building blocks from Lecture 5 alongside step-by-step reasoning.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4">
+                    <span class="text-xs font-mono font-semibold text-emerald-400">1. Role and perspective</span>
+                    <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                        Specify who is speaking and who the audience is. Writing as a "student café manager in Wrocław addressing 6 part-time baristas" sets an immediate register and removes generic corporate phrasing.
+                    </p>
+                </div>
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4">
+                    <span class="text-xs font-mono font-semibold text-emerald-400">2. Task and action</span>
+                    <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                        State the exact deliverable and what the reader must do after reading it (e.g., fill in a shift sheet by Friday at 16:00, approve one of three budget options).
+                    </p>
+                </div>
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4">
+                    <span class="text-xs font-mono font-semibold text-emerald-400">3. Context and domain data</span>
+                    <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                        Supply every concrete number, date, name, and background cause from your scenario brief. Anything you omit will either be left out or hallucinated by the model.
+                    </p>
+                </div>
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4">
+                    <span class="text-xs font-mono font-semibold text-emerald-400">4. Format and structure</span>
+                    <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                        Define how the text should look on the page: a comparison table with PLN columns, a day-by-day schedule, bulleted checklists, or a maximum word count.
+                    </p>
+                </div>
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4">
+                    <span class="text-xs font-mono font-semibold text-emerald-400">5. Negative constraints</span>
+                    <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                        Tell the model what not to do: ban clichés ("I hope this email finds you well", "valued customer"), forbid inventing unstated policies, or cap the length at 180 words.
+                    </p>
+                </div>
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4">
+                    <span class="text-xs font-mono font-semibold text-cyan-400">6. Step-by-step reasoning</span>
+                    <p class="text-xs text-slate-300 mt-1.5 leading-relaxed">
+                        For tasks involving math, budgets, or schedules, instruct the model to list the constraints and verify the arithmetic step by step before writing the final text.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="step-3" class="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-6 sm:p-8 space-y-8">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-3">
+                    <span class="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">Step 3 • Graded task</span>
+                    <h2 class="text-xl font-bold text-white">Iterate to useful (four documented rounds)</h2>
+                </div>
+                <span class="text-xs font-mono text-slate-400">Round 1 is recorded in Step 1 above • Complete Rounds 2, 3, and 4 below</span>
+            </div>
+
+            <p class="text-sm text-slate-300 leading-relaxed">
+                Using the real scenario brief from your assigned card in Step 1, refine your prompt across three further rounds (creating four documented rounds in total). Do not simply reply with two-word nudges like "make it shorter." Rewrite your prompt so that by Round 4, you have a complete, standalone prompt that produces a high-quality answer in a single shot.
+            </p>
+
+            <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-5 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div>
+                        <span class="text-xs font-mono text-emerald-400 font-semibold">Round 2 of 4</span>
+                        <h3 class="text-sm font-semibold text-white">Adding role, task, and domain context</h3>
+                    </div>
+                    <span class="text-[11px] font-mono text-slate-400">Inject the concrete facts, numbers, and names from your brief</span>
+                </div>
+
+                <div>
+                    <label for="round2-prompt" class="block text-xs font-medium text-slate-300 mb-1">Your Round 2 prompt</label>
+                    <textarea id="round2-prompt" rows="4" placeholder="Paste the full prompt you used in Round 2 (incorporating role, task, and scenario facts)..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div>
+                    <label for="round2-changes" class="block text-xs font-medium text-slate-300 mb-1">What did you change from Round 1, and why?</label>
+                    <textarea id="round2-changes" rows="2" placeholder="Explain which specific facts, roles, or goals you added to fix the Round 1 failure..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div>
+                    <label for="round2-output" class="block text-xs font-medium text-slate-300 mb-1">Round 2 AI output</label>
+                    <textarea id="round2-output" rows="4" placeholder="Paste the AI response from Round 2..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div>
+                    <label for="round2-diagnosis" class="block text-xs font-medium text-slate-300 mb-1">Diagnosis of Round 2 output: What improved, and what is still flawed, awkward, or missing?</label>
+                    <textarea id="round2-diagnosis" rows="2" placeholder="Look closely at tone, length, formatting, calculations, or remaining filler phrases..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+            </div>
+
+            <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-5 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div>
+                        <span class="text-xs font-mono text-emerald-400 font-semibold">Round 3 of 4</span>
+                        <h3 class="text-sm font-semibold text-white">Enforcing format, negative constraints, and step-by-step logic</h3>
+                    </div>
+                    <span class="text-[11px] font-mono text-slate-400">Control structure, math verification, and banned clichés</span>
+                </div>
+
+                <div>
+                    <label for="round3-prompt" class="block text-xs font-medium text-slate-300 mb-1">Your Round 3 prompt</label>
+                    <textarea id="round3-prompt" rows="5" placeholder="Paste the full consolidated prompt you used in Round 3..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div>
+                    <label for="round3-changes" class="block text-xs font-medium text-slate-300 mb-1">What did you change from Round 2, and why?</label>
+                    <textarea id="round3-changes" rows="2" placeholder="Specify the formatting rules, word limits, negative constraints, or step-by-step instructions you added..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div>
+                    <label for="round3-output" class="block text-xs font-medium text-slate-300 mb-1">Round 3 AI output</label>
+                    <textarea id="round3-output" rows="4" placeholder="Paste the AI response from Round 3..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div>
+                    <label for="round3-diagnosis" class="block text-xs font-medium text-slate-300 mb-1">Diagnosis of Round 3 output: What subtle weaknesses, edge cases, or formatting issues remain?</label>
+                    <textarea id="round3-diagnosis" rows="2" placeholder="Identify the final 10% that still needs tightening before the output is ready to use..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+            </div>
+
+            <div class="bg-slate-950/90 border border-emerald-500/30 rounded-xl p-5 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div>
+                        <span class="text-xs font-mono text-amber-400 font-semibold">Round 4 of 4 • Final version</span>
+                        <h3 class="text-sm font-semibold text-white">Precision polish and reusable standalone prompt</h3>
+                    </div>
+                    <span class="text-[11px] font-mono text-slate-400">Test in a fresh chat to verify standalone reliability</span>
+                </div>
+
+                <div>
+                    <label for="round4-prompt" class="block text-xs font-medium text-slate-300 mb-1">Your final Round 4 standalone prompt (this is the prompt you will hand to your partner in Step 4)</label>
+                    <textarea id="round4-prompt" rows="6" placeholder="Paste your complete, structured Round 4 prompt here..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-xs font-mono text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div>
+                    <label for="round4-changes" class="block text-xs font-medium text-slate-300 mb-1">What final adjustments did you make in Round 4, and how did you make the prompt reusable?</label>
+                    <textarea id="round4-changes" rows="2" placeholder="Explain your final precision edits and how this prompt structure could be reused for similar tasks..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div>
+                    <label for="round4-output" class="block text-xs font-medium text-slate-300 mb-1">Round 4 final AI output</label>
+                    <textarea id="round4-output" rows="5" placeholder="Paste the final AI output generated from a fresh chat using your Round 4 prompt..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div>
+                    <label for="round4-diagnosis" class="block text-xs font-medium text-slate-300 mb-1">Final evaluation: Why is this output now ready for real-world use compared to Round 1?</label>
+                    <textarea id="round4-diagnosis" rows="2" placeholder="Verify that all scenario constraints, numbers, and tone requirements are met..." class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <section id="step-4" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
+            <div class="flex items-center gap-3">
+                <span class="step-badge px-3 py-1 rounded-full text-xs font-mono font-semibold text-emerald-300">Step 4</span>
+                <h2 class="text-xl font-bold text-white">Prompt duel (pair stress-test)</h2>
+            </div>
+
+            <p class="text-sm text-slate-300 leading-relaxed">
+                Swap your final Round 4 prompt with a partner. Run your partner's prompt in your own AI tool and inspect the result against their scenario brief. Your job is to act as an auditor: try to find a loophole where the model still misbehaves, miscalculates, or slips into generic filler, and suggest one concrete improvement to your partner's prompt. Record what happened when your partner tested your prompt below.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="duel-break" class="block text-xs font-medium text-slate-300 mb-1.5">
+                        Partner stress-test: Did your Round 4 prompt hold up on your partner's tool, or where did it break/drift?
+                    </label>
+                    <textarea id="duel-break" rows="4" placeholder="Describe how your prompt performed when run by your partner (e.g., different model behavior, missed constraint, or consistent output)..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+
+                <div>
+                    <label for="duel-improvement" class="block text-xs font-medium text-slate-300 mb-1.5">
+                        Partner recommendation: What specific change did your partner suggest to make your prompt stronger?
+                    </label>
+                    <textarea id="duel-improvement" rows="4" placeholder="Record the specific constraint, formatting rule, or clarification your partner recommended..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-500"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <section id="step-5" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
+            <div class="flex items-center gap-3">
+                <span class="step-badge px-3 py-1 rounded-full text-xs font-mono font-semibold text-emerald-300">Step 5</span>
+                <h2 class="text-xl font-bold text-white">Debrief</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-1.5">
+                    <h3 class="text-xs font-mono font-semibold text-emerald-400">Probability pruning (Lectures 2 & 5)</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        The model did not become smarter between Round 1 and Round 4. By supplying role, domain facts, format, and negative rules, you narrowed the probability distribution so generic internet templates were no longer high-probability completions.
+                    </p>
+                </div>
+                <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-1.5">
+                    <h3 class="text-xs font-mono font-semibold text-emerald-400">Context length and attention dilution (Lecture 5)</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        When you stay in a single long chat thread across many corrections, the model's attention spreads across your old mistakes and rejected drafts. Consolidating your rules into a single clean prompt in a fresh chat prevents context pollution.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-emerald-950/20 border border-emerald-500/30 rounded-xl p-4">
+                <p class="text-xs font-mono uppercase tracking-wider text-emerald-400 mb-1">Session takeaway</p>
+                <p class="text-sm sm:text-base font-semibold text-white">
+                    "The quality of the answer is mostly decided before the AI says a word, by you."
+                </p>
+            </div>
+        </section>
+
+        <section id="step-6" class="bg-slate-900/90 border border-cyan-500/30 rounded-2xl p-6 sm:p-8 space-y-4">
+            <div class="flex items-center gap-3">
+                <span class="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">Step 6 • At-home portfolio section</span>
+                <h2 class="text-xl font-bold text-white">Individual reflection for your critical portfolio</h2>
+            </div>
+
+            <p class="text-sm text-slate-300 leading-relaxed">
+                Before copying your log to Microsoft Word, note that the exported document includes a final section for your individual Critical Portfolio (200–300 words, completed at home before Workshop 3). In that section of your Word file, answer the following three questions directly in your own words:
+            </p>
+
+            <ol class="list-decimal list-inside space-y-2 text-xs sm:text-sm text-slate-300 bg-slate-950/70 border border-slate-800 rounded-xl p-4">
+                <li>Which single change across your four rounds produced the largest jump in usefulness, and why did it matter?</li>
+                <li>What did you notice about how the model handled constraints (such as word counts, numbers, or negative rules) during your iterations or during the partner duel?</li>
+                <li>How will you structure your initial prompts differently the next time you use AI for a university or work task?</li>
+            </ol>
+
+            <div class="pt-3 flex flex-wrap items-center justify-between gap-4 border-t border-slate-800">
+                <p class="text-xs text-slate-400">
+                    Ready to export? Click the button to copy your complete formatted log (works in both Desktop Word and Word Online).
+                </p>
+                <button onclick="copyFilledReport()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Copy completed log for Word
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-slate-900 py-6 text-center text-xs text-slate-500">
+        AI Literacy and Critical Thinking • Workshop 2 Companion Guide
+    </footer>
+
+    <script>
+        const TASKS = {
+            "1": {
+                badge: "Task 1 • Business management",
+                title: "Café shift scheduling and staff conflict",
+                badPrompt: "Write an email to my café staff about the new weekend work schedule.",
+                scenario: "You manage a specialty café near Plac Grunwaldzki in Wrocław with 6 part-time student baristas. Two experienced baristas (Maja and Tomek) just complained that they were scheduled for every Saturday closing shift (until 22:00) over the past month, while newly hired trainees only got easy weekday morning shifts. Starting next month, every barista must work at least two Saturday closing shifts per month, and every shift must pair one experienced barista with one trainee. Shift preferences for November must be submitted in the shared spreadsheet by Friday at 16:00, or shifts will be assigned automatically. The tone must be fair, firm, and direct, without corporate jargon."
+            },
+            "2": {
+                badge: "Task 2 • Business management",
+                title: "Late component delivery to a B2B client",
+                badPrompt: "Write a message to a client apologizing for a late delivery.",
+                scenario: "You are an account coordinator at a print shop in Bielany Wrocławskie. You must inform a B2B client (EventsPol Sp. z o.o.) that 500 custom-printed conference folders ordered for their trade fair will arrive on Thursday at 10:00 AM instead of Tuesday at 12:00 PM. The delay happened because the lamination machine broke down on Monday afternoon. Their trade fair actually opens on Friday morning, so they will still have the folders in time for the event, but their staff wanted to pack them on Wednesday. To compensate, you are waiving the 350 PLN express courier fee and sending two staff members on Thursday at 10:00 AM to help pack the folders on-site for three hours at no charge. Do not grovel or use clichés like 'valued customer'."
+            },
+            "3": {
+                badge: "Task 3 • Business management",
+                title: "Onboarding plan for a junior marketing intern",
+                badPrompt: "Create a first-week onboarding plan for a new marketing intern.",
+                scenario: "You run a 5-person e-commerce store selling board games. A 2nd-year management student starts next Monday as a part-time marketing intern working 20 hours a week (Monday to Thursday, 09:00 to 14:00). The intern's only responsibilities during month one are auditing broken product descriptions on your WooCommerce store, replying to basic customer Instagram DMs using your FAQ sheet, and photographing three new board games every Wednesday afternoon. There is no HR department. You only have 30 minutes per day (09:00 to 09:30) to check in with them. You need a concrete hour-by-hour schedule for Monday through Thursday with exact deliverables by Thursday at 14:00."
+            },
+            "4": {
+                badge: "Task 4 • Business management",
+                title: "Cutting a project event budget by 25%",
+                badPrompt: "How can I reduce the budget of our company event by 25%?",
+                scenario: "You are organizing a 1-day product workshop in Wrocław for 40 business clients. Your initial budget was 16,000 PLN, and your director just cut it to 12,000 PLN (a 4,000 PLN reduction). Your current planned costs are: conference room rental at a 4-star hotel (5,500 PLN), external catering with hot buffet lunch and open coffee bar (6,000 PLN, or 150 PLN per person), printed welcome packs and branded powerbanks (2,500 PLN), and a professional photographer for 8 hours (2,000 PLN). The headcount (40 people) and duration (8 hours) cannot change, and attendees still need lunch and coffee. Propose three distinct cost-cutting options that each save exactly 4,000 PLN, showing the exact revised math for every line item and the trade-offs of each option."
+            },
+            "5": {
+                badge: "Task 5 • Student & everyday coordination",
+                title: "Resolving a shared student flat electricity bill dispute",
+                badPrompt: "Tell my flatmates they need to pay more for electricity.",
+                scenario: "You share a 4-room student flat in Nadodrze (Wrocław). The bi-monthly Tauron electricity reconciliation bill just arrived with an extra surcharge of 640 PLN above your usual monthly advances. One flatmate (Kamil) runs a gaming PC with two monitors and a 3D printer in his room for 8 hours a day. Another flatmate (Zosia) spent 3 weeks out of the 2 months at her parents' house in Opole and refuses to pay an equal 160 PLN split. The bill must be paid by the 10th of the month to avoid late interest. Draft a group chat message proposing two fair calculation formulas (one weighted by days present and high-draw equipment, one compromise split) with exact PLN amounts for all 4 flatmates, keeping the peace in the flat."
+            },
+            "6": {
+                badge: "Task 6 • Student & everyday coordination",
+                title: "Pitching a company sponsor for a student university event",
+                badPrompt: "Write an email asking a company to sponsor our student event.",
+                scenario: "You belong to a student management club at the Wrocław University of Economics and Business. You are organizing a 1-day practical case-study competition on November 24 for 60 second- and third-year business students. You are writing to the Employer Branding Manager of a local logistics company (LogisWro Sp. z o.o.) asking for 3,000 PLN in financial sponsorship to cover catering and prizes. In exchange, the company gets to design the real-world logistics case study that the 60 students will solve, sit on the jury, receive the CVs of consenting participants, and place two roll-ups in the room. Do not write a begging letter; frame it as a low-cost recruitment test compared to job board ads. Keep the email under 180 words."
+            },
+            "7": {
+                badge: "Task 7 • Student & everyday coordination",
+                title: "Reallocating work in a failing university group project",
+                badPrompt: "Write a message to my group project team telling them to work harder.",
+                scenario: "You are in a 4-person student team preparing a market analysis due next Wednesday at 23:59. Today is Friday. Two team members (Bartek and Kasia) have written nothing in the shared Google Doc; their assigned sections (competitor pricing table and risk analysis) are completely blank. If the project is late, everyone gets zero points. You and the fourth member (Ania) have already finished the market size and customer profile sections. Draft a firm message for the team Messenger group that sets an intermediary deadline of Sunday at 20:00 for rough drafts, breaks Bartek and Kasia's missing sections into small bulleted checklists so they cannot claim they do not know what to write, and states clearly that if the Sunday 20:00 deadline is missed, you and Ania will submit the paper on Monday with an explicit contribution table showing who wrote which section."
+            },
+            "8": {
+                badge: "Task 8 • Student & everyday coordination",
+                title: "Study schedule for three overlapping exam weeks",
+                badPrompt: "Make me a study plan for my upcoming university exams.",
+                scenario: "You have 10 days left (Monday of Week 1 to Wednesday of Week 2) to prepare for three exams: Microeconomics (Monday of Week 2, 12 lecture topics, requires solving math problems, currently your weakest subject), Fundamentals of Management (Tuesday of Week 2, 8 chapters of textbook definitions, mostly memorization), and Business Law (Wednesday of Week 2, 5 statutory acts and case scenarios). You work a part-time job on Tuesday, Thursday, and Saturday from 14:00 to 20:00. You cannot study past 22:00, and you need 1 hour per day for exercise or rest. Build a realistic 10-day calendar table showing exact time blocks, specific topics covered per block, and active recall methods instead of passive re-reading."
+            }
+        };
+
+        const STORAGE_KEY = "ai_literacy_workshop_2_draft_v1";
+        const FIELD_IDS = [
+            "prompt-selector",
+            "student-model",
+            "round1-output",
+            "round1-diagnosis",
+            "round2-prompt",
+            "round2-changes",
+            "round2-output",
+            "round2-diagnosis",
+            "round3-prompt",
+            "round3-changes",
+            "round3-output",
+            "round3-diagnosis",
+            "round4-prompt",
+            "round4-changes",
+            "round4-output",
+            "round4-diagnosis",
+            "duel-break",
+            "duel-improvement"
+        ];
+
+        let saveTimeout = null;
+
+        function switchPromptView(val) {
+            const placeholder = document.getElementById("prompt-placeholder");
+            const card = document.getElementById("prompt-card-display");
+
+            if (!val || !TASKS[val]) {
+                placeholder.classList.remove("hidden");
+                card.classList.add("hidden");
+                return;
+            }
+
+            const task = TASKS[val];
+            document.getElementById("card-badge").textContent = task.badge;
+            document.getElementById("card-title").textContent = task.title;
+            document.getElementById("card-bad-prompt").textContent = task.badPrompt;
+            document.getElementById("card-scenario").textContent = task.scenario;
+
+            placeholder.classList.add("hidden");
+            card.classList.remove("hidden");
+            scheduleAutosave();
+        }
+
+        function copyBadPrompt() {
+            const val = document.getElementById("prompt-selector").value;
+            if (!val || !TASKS[val]) {
+                showToast("Select a task first");
+                return;
+            }
+            copyPlainText(TASKS[val].badPrompt, "Bad prompt copied to clipboard");
+        }
+
+        function hasAnyUserInput() {
+            for (const id of FIELD_IDS) {
+                const el = document.getElementById(id);
+                if (el && el.value && el.value.trim() !== "") {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function updateAutosaveIndicator(state) {
+            const dot = document.getElementById("autosave-dot");
+            const text = document.getElementById("autosave-status");
+            if (state === "saving") {
+                dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+                text.textContent = "Saving...";
+            } else if (state === "saved") {
+                dot.className = "w-2 h-2 rounded-full bg-emerald-400";
+                text.textContent = "Draft saved";
+            } else {
+                dot.className = "w-2 h-2 rounded-full bg-slate-500";
+                text.textContent = "Ready";
+            }
+        }
+
+        function saveDraftNow() {
+            try {
+                const payload = {};
+                FIELD_IDS.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) payload[id] = el.value;
+                });
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+                updateAutosaveIndicator(hasAnyUserInput() ? "saved" : "ready");
+            } catch (e) {
+                console.warn("Autosave failed:", e);
+            }
+        }
+
+        function scheduleAutosave() {
+            updateAutosaveIndicator("saving");
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveDraftNow, 300);
+        }
+
+        function restoreDraft() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return;
+                const payload = JSON.parse(raw);
+                FIELD_IDS.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && typeof payload[id] === "string") {
+                        el.value = payload[id];
+                    }
+                });
+                const selectedTask = document.getElementById("prompt-selector").value;
+                if (selectedTask) {
+                    switchPromptView(selectedTask);
+                }
+                if (hasAnyUserInput()) {
+                    updateAutosaveIndicator("saved");
+                }
+            } catch (e) {
+                console.warn("Restore draft failed:", e);
+            }
+        }
+
+        function openResetModal() {
+            if (!hasAnyUserInput()) {
+                showToast("Form is already empty");
+                return;
+            }
+            document.getElementById("reset-modal").classList.remove("hidden");
+        }
+
+        function closeResetModal() {
+            document.getElementById("reset-modal").classList.add("hidden");
+        }
+
+        function executeResetForm() {
+            FIELD_IDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = "";
+            });
+            try {
+                localStorage.removeItem(STORAGE_KEY);
+            } catch (e) {}
+            switchPromptView("");
+            updateAutosaveIndicator("ready");
+            closeResetModal();
+            showToast("Form cleared");
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;")
+                .replace(/\n/g, "<br>");
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            const toastText = document.getElementById("toast-text");
+            toastText.textContent = message;
+            toast.classList.remove("hidden");
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => {
+                toast.classList.add("hidden");
+            }, 2800);
+        }
+
+        async function copyPlainText(text, successMsg) {
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(text);
+                    showToast(successMsg);
+                    return;
+                }
+            } catch (err) {}
+
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.top = "0";
+            ta.style.left = "0";
+            ta.style.opacity = "0.01";
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try {
+                const ok = document.execCommand("copy");
+                document.body.removeChild(ta);
+                if (ok) {
+                    showToast(successMsg);
+                } else {
+                    showToast("Copy blocked by browser");
+                }
+            } catch (e) {
+                document.body.removeChild(ta);
+                showToast("Copy failed");
+            }
+        }
+
+        async function copyRichData(htmlString, plainString, successMessage) {
+            if (navigator.clipboard && window.ClipboardItem) {
+                try {
+                    const htmlBlob = new Blob([htmlString], { type: "text/html" });
+                    const textBlob = new Blob([plainString], { type: "text/plain" });
+                    const item = new ClipboardItem({
+                        "text/html": htmlBlob,
+                        "text/plain": textBlob
+                    });
+                    await navigator.clipboard.write([item]);
+                    showToast(successMessage);
+                    return;
+                } catch (err) {
+                    console.warn("Async ClipboardItem failed, trying DOM selection fallback:", err);
+                }
+            }
+
+            const container = document.createElement("div");
+            container.innerHTML = htmlString;
+            container.setAttribute("contenteditable", "true");
+            container.style.position = "fixed";
+            container.style.top = "0";
+            container.style.left = "0";
+            container.style.width = "1px";
+            container.style.height = "1px";
+            container.style.overflow = "hidden";
+            container.style.opacity = "0.01";
+            container.style.pointerEvents = "none";
+            document.body.appendChild(container);
+
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(container);
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            let copySucceeded = false;
+            const onCopy = function(e) {
+                if (e.clipboardData) {
+                    e.clipboardData.setData("text/html", htmlString);
+                    e.clipboardData.setData("text/plain", plainString);
+                    e.preventDefault();
+                    copySucceeded = true;
+                }
+            };
+
+            document.addEventListener("copy", onCopy);
+            try {
+                const execOk = document.execCommand("copy");
+                copySucceeded = copySucceeded || execOk;
+            } catch (err) {
+                copySucceeded = false;
+            }
+            document.removeEventListener("copy", onCopy);
+            selection.removeAllRanges();
+            document.body.removeChild(container);
+
+            if (copySucceeded) {
+                showToast(successMessage);
+            } else {
+                await copyPlainText(plainString, successMessage + " (plain text)");
+            }
+        }
+
+        function buildReportData(isBlank) {
+            const val = document.getElementById("prompt-selector").value;
+            const taskObj = (!isBlank && val && TASKS[val]) ? TASKS[val] : null;
+
+            const taskTitle = isBlank
+                ? "[Insert assigned task number and title]"
+                : (taskObj ? `${taskObj.badge} — ${taskObj.title}` : "[No task selected]");
+            const badPrompt = isBlank
+                ? "[Insert initial vague one-liner prompt]"
+                : (taskObj ? taskObj.badPrompt : "[No task selected]");
+            const scenario = isBlank
+                ? "[Insert scenario brief]"
+                : (taskObj ? taskObj.scenario : "[No task selected]");
+
+            const getField = (id, placeholder) => {
+                if (isBlank) return placeholder;
+                const el = document.getElementById(id);
+                const v = el ? el.value.trim() : "";
+                return v !== "" ? v : placeholder;
+            };
+
+            return {
+                taskTitle,
+                badPrompt,
+                scenario,
+                model: getField("student-model", "[Specify AI model used]"),
+                r1Out: getField("round1-output", "[Paste Round 1 AI output]"),
+                r1Diag: getField("round1-diagnosis", "[Write Round 1 failure diagnosis]"),
+                r2Prompt: getField("round2-prompt", "[Paste Round 2 prompt]"),
+                r2Changes: getField("round2-changes", "[Explain changes made in Round 2 and why]"),
+                r2Out: getField("round2-output", "[Paste Round 2 AI output]"),
+                r2Diag: getField("round2-diagnosis", "[Write Round 2 diagnosis]"),
+                r3Prompt: getField("round3-prompt", "[Paste Round 3 prompt]"),
+                r3Changes: getField("round3-changes", "[Explain changes made in Round 3 and why]"),
+                r3Out: getField("round3-output", "[Paste Round 3 AI output]"),
+                r3Diag: getField("round3-diagnosis", "[Write Round 3 diagnosis]"),
+                r4Prompt: getField("round4-prompt", "[Paste final Round 4 standalone prompt]"),
+                r4Changes: getField("round4-changes", "[Explain final adjustments and reusability in Round 4]"),
+                r4Out: getField("round4-output", "[Paste final Round 4 AI output]"),
+                r4Diag: getField("round4-diagnosis", "[Evaluate why Round 4 output is ready for real use]"),
+                duelBreak: getField("duel-break", "[Record how your prompt performed when tested by your partner]"),
+                duelImprove: getField("duel-improvement", "[Record the specific improvement suggested by your partner]")
+            };
+        }
+
+        function generateWordHtml(d) {
+            const boxStyle = "border:1px solid #cbd5e1; background-color:#f8fafc; padding:10px; font-family:Consolas, monospace; font-size:10pt; margin-bottom:10px;";
+            const thStyle = "border:1px solid #94a3b8; background-color:#e2e8f0; padding:8px; text-align:left; font-weight:bold; font-size:10.5pt;";
+            const tdStyle = "border:1px solid #cbd5e1; padding:8px; vertical-align:top; font-size:10.5pt;";
+
+            return `
+            <div style="font-family: Calibri, Arial, sans-serif; color: #0f172a; line-height: 1.45; font-size: 11pt;">
+                <h1 style="font-size: 18pt; margin-bottom: 4pt; color: #0f172a;">Workshop 2 report: The craft of asking (prompting)</h1>
+                <p style="margin-top: 0; color: #475569; font-size: 10.5pt;">
+                    <strong>Course:</strong> AI Literacy and Critical Thinking &nbsp;|&nbsp;
+                    <strong>AI model used:</strong> ${escapeHtml(d.model)}
+                </p>
+                <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 12pt 0;">
+
+                <h2 style="font-size: 14pt; color: #0f172a; margin-bottom: 6pt;">1. Assigned task and scenario brief</h2>
+                <p><strong>Assigned task:</strong> ${escapeHtml(d.taskTitle)}</p>
+                <p><strong>Scenario brief and operational rules:</strong><br>${escapeHtml(d.scenario)}</p>
+
+                <h2 style="font-size: 14pt; color: #0f172a; margin-top: 16pt; margin-bottom: 6pt;">2. Four-round prompt iteration log (graded task)</h2>
+
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 16pt;">
+                    <thead>
+                        <tr>
+                            <th style="${thStyle} width: 14%;">Round</th>
+                            <th style="${thStyle} width: 43%;">Prompt &amp; rationale for changes</th>
+                            <th style="${thStyle} width: 43%;">AI output &amp; failure diagnosis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="${tdStyle}"><strong>Round 1</strong><br>(The bad prompt)</td>
+                            <td style="${tdStyle}">
+                                <strong>Initial vague prompt:</strong>
+                                <div style="${boxStyle}">${escapeHtml(d.badPrompt)}</div>
+                            </td>
+                            <td style="${tdStyle}">
+                                <strong>Round 1 raw output:</strong>
+                                <div style="${boxStyle}">${escapeHtml(d.r1Out)}</div>
+                                <strong>Failure diagnosis:</strong><br>${escapeHtml(d.r1Diag)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="${tdStyle}"><strong>Round 2</strong><br>(Role, task &amp; context)</td>
+                            <td style="${tdStyle}">
+                                <strong>Round 2 prompt:</strong>
+                                <div style="${boxStyle}">${escapeHtml(d.r2Prompt)}</div>
+                                <strong>What changed and why:</strong><br>${escapeHtml(d.r2Changes)}
+                            </td>
+                            <td style="${tdStyle}">
+                                <strong>Round 2 output:</strong>
+                                <div style="${boxStyle}">${escapeHtml(d.r2Out)}</div>
+                                <strong>Diagnosis of remaining flaws:</strong><br>${escapeHtml(d.r2Diag)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="${tdStyle}"><strong>Round 3</strong><br>(Format, constraints &amp; steps)</td>
+                            <td style="${tdStyle}">
+                                <strong>Round 3 prompt:</strong>
+                                <div style="${boxStyle}">${escapeHtml(d.r3Prompt)}</div>
+                                <strong>What changed and why:</strong><br>${escapeHtml(d.r3Changes)}
+                            </td>
+                            <td style="${tdStyle}">
+                                <strong>Round 3 output:</strong>
+                                <div style="${boxStyle}">${escapeHtml(d.r3Out)}</div>
+                                <strong>Diagnosis of remaining flaws:</strong><br>${escapeHtml(d.r3Diag)}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="${tdStyle}"><strong>Round 4</strong><br>(Final reusable prompt)</td>
+                            <td style="${tdStyle}">
+                                <strong>Final standalone prompt:</strong>
+                                <div style="${boxStyle}">${escapeHtml(d.r4Prompt)}</div>
+                                <strong>Final adjustments &amp; reusability:</strong><br>${escapeHtml(d.r4Changes)}
+                            </td>
+                            <td style="${tdStyle}">
+                                <strong>Final Round 4 output:</strong>
+                                <div style="${boxStyle}">${escapeHtml(d.r4Out)}</div>
+                                <strong>Final verification against brief:</strong><br>${escapeHtml(d.r4Diag)}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2 style="font-size: 14pt; color: #0f172a; margin-top: 16pt; margin-bottom: 6pt;">3. Step 4: Prompt duel (pair stress-test)</h2>
+                <p><strong>How my Round 4 prompt performed when tested by my partner:</strong><br>${escapeHtml(d.duelBreak)}</p>
+                <p><strong>Concrete improvement suggested by my partner:</strong><br>${escapeHtml(d.duelImprove)}</p>
+
+                <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 14pt 0;">
+                <h2 style="font-size: 14pt; color: #0f172a; margin-bottom: 6pt;">4. Individual critical portfolio reflection (complete at home, 200–300 words)</h2>
+                <p style="color: #334155; font-size: 10pt;">
+                    <em>Answer the three questions below in continuous prose before Workshop 3:</em><br>
+                    1. Which single change across your four rounds produced the largest jump in usefulness, and why did it matter?<br>
+                    2. What did you notice about how the model handled constraints (such as word counts, numbers, or negative rules) during your iterations or during the partner duel?<br>
+                    3. How will you structure your initial prompts differently the next time you use AI for a university or work task?
+                </p>
+                <p>[Write your 200–300 word reflection here in Word]</p>
+            </div>`;
+        }
+
+        function generatePlainText(d) {
+            return `WORKSHOP 2 REPORT: THE CRAFT OF ASKING (PROMPTING)
+Course: AI Literacy and Critical Thinking
+AI model used: ${d.model}
+
+====================================================================
+1. ASSIGNED TASK AND SCENARIO BRIEF
+====================================================================
+Assigned task: ${d.taskTitle}
+
+Scenario brief and operational rules:
+${d.scenario}
+
+====================================================================
+2. FOUR-ROUND PROMPT ITERATION LOG (GRADED TASK)
+====================================================================
+
+--- ROUND 1 (THE BAD PROMPT) ---
+Initial vague prompt:
+${d.badPrompt}
+
+Round 1 raw output:
+${d.r1Out}
+
+Round 1 failure diagnosis:
+${d.r1Diag}
+
+--- ROUND 2 (ROLE, TASK & CONTEXT) ---
+Round 2 prompt:
+${d.r2Prompt}
+
+What changed from Round 1 and why:
+${d.r2Changes}
+
+Round 2 output:
+${d.r2Out}
+
+Round 2 diagnosis:
+${d.r2Diag}
+
+--- ROUND 3 (FORMAT, CONSTRAINTS & STEP-BY-STEP LOGIC) ---
+Round 3 prompt:
+${d.r3Prompt}
+
+What changed from Round 2 and why:
+${d.r3Changes}
+
+Round 3 output:
+${d.r3Out}
+
+Round 3 diagnosis:
+${d.r3Diag}
+
+--- ROUND 4 (FINAL PRECISION & REUSABLE PROMPT) ---
+Final Round 4 standalone prompt:
+${d.r4Prompt}
+
+Final adjustments and reusability:
+${d.r4Changes}
+
+Final Round 4 output:
+${d.r4Out}
+
+Final evaluation:
+${d.r4Diag}
+
+====================================================================
+3. STEP 4: PROMPT DUEL (PAIR STRESS-TEST)
+====================================================================
+How my Round 4 prompt performed on my partner's tool:
+${d.duelBreak}
+
+Concrete improvement suggested by my partner:
+${d.duelImprove}
+
+====================================================================
+4. INDIVIDUAL CRITICAL PORTFOLIO REFLECTION (AT HOME, 200-300 WORDS)
+====================================================================
+1. Which single change across your four rounds produced the largest jump in usefulness, and why did it matter?
+2. What did you notice about how the model handled constraints (such as word counts, numbers, or negative rules) during your iterations or during the partner duel?
+3. How will you structure your initial prompts differently the next time you use AI for a university or work task?
+
+[Write your 200-300 word reflection here]
+`;
+        }
+
+        function copyBlankTemplate() {
+            const data = buildReportData(true);
+            copyRichData(
+                generateWordHtml(data),
+                generatePlainText(data),
+                "Blank template copied for Word"
+            );
+        }
+
+        function copyFilledReport() {
+            const data = buildReportData(false);
+            copyRichData(
+                generateWordHtml(data),
+                generatePlainText(data),
+                "Completed log copied for Word"
+            );
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            restoreDraft();
+            FIELD_IDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener("input", scheduleAutosave);
+                    el.addEventListener("change", scheduleAutosave);
+                }
+            });
+
+            window.addEventListener("beforeunload", (e) => {
+                if (hasAnyUserInput()) {
+                    e.preventDefault();
+                    e.returnValue = "";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
