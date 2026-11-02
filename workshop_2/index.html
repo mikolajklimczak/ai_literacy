@@ -277,11 +277,10 @@
           <p id="card-bad-prompt" class="text-xs font-mono text-slate-100"></p>
         </div>
         <div id="card-scenario-box" class="bg-surface-900 border border-slate-800 rounded-xl p-4 no-copy" oncopy="blockScenarioCopy(event)" oncut="blockScenarioCopy(event)" oncontextmenu="blockScenarioCopy(event)">
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
-            <span class="text-xs font-mono uppercase tracking-wider text-accent">Raw situation notes (copying disabled — select relevant facts &amp; ignore irrelevant desk noise)</span>
-            <span class="text-[11px] font-mono text-amberAccent bg-amberAccent-muted border border-amberAccent/30 px-2 py-0.5 rounded">Contains 1–2 irrelevant distraction facts</span>
+          <div class="mb-2.5 pb-2 border-b border-slate-800/80">
+            <span class="text-xs font-mono uppercase tracking-wider text-accent">Raw situation notes (copying disabled — select relevant facts in your own words)</span>
           </div>
-          <p id="card-scenario" class="text-xs sm:text-sm text-slate-300 leading-relaxed"></p>
+          <div id="card-scenario" class="text-xs sm:text-sm text-slate-300 leading-relaxed"></div>
         </div>
       </div>
 
@@ -305,7 +304,7 @@
 
       <div class="text-xs sm:text-sm text-slate-300 leading-relaxed space-y-3">
         <p>An AI model does not know your café, your budget or your flatmates. With a ten-word prompt it has to guess everything you left out, and the guess is usually the most typical answer. That answer tends to be polite and generic for two reasons: it reflects patterns in its training text, and assistants are further tuned to sound helpful, agreeable and safe. The practical consequence is that <strong>whatever you do not specify, the model fills in with a plausible assumption, and it will not always tell you it did so.</strong></p>
-        <p>Think of a prompt as a <strong>brief for a capable colleague who knows nothing about your situation</strong>. Note that the raw situation notes in Step 1 are messy desk memos: they are not written as instructions, and each one contains 1–2 irrelevant distraction details (like a broken espresso grinder or a rent-included Wi-Fi router). You must filter out the noise and organize the relevant facts using the six elements below.</p>
+        <p>Think of a prompt as a <strong>brief for a capable colleague who knows nothing about your situation</strong>. Note that the raw situation notes in Step 1 are background desk notes containing various operational facts alongside office noise. You must filter out what is unnecessary and organize the relevant facts using the six elements below.</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -368,7 +367,7 @@
         <span class="text-xs font-mono text-slate-400">Round 1 is in Step 1 • Complete Rounds 2, 3 and 4 below</span>
       </div>
       <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-        Each round must respond to <strong>the diagnosis you wrote in the previous round</strong>. Do not copy or retype the raw situation notes verbatim: filter out the irrelevant distraction facts and write your own structured prompt (<code>ROLE / VOICE</code>, <code>TASK</code>, <code>FACTS</code>, <code>FORMAT</code>, <code>CONSTRAINTS</code>). By Round 4 produce a complete standalone prompt that works in a fresh chat.
+        Each round must respond to <strong>the diagnosis you wrote in the previous round</strong>. Do not copy or retype the raw situation notes verbatim: filter out irrelevant desk noise and write your own structured prompt (<code>ROLE / VOICE</code>, <code>TASK</code>, <code>FACTS</code>, <code>FORMAT</code>, <code>CONSTRAINTS</code>). By Round 4 produce a complete standalone prompt that works in a fresh chat.
       </p>
       <div id="rounds-container" class="space-y-8"></div>
     </section>
@@ -389,8 +388,8 @@
           <select id="duel-partner-task" onchange="showPartnerTask(this.value)" class="inp"><option value="">Choose partner's task...</option></select>
         </div>
         <div id="partner-card" class="hidden bg-surface-900 border border-slate-800 rounded-lg p-4 no-copy" oncopy="blockScenarioCopy(event)" oncut="blockScenarioCopy(event)" oncontextmenu="blockScenarioCopy(event)">
-          <p id="partner-title" class="text-xs sm:text-sm font-semibold text-white mb-1"></p>
-          <p id="partner-scenario" class="text-xs text-slate-300 leading-relaxed"></p>
+          <p id="partner-title" class="text-xs sm:text-sm font-semibold text-white mb-2 pb-1 border-b border-slate-800"></p>
+          <div id="partner-scenario" class="text-xs text-slate-300 leading-relaxed"></div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
           <div class="flex flex-col h-full">
@@ -504,51 +503,125 @@
         badge: "Task 1 • Business management",
         title: "Café shift scheduling and staff conflict",
         badPrompt: "Write an email to my café staff about the new weekend work schedule.",
-        scenario: "Raw desk memo — Specialty café near Plac Grunwaldzki, Wrocław (sender: café manager) • Staff headcount: 6 part-time baristas total -> 2 senior baristas (Maja, Tomek) + 4 newly hired trainees • Recent dispute: Maja & Tomek complained after working every Saturday closing shift (until 22:00) last month while trainees only got easy weekday morning shifts • Next month calendar: 4 Saturdays total, 1 closing shift per Saturday • New pairing rule: every Saturday closing shift pairs 1 senior barista + 1 trainee; each of the 6 baristas works minimum 1 and maximum 2 Saturday closing shifts across the month • Unrelated maintenance memo on desk: espresso grinder #2 burr replacement booked for Tuesday 08:30 (cost 420 PLN, paid by invoice) and oat milk supplier switched to 12-carton crates • Action deadline for staff: enter next month's availability in the shared Google Sheet by Friday 16:00, otherwise shifts are assigned automatically • Communication register: fair, firm, plain language, zero corporate HR buzzwords."
+        scenarioItems: [
+          { label: "Workplace & role", text: "Specialty café near Plac Grunwaldzki, Wrocław. Sender: café manager." },
+          { label: "Staff headcount", text: "6 part-time baristas total (2 experienced baristas: Maja and Tomek; 4 newly hired trainees)." },
+          { label: "Recent dispute", text: "Maja and Tomek complained after working every Saturday closing shift (until 22:00) last month, while trainees received weekday morning shifts." },
+          { label: "Next month schedule", text: "4 Saturdays in the month, with exactly 1 closing shift per Saturday." },
+          { label: "New pairing rule", text: "Each Saturday closing shift must pair 1 experienced barista with 1 trainee. Every barista must work at least 1 and at most 2 Saturday closing shifts that month." },
+          { label: "Staff action deadline", text: "Submit availability preferences in the shared Google Sheet by Friday at 16:00, or shifts are assigned automatically." },
+          { label: "Communication tone", text: "Fair, firm, plain language, without corporate HR jargon." },
+          { label: "Maintenance note on desk", text: "Espresso grinder #2 burr replacement scheduled for Tuesday 08:30 (cost: 420 PLN, invoice pending). Oat milk supplier switched to 12-carton crates." }
+        ]
       },
       "2": {
         badge: "Task 2 • Business management",
         title: "Late component delivery to a B2B client",
         badPrompt: "Write a message to a client apologizing for a late delivery.",
-        scenario: "Raw incident notes — Print shop in Bielany Wrocławskie (role: account coordinator) • Client account: EventsPol Sp. z o.o. • Order item: 500 custom-printed conference folders for their upcoming Friday morning trade fair • Delivery change: promised Tuesday 12:00 PM -> actual arrival Thursday 10:00 AM • Root cause: shop lamination machine motor failed Monday afternoon • Operational impact on client: folders still arrive before Friday's trade fair opening, but EventsPol's team had scheduled Wednesday afternoon to stuff inserts into the folders • Unrelated office memo: print shop parking lot repainting scheduled for next Monday and toner supplier raised cyan cartridge prices by 8% • Goodwill package approved by shop owner: waive the 350 PLN express courier charge + send 2 print shop employees to EventsPol's office on Thursday at 10:00 AM for 3 hours free of charge to help pack the folders • Tone requirement: matter-of-fact B2B accountability; avoid groveling or clichés like 'valued customer'."
+        scenarioItems: [
+          { label: "Workplace & role", text: "Print shop in Bielany Wrocławskie. Sender: account coordinator." },
+          { label: "Client account", text: "EventsPol Sp. z o.o." },
+          { label: "Order details", text: "500 custom-printed conference folders for their upcoming Friday morning trade fair." },
+          { label: "Delivery change", text: "Promised delivery: Tuesday 12:00 PM. Actual arrival: Thursday 10:00 AM." },
+          { label: "Root cause", text: "The shop lamination machine motor broke down on Monday afternoon." },
+          { label: "Client operational impact", text: "Folders still arrive before Friday's fair, but client staff had scheduled Wednesday afternoon to pack inserts." },
+          { label: "Goodwill package", text: "Waiving the 350 PLN express courier fee and sending 2 print shop staff members on Thursday at 10:00 AM for 3 hours free of charge to help pack." },
+          { label: "Tone requirement", text: "Direct, professional B2B accountability; avoid groveling or clichés like 'valued customer'." },
+          { label: "Office memo on desk", text: "Parking lot repainting scheduled for next Monday; toner supplier announced an 8% price increase on cyan cartridges." }
+        ]
       },
       "3": {
         badge: "Task 3 • Business management",
         title: "Onboarding plan for a junior marketing intern",
         badPrompt: "Create a first-week onboarding plan for a new marketing intern.",
-        scenario: "Raw planning notes — 5-person e-commerce store selling board games (sender: store owner, no HR department) • New hire: 2nd-year management student starting next Monday as part-time marketing intern • Working hours: 20 hours/week, Monday to Thursday, 09:00–14:00 (Fridays off) • Month-1 scope (strictly limited to 3 tasks): (1) audit broken product descriptions on the WooCommerce site, (2) reply to basic customer Instagram DMs using the store FAQ sheet, (3) photograph 3 new board game releases every Wednesday from 11:00 to 14:00 • Unrelated warehouse note: Polish Post pallet pickup moves to 15:30 on Fridays and office coffee machine descaling tablets are in the blue cabinet • Owner availability constraint: only 30 minutes per day (09:00–09:30) for live check-ins and feedback • Needed output structure: hour-by-hour schedule covering Monday through Thursday with concrete, verifiable deliverables due Thursday at 14:00."
+        scenarioItems: [
+          { label: "Company context", text: "5-person e-commerce store selling board games. Sender: store owner (no HR department)." },
+          { label: "New hire", text: "2nd-year management student starting next Monday as a part-time marketing intern." },
+          { label: "Working hours", text: "20 hours per week: Monday through Thursday, 09:00 to 14:00 (Fridays off)." },
+          { label: "Month-1 scope", text: "Strictly limited to 3 tasks: (1) audit broken product descriptions on WooCommerce, (2) answer basic Instagram DMs using the FAQ sheet, (3) photograph 3 new board games every Wednesday from 11:00 to 14:00." },
+          { label: "Owner availability", text: "Strictly 30 minutes per day (09:00 to 09:30) for check-in and feedback." },
+          { label: "Required deliverable", text: "Hour-by-hour schedule covering Monday through Thursday with concrete deliverables due by Thursday at 14:00." },
+          { label: "Warehouse note on desk", text: "Polish Post pallet pickup moves to 15:30 on Fridays; spare descaling tablets for the office coffee machine are in the blue cabinet." }
+        ]
       },
       "4": {
         badge: "Task 4 • Business management",
         title: "Cutting a project event budget by 25%",
         badPrompt: "How can I reduce the budget of our company event by 25%?",
-        scenario: "Raw budget sheet — 1-day client product workshop in Wrocław • Fixed parameters: 40 business clients attending, 8-hour duration (cannot be shortened, headcount cannot be reduced, attendees must still receive lunch and coffee) • Budget cut: original allocation 16,000 PLN -> director cut limit to 12,000 PLN (exact required savings: 4,000 PLN) • Current planned line items: (a) 4-star hotel conference room rental = 5,500 PLN; (b) external catering with hot buffet lunch + open coffee bar = 6,000 PLN (150 PLN/person); (c) printed welcome packs + branded powerbanks = 2,500 PLN; (d) professional photographer for 8 hours = 2,000 PLN • Unrelated Q4 accounting note: company car winter tire swap cost 1,100 PLN last week and the Dublin sales trip is postponed to March • Required analysis for the director: 3 distinct cost-reduction options where each option saves exactly 4,000 PLN, showing the revised PLN math for every line item and the practical trade-offs of each option."
+        scenarioItems: [
+          { label: "Event context", text: "1-day client product workshop in Wrocław for 40 business clients; 8-hour total duration." },
+          { label: "Budget cut", text: "Initial budget: 16,000 PLN. Director cut limit: 12,000 PLN (required reduction: exactly 4,000 PLN)." },
+          { label: "Fixed parameters", text: "Headcount (40 people) and duration (8 hours) cannot change; attendees must still receive lunch and coffee." },
+          { label: "Current planned line items", text: "Hotel conference room rental: 5,500 PLN; catering with hot buffet and open coffee bar: 6,000 PLN (150 PLN/person); welcome packs with branded powerbanks: 2,500 PLN; professional photographer for 8 hours: 2,000 PLN." },
+          { label: "Required output", text: "Propose 3 distinct cost-cutting options that each save exactly 4,000 PLN, showing revised math for every line item and practical trade-offs." },
+          { label: "Accounting memo on desk", text: "Company car winter tire swap cost 1,100 PLN last week; Dublin partner sales trip has been postponed to March." }
+        ]
       },
       "5": {
         badge: "Task 5 • Student & everyday coordination",
         title: "Resolving a shared student flat electricity bill dispute",
         badPrompt: "Tell my flatmates they need to pay more for electricity.",
-        scenario: "Raw flat notes — 4-room student flat in Nadodrze, Wrocław (4 flatmates total, no room sub-meters) • Bill details: bi-monthly Tauron electricity reconciliation surcharge = 640 PLN above regular monthly advances • Billing period length: 60 days • Payment deadline: 10th of this month (late interest applies after the 10th) • Usage asymmetry 1 (Kamil): runs a gaming PC with two monitors + a 3D printer in his room 8 hours/day -> estimated extra draw = 216 kWh over the 60 days, which at 1.00 PLN/kWh equals 216 PLN • Usage asymmetry 2 (Zosia): stayed at her parents' house in Opole for 21 of the 60 days (present 39 days) and refuses an equal 160 PLN four-way split • Unrelated flat memo: hallway shoe rack cost 89 PLN on Allegro last month and the UPC fiber Wi-Fi router is already included in the landlord's base rent • Goal for the flat group chat: propose 2 fair split formulas (Formula A weighted by days present + high-draw equipment; Formula B a middle-ground compromise) with exact PLN amounts per person that sum to 640 PLN, keeping flat relations friendly and explicitly labeling any extra assumption."
+        scenarioItems: [
+          { label: "Apartment context", text: "4-room shared student flat in Nadodrze, Wrocław (4 flatmates total, no individual room sub-meters)." },
+          { label: "Bill details", text: "Bi-monthly Tauron reconciliation surcharge: 640 PLN above regular monthly advances. Billing period: 60 days. Payment deadline: 10th of the month." },
+          { label: "Usage asymmetry 1 (Kamil)", text: "Runs a gaming PC with dual monitors and a 3D printer for 8 hours daily; estimated consumption is 216 kWh (about 216 PLN at 1.00 PLN/kWh)." },
+          { label: "Usage asymmetry 2 (Zosia)", text: "Was away at parents' house in Opole for 21 of the 60 days (present 39 days); refuses an equal 160 PLN split." },
+          { label: "Communication objective", text: "Draft a group chat message proposing 2 fair split formulas (Formula A weighted by days and high-draw gear; Formula B a middle-ground compromise) summing to 640 PLN, keeping relations friendly." },
+          { label: "Household note", text: "Hallway shoe rack cost 89 PLN on Allegro last month; UPC fiber Wi-Fi router is already included in landlord's base rent." }
+        ]
       },
       "6": {
         badge: "Task 6 • Student & everyday coordination",
         title: "Pitching a company sponsor for a student university event",
         badPrompt: "Write an email asking a company to sponsor our student event.",
-        scenario: "Raw club notes — Student Management Club at Wrocław University of Economics and Business (UEW) • Event: 1-day practical logistics case-study competition on November 24 for 60 second- and third-year business students • Target sponsor: LogisWro Sp. z o.o. (recipient: Employer Branding Manager) • Sponsorship ask: 3,000 PLN cash to cover catering and prizes • Sponsor benefits package: LogisWro designs the real-world logistics case solved by the 60 students, takes 1 seat on the jury, receives CVs of consenting participants, and places 2 roll-up banners in the competition room • Unrelated club admin note: room 214B projector needs a new HDMI-to-USB-C adapter and club membership dues left 450 PLN in the petty cash box for plastic name badges • Framing & length rule: pitch as a low-cost recruitment assessment compared to paid job-board ads (not a charity plea); maximum length 180 words so a busy manager reads it."
+        scenarioItems: [
+          { label: "Organizer", text: "Student Management Club at Wrocław University of Economics and Business (UEW)." },
+          { label: "Event", text: "1-day case-study competition on November 24 for 60 second- and third-year business students." },
+          { label: "Prospective sponsor", text: "LogisWro Sp. z o.o. (recipient: Employer Branding Manager)." },
+          { label: "Sponsorship ask", text: "3,000 PLN financial sponsorship to cover catering and competition prizes." },
+          { label: "Sponsor package", text: "Company designs the real-world logistics case study, sits on the jury, receives CVs of consenting participants, and places 2 roll-up banners in the venue." },
+          { label: "Tone & length rules", text: "Pitch as an economical recruitment assessment compared to job board ads (not a charity request); strictly under 180 words." },
+          { label: "Club admin note", text: "Room 214B projector needs a replacement HDMI-to-USB-C adapter; club dues left 450 PLN in petty cash for plastic name badges." }
+        ]
       },
       "7": {
         badge: "Task 7 • Student & everyday coordination",
         title: "Reallocating work in a failing university group project",
         badPrompt: "Write a message to my group project team telling them to work harder.",
-        scenario: "Raw project status notes — 4-person university team writing a market analysis paper • Final submission deadline: next Wednesday at 23:59 (late submission = 0 points for the whole team); today is Friday • Current progress in shared Google Doc: sender + Ania already completed the market size and customer profile sections (100% done); Bartek (assigned: competitor pricing table) and Kasia (assigned: risk analysis) have 0 words written • Unrelated semester note: Tuesday's macroeconomics lecture was moved to Auditorium C and Ania works at the cinema on Friday evenings • Needed team Messenger action plan: set an internal rough-draft deadline of Sunday at 20:00, break Bartek's and Kasia's blank sections into small bulleted sub-tasks so neither can claim they do not know where to start, and state calmly that if the Sunday 20:00 deadline is missed, sender + Ania will submit the paper on Monday with a formal contribution table showing who authored each section."
+        scenarioItems: [
+          { label: "Project context", text: "4-person university group writing a market analysis due next Wednesday at 23:59 (late submission = 0 points for everyone); today is Friday." },
+          { label: "Current status", text: "Sender and Ania have completed the market size and customer profile sections (100% done). Bartek (competitor pricing table) and Kasia (risk analysis) have written 0 words." },
+          { label: "Action plan", text: "Set an internal rough-draft deadline of Sunday at 20:00. Break Bartek's and Kasia's sections into short bulleted checklists so tasks are unambiguous." },
+          { label: "Escalation rule", text: "State clearly and calmly that if Sunday 20:00 is missed, sender and Ania submit on Monday with an explicit contribution table detailing section authorship." },
+          { label: "Semester note", text: "Tuesday macroeconomics lecture moved to Auditorium C; Ania works at the cinema on Friday evenings." }
+        ]
       },
       "8": {
         badge: "Task 8 • Student & everyday coordination",
         title: "Study schedule for three overlapping exam weeks",
         badPrompt: "Make me a study plan for my upcoming university exams.",
-        scenario: "Raw exam & shift notes — 10 preparation days remaining (Monday of Week 1 through Wednesday of Week 2) • Exam 1: Microeconomics on Monday of Week 2 -> 12 lecture topics, heavy math problem-solving, student's weakest subject • Exam 2: Fundamentals of Management on Tuesday of Week 2 -> 8 textbook chapters of definitions, mostly memorization • Exam 3: Business Law on Wednesday of Week 2 -> 5 statutory acts + case scenarios • Fixed non-study commitments: part-time job every Tuesday, Thursday, and Saturday from 14:00 to 20:00 • Personal health rules: no studying after 22:00 any night; 1 hour every day reserved for exercise/rest • Unrelated desk note: student ID card renewal at the dean's office is due in April and library late fee for the sociology book was 14 PLN • Required output format: 10-day calendar table with exact time blocks, specific topic/chapter numbers assigned to each block, and active-recall study techniques (practice problems, flashcards, self-quizzing) instead of passive re-reading."
+        scenarioItems: [
+          { label: "Timeline", text: "10 days remaining (Monday of Week 1 through Wednesday of Week 2)." },
+          { label: "Exams", text: "Microeconomics on Monday of Week 2 (12 lecture topics, heavy math problem solving, weakest subject); Fundamentals of Management on Tuesday of Week 2 (8 textbook chapters, definitions); Business Law on Wednesday of Week 2 (5 statutory acts and cases)." },
+          { label: "Fixed commitments", text: "Part-time job on Tuesday, Thursday, and Saturday from 14:00 to 20:00." },
+          { label: "Health constraints", text: "No studying past 22:00 any night; 1 hour daily reserved for exercise or rest." },
+          { label: "Output requirement", text: "10-day calendar table with exact time blocks, assigned topics/chapters, and active-recall techniques (practice problems, flashcards) instead of passive reading." },
+          { label: "Desk note", text: "Student ID card validation at dean's office due in April; library overdue fee for sociology book was 14 PLN." }
+        ]
       }
     };
+
+    function renderScenarioHtml(items) {
+      if (!items || !items.length) return "";
+      return `<ul class="space-y-2 text-xs sm:text-sm text-slate-300">` +
+        items.map(it => `<li class="flex items-start space-x-2"><span class="text-accent font-semibold shrink-0">•</span><span><strong class="text-slate-100 font-medium">${escapeHtml(it.label)}:</strong> ${escapeHtml(it.text)}</span></li>`).join("") +
+        `</ul>`;
+    }
+
+    function getScenarioPlainText(task) {
+      if (!task || !task.scenarioItems) return "";
+      return task.scenarioItems.map(it => `• ${it.label}: ${it.text}`).join("\n");
+    }
 
     const ROUNDS = [
       {
@@ -639,12 +712,12 @@
 
     function checkAllPromptOverlaps() {
       const val = document.getElementById("prompt-selector").value;
-      const scenario = (val && TASKS[val]) ? TASKS[val].scenario : "";
+      const scenarioText = (val && TASKS[val]) ? getScenarioPlainText(TASKS[val]) : "";
       ROUNDS.forEach(r => {
         const el = document.getElementById(`round${r.n}-prompt`);
         const warn = document.getElementById(`round${r.n}-overlap-warn`);
         if (!el || !warn) return;
-        const ratio = computeScenarioOverlap(el.value, scenario);
+        const ratio = computeScenarioOverlap(el.value, scenarioText);
         if (ratio >= OVERLAP_THRESHOLD) {
           const pct = Math.round(ratio * 100);
           warn.classList.remove("hidden");
@@ -716,7 +789,7 @@
       document.getElementById("card-badge").textContent = t.badge;
       document.getElementById("card-title").textContent = t.title;
       document.getElementById("card-bad-prompt").textContent = t.badPrompt;
-      document.getElementById("card-scenario").textContent = t.scenario;
+      document.getElementById("card-scenario").innerHTML = renderScenarioHtml(t.scenarioItems);
       ph.classList.add("hidden"); card.classList.remove("hidden");
       checkAllPromptOverlaps();
       scheduleAutosave();
@@ -726,7 +799,7 @@
       const c = document.getElementById("partner-card");
       if (!val || !TASKS[val]) { c.classList.add("hidden"); return; }
       document.getElementById("partner-title").textContent = TASKS[val].badge + " — " + TASKS[val].title;
-      document.getElementById("partner-scenario").textContent = TASKS[val].scenario;
+      document.getElementById("partner-scenario").innerHTML = renderScenarioHtml(TASKS[val].scenarioItems);
       c.classList.remove("hidden");
       scheduleAutosave();
     }
@@ -915,6 +988,7 @@
     function buildReportData(isBlank) {
       const val = document.getElementById("prompt-selector").value;
       const task = (!isBlank && val && TASKS[val]) ? TASKS[val] : null;
+      const scenarioText = task ? getScenarioPlainText(task) : "";
       const g = (id, ph) => {
         if (isBlank) return ph;
         const el = document.getElementById(id);
@@ -924,7 +998,8 @@
       const d = {
         taskTitle: isBlank ? "[Insert assigned task number and title]" : (task ? `${task.badge} — ${task.title}` : "[No task selected]"),
         badPrompt: isBlank ? "[Insert initial vague one-liner prompt]" : (task ? task.badPrompt : "[No task selected]"),
-        scenario: isBlank ? "[Insert raw situation notes]" : (task ? task.scenario : "[No task selected]"),
+        scenarioHtml: isBlank ? "<p>[Insert raw situation notes]</p>" : (task ? renderScenarioHtml(task.scenarioItems) : "<p>[No task selected]</p>"),
+        scenarioPlain: isBlank ? "[Insert raw situation notes]" : scenarioText,
         settings: [
           ["AI tool", g("set-tool", "[Specify tool]")],
           ["Mode / model", g("set-mode", "[Specify mode]")],
@@ -938,7 +1013,7 @@
         r1Diag: g("round1-diagnosis", "[Write Round 1 failure diagnosis]"),
         rounds: ROUNDS.map(r => {
           const rawP = g(`round${r.n}-prompt`, `[Paste Round ${r.n} prompt]`);
-          const ratio = (!isBlank && task) ? computeScenarioOverlap(rawP, task.scenario) : 0;
+          const ratio = (!isBlank && task) ? computeScenarioOverlap(rawP, scenarioText) : 0;
           const flag = ratio >= OVERLAP_THRESHOLD ? `[System note: Round ${r.n} prompt has ${Math.round(ratio * 100)}% verbatim 4-word phrase overlap with the raw situation notes]` : "";
           return {
             n: r.n,
@@ -1002,7 +1077,7 @@
         <table style="width:100%; border-collapse:collapse;"><tbody>${settings}</tbody></table>
         <h2 style="${h2}">1. Assigned task and raw situation notes</h2>
         <p><strong>Assigned task:</strong> ${escapeHtml(d.taskTitle)}</p>
-        <p><strong>Raw situation notes (including distraction items):</strong><br>${escapeHtml(d.scenario)}</p>
+        <div><strong>Raw situation notes:</strong>${d.scenarioHtml}</div>
         <h2 style="${h2}">2. Four-round prompt iteration log</h2>
         <table style="width:100%; border-collapse:collapse; margin-bottom:16pt;">
           <thead><tr><th style="${th} width:14%;">Round</th><th style="${th} width:43%;">Prompt &amp; rationale</th><th style="${th} width:43%;">AI output &amp; diagnosis</th></tr></thead>
@@ -1033,7 +1108,7 @@
       const line = "====";
       let t = `WORKSHOP 2 REPORT: PROMPTING\nCourse: AI Literacy and Critical Thinking\n\n${line}\n0. TOOL AND SESSION SETTINGS\n${line}\n`;
       t += d.settings.map(s => `${s[0]}: ${s[1]}`).join("\n");
-      t += `\n\n${line}\n1. ASSIGNED TASK AND RAW SITUATION NOTES\n${line}\nAssigned task: ${d.taskTitle}\n\nRaw situation notes:\n${d.scenario}\n\n${line}\n2. FOUR-ROUND PROMPT ITERATION LOG\n${line}\n`;
+      t += `\n\n${line}\n1. ASSIGNED TASK AND RAW SITUATION NOTES\n${line}\nAssigned task: ${d.taskTitle}\n\nRaw situation notes:\n${d.scenarioPlain}\n\n${line}\n2. FOUR-ROUND PROMPT ITERATION LOG\n${line}\n`;
       t += `\n--- ROUND 1 (THE BAD PROMPT) ---\nPrompt:\n${d.badPrompt}\n\nOutput:\n${d.r1Out}\n\nDiagnosis:\n${d.r1Diag}\n`;
       d.rounds.forEach(r => {
         t += `\n--- ROUND ${r.n} ${ROUND_LABEL[r.n].toUpperCase()} ---\nPrompt:\n${r.prompt}\n${r.overlapFlag ? r.overlapFlag + "\n" : ""}\nWhat changed and why:\n${r.changes}\n\nOutput:\n${r.out}\n\nDiagnosis:\n${r.diag}\n`;
