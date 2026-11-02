@@ -168,14 +168,10 @@
   <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 flex-1">
 
     <section class="bg-gradient-to-br from-surface-900 to-surface-850 border border-slate-800 rounded-2xl p-6 sm:p-8 relative overflow-hidden">
-      <div class="max-w-3xl space-y-4">
-        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-surface-800 border border-slate-700 text-xs text-slate-300">
-          <span class="w-2 h-2 rounded-full bg-amberAccent"></span>
-          <span>Week 5 • Graded session (5% of final course grade)</span>
-        </div>
+      <div class="max-w-3xl space-y-3">
         <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">Briefing an AI, checking its work, and knowing what you tested</h2>
         <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
-          In Workshop 1 you saw that language models generate text from learned patterns and that different models often disagree on facts. In this graded session you will test how the content and structure of your input changes the output. You will take a realistic problem, diagnose why the first output fails, translate raw situation notes into a structured prompt across four documented rounds, and then <strong>verify the final answer yourself</strong> against the facts. A clearer prompt makes a good answer more likely. It does not make the answer correct.
+          In Workshop 1 you saw that language models generate text from learned patterns and that different models often disagree on facts. In this session you will test how the content and structure of your input changes the output. You will take a realistic problem, diagnose why the first output fails, translate raw situation notes into a structured prompt across four documented rounds, and then <strong>verify the final answer yourself</strong> against the facts. A clearer prompt makes a good answer more likely. It does not make the answer correct.
         </p>
       </div>
 
@@ -189,7 +185,7 @@
           <span class="font-medium text-slate-200">The teardown</span>
         </a>
         <a href="#step-3" class="bg-surface-800/50 p-3 rounded-xl border border-amberAccent/40 hover:border-amberAccent transition-colors">
-          <span class="text-amberAccent block mb-1 font-mono">Step 3 • Graded</span>
+          <span class="text-amberAccent block mb-1 font-mono">Step 3</span>
           <span class="font-medium text-white">Iterate &amp; verify</span>
         </a>
         <a href="#step-4" class="bg-surface-800/50 p-3 rounded-xl border border-slate-800 hover:border-slate-700 transition-colors">
@@ -201,21 +197,21 @@
           <span class="font-medium text-slate-200">Debrief</span>
         </a>
         <a href="#step-6" class="bg-surface-800/50 p-3 rounded-xl border border-slate-800 hover:border-slate-700 transition-colors">
-          <span class="text-emeraldAccent block mb-1 font-mono">Step 6 • Home</span>
+          <span class="text-emeraldAccent block mb-1 font-mono">Step 6</span>
           <span class="font-medium text-slate-200">Portfolio reflection</span>
         </a>
       </div>
 
       <div class="mt-6 bg-surface-950/70 border border-slate-800 rounded-xl p-4 space-y-4 text-xs">
         <div>
-          <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-200">Tools, privacy and grading rules</h3>
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-200">Tools, privacy and assessment rules</h3>
           <ul class="mt-2 space-y-1.5 text-slate-300 leading-relaxed list-disc list-inside">
             <li>Use <strong>one</strong> AI tool and <strong>one mode</strong> for all four rounds, so changes in output come from your prompt and not from a different model. The free version of Microsoft Copilot, ChatGPT, Gemini, Claude, Mistral Le Chat and similar tools are all fine.</li>
             <li><strong>Microsoft Copilot:</strong> sign in with your university account and check that the data-protection indicator is shown. If you are unsure what your licence includes, ask the IT office.</li>
             <li><strong>Free tiers change without notice.</strong> They may switch the underlying model, limit "thinking" modes or stop mid-session. Record what you actually used in the fields below.</li>
             <li><strong>Start a new, temporary chat with memory and personalisation switched off</strong> if the tool allows it. Otherwise earlier chats can influence your results.</li>
             <li><strong>Privacy:</strong> never paste personal data about real people (flatmates, colleagues, teachers) or confidential company information. Some tools, such as DeepSeek, process data outside the EU. Use only the fictional notes provided here.</li>
-            <li><strong>Grading criteria:</strong> visible iteration driven by your diagnoses, filtering irrelevant noise out of the raw notes, specificity of diagnoses, your own verification of constraints and facts (constraint audit), reusability of the final prompt, and the quality of your partner audit.</li>
+            <li><strong>Evaluation criteria:</strong> visible iteration driven by your diagnoses, filtering irrelevant noise out of the raw notes, specificity of diagnoses, your own verification of constraints and facts (constraint audit), reusability of the final prompt, and the quality of your partner audit.</li>
           </ul>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-3 border-t border-slate-800">
@@ -229,7 +225,7 @@
           <div><label for="set-memory" class="lbl">Memory / personalisation</label>
             <select id="set-memory" class="inp"><option value="">Choose…</option><option>Off or temporary chat</option><option>On</option><option>Could not tell</option></select></div>
           <div><label for="set-date" class="lbl">Date of session</label><input id="set-date" type="date" class="inp"></div>
-          <div class="sm:col-span-2 lg:col-span-3"><label for="set-evidence" class="lbl">Evidence of your chats (share link or screenshot file names, if your instructor requires it)</label><input id="set-evidence" type="text" class="inp" placeholder="e.g. share link, or screenshots round1.png ... round4.png"></div>
+          <div class="sm:col-span-2 lg:col-span-3"><label for="set-evidence" class="lbl">Evidence of your chats (share link or screenshot file names, if required)</label><input id="set-evidence" type="text" class="inp" placeholder="e.g. share link, or screenshots round1.png ... round4.png"></div>
         </div>
       </div>
     </section>
@@ -366,7 +362,7 @@
     <section id="step-3" class="bg-surface-900 border border-amberAccent/30 rounded-2xl p-6 sm:p-8 space-y-8">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="flex items-center gap-3">
-          <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs font-mono font-semibold bg-amberAccent-muted text-amberAccent border border-amberAccent/30">Step 3 • Graded task</span>
+          <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-md text-xs font-mono font-semibold bg-amberAccent-muted text-amberAccent border border-amberAccent/30">Step 3</span>
           <h2 class="text-xl font-bold text-white">Iterate and verify (four documented rounds)</h2>
         </div>
         <span class="text-xs font-mono text-slate-400">Round 1 is in Step 1 • Complete Rounds 2, 3 and 4 below</span>
@@ -396,28 +392,28 @@
           <p id="partner-title" class="text-xs sm:text-sm font-semibold text-white mb-1"></p>
           <p id="partner-scenario" class="text-xs text-slate-300 leading-relaxed"></p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label for="duel-loophole" class="lbl">Loophole you found (what went wrong when you ran their prompt, in which constraint or number)</label>
-            <textarea id="duel-loophole" rows="4" class="inp custom-scroll" placeholder="e.g. The output ignored the 180-word limit (measured: 231 words) and invented a 'late fee' policy not in the notes..."></textarea>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
+          <div class="flex flex-col h-full">
+            <label for="duel-loophole" class="lbl flex-1 min-h-[2.5rem]">Loophole you found (what went wrong when you ran their prompt, in which constraint or number)</label>
+            <textarea id="duel-loophole" rows="4" class="inp custom-scroll flex-1 mt-1" placeholder="e.g. The output ignored the 180-word limit (measured: 231 words) and invented a 'late fee' policy not in the notes..."></textarea>
           </div>
-          <div>
-            <label for="duel-fix" class="lbl">Concrete fix you proposed to your partner</label>
-            <textarea id="duel-fix" rows="4" class="inp custom-scroll" placeholder="Write the exact sentence or change you suggested for their prompt..."></textarea>
+          <div class="flex flex-col h-full">
+            <label for="duel-fix" class="lbl flex-1 min-h-[2.5rem]">Concrete fix you proposed to your partner</label>
+            <textarea id="duel-fix" rows="4" class="inp custom-scroll flex-1 mt-1" placeholder="Write the exact sentence or change you suggested for their prompt..."></textarea>
           </div>
         </div>
       </div>
 
       <div class="bg-surface-850 border border-slate-800 rounded-xl p-4 space-y-3">
         <h3 class="text-xs font-mono uppercase tracking-wider text-emeraldAccent">B. Your partner auditing your prompt</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label for="duel-break" class="lbl">Did your Round 4 prompt hold up in your partner's tool? Where did it break or drift (different tool or mode, missed constraint, different result)?</label>
-            <textarea id="duel-break" rows="4" class="inp custom-scroll" placeholder="Describe how your prompt performed when run by your partner..."></textarea>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
+          <div class="flex flex-col h-full">
+            <label for="duel-break" class="lbl flex-1 min-h-[2.5rem]">Did your Round 4 prompt hold up in your partner's tool? Where did it break or drift (different tool or mode, missed constraint, different result)?</label>
+            <textarea id="duel-break" rows="4" class="inp custom-scroll flex-1 mt-1" placeholder="Describe how your prompt performed when run by your partner..."></textarea>
           </div>
-          <div>
-            <label for="duel-improvement" class="lbl">What specific change did your partner suggest, and will you adopt it? Why or why not?</label>
-            <textarea id="duel-improvement" rows="4" class="inp custom-scroll" placeholder="Record the suggestion and your decision..."></textarea>
+          <div class="flex flex-col h-full">
+            <label for="duel-improvement" class="lbl flex-1 min-h-[2.5rem]">What specific change did your partner suggest, and will you adopt it? Why or why not?</label>
+            <textarea id="duel-improvement" rows="4" class="inp custom-scroll flex-1 mt-1" placeholder="Record the suggestion and your decision..."></textarea>
           </div>
         </div>
       </div>
@@ -430,11 +426,11 @@
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
         <div class="bg-surface-850 border border-slate-800 rounded-xl p-4 space-y-1.5">
-          <h3 class="text-sm font-semibold text-white">Why did the output improve? (Lectures 2 &amp; 5)</h3>
+          <h3 class="text-sm font-semibold text-white">Why did the output improve?</h3>
           <p class="text-slate-400 leading-relaxed">The model was not "smarter" in Round 4. You removed guesswork: you filtered out irrelevant noise and supplied the facts, the audience, the format and the criteria, so there was less for it to fill in with generic or invented material. Better information in, better output out. That is a statement about the <em>probability</em> of a good answer, not a guarantee.</p>
         </div>
         <div class="bg-surface-850 border border-slate-800 rounded-xl p-4 space-y-1.5">
-          <h3 class="text-sm font-semibold text-white">Why start a fresh chat? (Lecture 5)</h3>
+          <h3 class="text-sm font-semibold text-white">Why start a fresh chat?</h3>
           <p class="text-slate-400 leading-relaxed">In a long thread, the model keeps your earlier drafts and corrections in view. It can anchor on rejected wording or contradict itself, and very long contexts can make instructions get lost. Consolidating your rules in one clean prompt in a new chat gives you a result you can reproduce. Memory features can carry information between chats, which is why we switched them off.</p>
         </div>
         <div class="bg-surface-850 border border-slate-800 rounded-xl p-4 space-y-1.5">
@@ -462,7 +458,7 @@
       <div class="bg-surface-900 border border-slate-800 rounded-2xl p-6 space-y-4">
         <div class="flex items-center space-x-2 text-xs text-slate-300">
           <span class="w-2 h-2 rounded-full bg-emeraldAccent"></span>
-          <span class="font-medium text-white">Individual reflection for your critical portfolio (200–300 words, completed before Workshop 3)</span>
+          <span class="font-medium text-white">Individual reflection for your critical portfolio (200–300 words)</span>
         </div>
         <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
           The exported document ends with a section for your individual Critical Portfolio. Answer the three questions below in your own words in continuous prose:
@@ -652,7 +648,7 @@
         if (ratio >= OVERLAP_THRESHOLD) {
           const pct = Math.round(ratio * 100);
           warn.classList.remove("hidden");
-          warn.innerHTML = `<strong>Warning (${pct}% verbatim phrase overlap with raw notes):</strong> Criterion 1 of the grading rubric awards 0 points for copying or retyping the raw situation notes verbatim (and your prompt likely includes the planted distraction noise). Filter out irrelevant details and organize the facts in your own words under clear headings (<code>ROLE</code>, <code>TASK</code>, <code>FACTS</code>, <code>FORMAT</code>, <code>CONSTRAINTS</code>).`;
+          warn.innerHTML = `<strong>Warning (${pct}% verbatim phrase overlap with raw notes):</strong> Evaluation awards 0 points for copying or retyping the raw situation notes verbatim (and your prompt likely includes the planted distraction noise). Filter out irrelevant details and organize the facts in your own words under clear headings (<code>ROLE</code>, <code>TASK</code>, <code>FACTS</code>, <code>FORMAT</code>, <code>CONSTRAINTS</code>).`;
         } else {
           warn.classList.add("hidden");
         }
@@ -1007,7 +1003,7 @@
         <h2 style="${h2}">1. Assigned task and raw situation notes</h2>
         <p><strong>Assigned task:</strong> ${escapeHtml(d.taskTitle)}</p>
         <p><strong>Raw situation notes (including distraction items):</strong><br>${escapeHtml(d.scenario)}</p>
-        <h2 style="${h2}">2. Four-round prompt iteration log (graded task)</h2>
+        <h2 style="${h2}">2. Four-round prompt iteration log</h2>
         <table style="width:100%; border-collapse:collapse; margin-bottom:16pt;">
           <thead><tr><th style="${th} width:14%;">Round</th><th style="${th} width:43%;">Prompt &amp; rationale</th><th style="${th} width:43%;">AI output &amp; diagnosis</th></tr></thead>
           <tbody>${rows}</tbody></table>
@@ -1025,7 +1021,7 @@
         <p><strong>Improvement my partner suggested, and my decision:</strong><br>${escapeHtml(d.duelImprove)}</p>
         <hr style="border:0; border-top:1px solid #cbd5e1; margin:14pt 0;">
         <h2 style="font-size:14pt; margin-bottom:6pt;">5. Individual critical portfolio reflection (complete at home, 200–300 words)</h2>
-        <p style="color:#334155; font-size:10pt;"><em>Answer the three questions below in continuous prose before Workshop 3:</em><br>
+        <p style="color:#334155; font-size:10pt;"><em>Answer the three questions below in continuous prose:</em><br>
           1. Which single change across your four rounds produced the largest jump in usefulness, and why did it matter?<br>
           2. Which constraints or numbers did the model get wrong or ignore, how did you find out, and how confident did the output sound when it was wrong?<br>
           3. How will you structure your initial prompts, and check the results, differently the next time you use AI for a university or work task?</p>
@@ -1037,7 +1033,7 @@
       const line = "====";
       let t = `WORKSHOP 2 REPORT: PROMPTING\nCourse: AI Literacy and Critical Thinking\n\n${line}\n0. TOOL AND SESSION SETTINGS\n${line}\n`;
       t += d.settings.map(s => `${s[0]}: ${s[1]}`).join("\n");
-      t += `\n\n${line}\n1. ASSIGNED TASK AND RAW SITUATION NOTES\n${line}\nAssigned task: ${d.taskTitle}\n\nRaw situation notes:\n${d.scenario}\n\n${line}\n2. FOUR-ROUND PROMPT ITERATION LOG (GRADED TASK)\n${line}\n`;
+      t += `\n\n${line}\n1. ASSIGNED TASK AND RAW SITUATION NOTES\n${line}\nAssigned task: ${d.taskTitle}\n\nRaw situation notes:\n${d.scenario}\n\n${line}\n2. FOUR-ROUND PROMPT ITERATION LOG\n${line}\n`;
       t += `\n--- ROUND 1 (THE BAD PROMPT) ---\nPrompt:\n${d.badPrompt}\n\nOutput:\n${d.r1Out}\n\nDiagnosis:\n${d.r1Diag}\n`;
       d.rounds.forEach(r => {
         t += `\n--- ROUND ${r.n} ${ROUND_LABEL[r.n].toUpperCase()} ---\nPrompt:\n${r.prompt}\n${r.overlapFlag ? r.overlapFlag + "\n" : ""}\nWhat changed and why:\n${r.changes}\n\nOutput:\n${r.out}\n\nDiagnosis:\n${r.diag}\n`;
