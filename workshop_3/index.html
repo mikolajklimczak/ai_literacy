@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workshop 3: Fact-checking and source verification – AI Literacy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            surface: {
+              950: '#090d16',
+              900: '#0f172a',
+              850: '#141e33',
+              800: '#1e293b',
+              700: '#334155',
+              600: '#475569',
+            },
+            accent: {
+              DEFAULT: '#38bdf8',
+              hover: '#0ea5e9',
+              muted: 'rgba(56, 189, 248, 0.12)',
+            },
+            emeraldAccent: {
+              DEFAULT: '#10b981',
+              muted: 'rgba(16, 185, 129, 0.12)',
+            },
+            amberAccent: {
+              DEFAULT: '#f59e0b',
+              muted: 'rgba(245, 158, 11, 0.12)',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #090d16;
+      color: #e2e8f0;
+      scroll-behavior: smooth;
+    }
+    .glass-header {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    input[type="text"], textarea, select {
+      background-color: #0f172a;
+      border-color: #334155;
+      color: #f8fafc;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .no-copy {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    .claim-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.1rem 0.4rem;
+      border-radius: 0.25rem;
+      background-color: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      margin-right: 0.25rem;
+      vertical-align: baseline;
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased selection:bg-sky-500 selection:text-slate-950 pb-20">
+
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 bg-emerald-950/95 border border-emerald-500/50 text-emerald-200 px-4 py-3 rounded-xl shadow-2xl">
+    <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+    </svg>
+    <span id="toast-message" class="text-sm font-medium">Copied to clipboard</span>
+  </div>
+
+  <div id="reset-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+    <div class="bg-surface-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-start gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-base font-semibold text-white">Clear all entries and reset form?</h3>
+          <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">
+            This action will permanently delete your verification table entries, primary source links, unlocked trap scores, and saved browser draft.
+          </p>
+        </div>
+      </div>
+      <div class="mt-6 flex items-center justify-end gap-2.5">
+        <button onclick="closeResetModal()" class="text-xs font-medium bg-surface-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-4 py-2 rounded-lg transition-colors">
+          Cancel
+        </button>
+        <button onclick="executeResetForm()" class="text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-lg transition-colors shadow-sm">
+          Yes, reset form
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <header class="sticky top-0 z-40 glass-header border-b border-slate-800/80">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="w-9 h-9 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-mono font-bold text-sm">
+          W3
+        </div>
+        <div>
+          <div class="text-sm font-bold text-white tracking-tight leading-tight whitespace-nowrap">Workshop 3: Fact-checking</div>
+          <div class="text-xs text-slate-400 leading-normal">AI literacy and critical thinking</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="flex items-center gap-2 text-xs">
+          <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-900 border border-slate-700/80 text-slate-300">
+            <span id="autosave-dot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span id="autosave-status" class="whitespace-nowrap">Draft saved</span>
+          </div>
+          <button onclick="resetFormDraft()" class="text-slate-400 hover:text-rose-400 text-xs font-medium px-1 transition-colors whitespace-nowrap" title="Clear all saved inputs">
+            Reset form
+          </button>
+        </div>
+
+        <a href="https://www.office.com/launch/word" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 text-xs font-medium bg-surface-850 hover:bg-surface-800 text-slate-200 border border-slate-700 px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap">
+          <svg class="w-4 h-4 text-sky-400 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 9h-2v8H9v-8H7V9h6v2zm4 8h-2v-6h-2v-2h4v8zm-3-12V3.5L18.5 8H14z"/>
+          </svg>
+          <span>Open Word Online</span>
+        </a>
+
+        <button onclick="copyBlankTemplate()"
+                class="inline-flex items-center gap-2 text-xs font-medium bg-surface-850 hover:bg-surface-800 text-slate-200 border border-slate-700 px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap">
+          <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <span>Copy blank template</span>
+        </button>
+
+        <button onclick="copyFilledReport()"
+                class="inline-flex items-center gap-2 text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-slate-950 px-4 py-2 rounded-lg transition-colors shadow-sm whitespace-nowrap">
+          <svg class="w-4 h-4 text-slate-950 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+          </svg>
+          <span>Copy completed log</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-10">
+
+    <section class="bg-surface-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+      <div class="max-w-3xl space-y-3">
+        <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          Auditing AI claims against primary records
+        </h2>
+        <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+          Language models state fabricated statistics, non-existent reports, outdated regulations, and foreign legal defaults with total grammatical confidence. In this session, your team will audit an AI-generated briefing document containing eight distinct claims: five planted errors and three accurate facts. You will verify every claim against primary institutional sources and score your precision.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-7 pt-6 border-t border-slate-800/90">
+        <a href="#step-1" class="group p-3 rounded-xl bg-surface-850 hover:bg-surface-800 border border-slate-800 hover:border-slate-700 transition-all">
+          <div class="text-xs font-mono text-accent">Step 1</div>
+          <div class="text-sm font-semibold text-slate-200 mt-0.5 group-hover:text-white">1. The poisoned brief</div>
+          <div class="text-xs text-slate-400 mt-1">Read the 8 flagged claims</div>
+        </a>
+        <a href="#step-2" class="group p-3 rounded-xl bg-surface-850 hover:bg-surface-800 border border-slate-800 hover:border-slate-700 transition-all">
+          <div class="text-xs font-mono text-accent">Step 2</div>
+          <div class="text-sm font-semibold text-slate-200 mt-0.5 group-hover:text-white">2. The hunt</div>
+          <div class="text-xs text-slate-400 mt-1">Verify against primary records</div>
+        </a>
+        <a href="#step-3" class="group p-3 rounded-xl bg-surface-850 hover:bg-surface-800 border border-slate-800 hover:border-slate-700 transition-all">
+          <div class="text-xs font-mono text-accent">Step 3</div>
+          <div class="text-sm font-semibold text-slate-200 mt-0.5 group-hover:text-white">3. Scoring the traps</div>
+          <div class="text-xs text-slate-400 mt-1">Unlock key &amp; audit false alarms</div>
+        </a>
+        <a href="#step-4" class="group p-3 rounded-xl bg-surface-850 hover:bg-surface-800 border border-slate-800 hover:border-slate-700 transition-all">
+          <div class="text-xs font-mono text-emerald-400">Step 4</div>
+          <div class="text-sm font-semibold text-slate-200 mt-0.5 group-hover:text-white">4. Debrief</div>
+          <div class="text-xs text-slate-400 mt-1">Why traps bypass scepticism</div>
+        </a>
+        <a href="#step-5" class="group p-3 rounded-xl bg-surface-850 hover:bg-surface-800 border border-slate-800 hover:border-slate-700 transition-all col-span-2 sm:col-span-1">
+          <div class="text-xs font-mono text-amber-400">Step 5</div>
+          <div class="text-sm font-semibold text-slate-200 mt-0.5 group-hover:text-white">5. Reflection</div>
+          <div class="text-xs text-slate-400 mt-1">Individual portfolio analysis</div>
+        </a>
+      </div>
+    </section>
+
+    <section class="bg-surface-900/70 border border-slate-800 rounded-xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div class="w-full md:w-[40%] space-y-1">
+        <h3 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+          <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Rules of primary source verification
+        </h3>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Asking an AI chatbot <span class="text-slate-200">"Is this claim true?"</span> is not verification. Models asked to check plausible fabrications frequently agree with the mistake or repeat outdated blog posts. You must verify claims using <strong class="text-slate-200 font-medium">primary records</strong>: official statutory databases (<span class="font-mono text-sky-300">isap.sejm.gov.pl</span>, <span class="font-mono text-sky-300">eur-lex.europa.eu</span>), statistical offices (<span class="font-mono text-sky-300">stat.gov.pl</span>, <span class="font-mono text-sky-300">ec.europa.eu/eurostat</span>), regulators (<span class="font-mono text-sky-300">uokik.gov.pl</span>, <span class="font-mono text-sky-300">podatki.gov.pl</span>), or official municipal registries.
+        </p>
+      </div>
+      <div class="w-full md:w-[60%] shrink-0 space-y-2.5 bg-surface-950/70 border border-slate-800 rounded-xl p-3.5">
+        <div>
+          <label for="search-tools" class="block text-[11px] font-mono uppercase text-slate-400 mb-1">
+            Primary search tools &amp; registries used
+          </label>
+          <input id="search-tools" type="text" placeholder="e.g. Google, ISAP, GUS, UOKiK, Eurostat" class="w-full text-xs rounded-lg px-2.5 py-1.5 border" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-mono uppercase text-slate-400 mb-1">
+            Group members
+          </label>
+          <div class="grid grid-cols-2 gap-1.5">
+            <input id="member-1" type="text" placeholder="Member 1" class="text-xs rounded-lg px-2 py-1.5 border" />
+            <input id="member-2" type="text" placeholder="Member 2" class="text-xs rounded-lg px-2 py-1.5 border" />
+            <input id="member-3" type="text" placeholder="Member 3" class="text-xs rounded-lg px-2 py-1.5 border" />
+            <input id="member-4" type="text" placeholder="Member 4" class="text-xs rounded-lg px-2 py-1.5 border" />
+            <input id="member-5" type="text" placeholder="Member 5" class="text-xs rounded-lg px-2 py-1.5 border" />
+            <input id="member-6" type="text" placeholder="Member 6" class="text-xs rounded-lg px-2 py-1.5 border" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="step-1" class="scroll-mt-20 space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-wider text-accent">Step 1</span>
+          <h2 class="text-xl font-bold text-white mt-0.5">The poisoned brief</h2>
+        </div>
+        <span class="text-xs font-mono text-slate-400 bg-surface-850 px-3 py-1.5 rounded-lg border border-slate-800 self-start sm:self-auto">
+          Target: Inspect 8 claims (5 planted errors + 3 true claims)
+        </span>
+      </div>
+
+      <p class="text-sm text-slate-300 leading-relaxed">
+        Select the brief number (1 to 6) assigned to your team. Read the AI-generated executive document carefully. Eight specific factual claims are marked inline from <span class="claim-badge">C1</span> to <span class="claim-badge">C8</span>.
+      </p>
+
+      <div class="bg-surface-900 border border-slate-800 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <label for="brief-selector" class="block text-sm font-semibold text-white">
+            Select your team's assigned brief (1–6)
+          </label>
+          <p class="text-xs text-slate-400">
+            Selecting a brief populates the document below and loads the eight claims into your verification table in Step 2.
+          </p>
+        </div>
+        <div class="w-full sm:w-96 shrink-0">
+          <select id="brief-selector" onchange="switchBrief(this.value)"
+                  class="w-full text-sm rounded-lg px-3.5 py-2.5 border border-slate-700 bg-surface-850 text-slate-100 font-medium cursor-pointer">
+            <option value="">Choose your assigned brief (1–6)...</option>
+            <option value="1">Brief 1 – Polish B2B invoicing &amp; mandatory KSeF</option>
+            <option value="2">Brief 2 – E-commerce returns &amp; Omnibus pricing</option>
+            <option value="3">Brief 3 – Electric delivery fleet &amp; Wrocław SCT</option>
+            <option value="4">Brief 4 – Sustainable packaging &amp; SUP Directive</option>
+            <option value="5">Brief 5 – Wrocław student transport, housing &amp; tax</option>
+            <option value="6">Brief 6 – Academic research, copyright &amp; EU AI Act</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="brief-placeholder" class="bg-surface-900/60 border border-dashed border-slate-700/80 rounded-xl p-8 text-center space-y-2">
+        <svg class="w-8 h-8 text-slate-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <div class="text-sm font-semibold text-slate-300">No poisoned brief selected</div>
+        <p class="text-xs text-slate-400 max-w-md mx-auto">
+          Choose your team's assigned number (1–6) from the dropdown list above to display the AI-generated briefing document and load the verification table.
+        </p>
+      </div>
+
+      <div id="brief-card" class="hidden bg-surface-900 border border-slate-800 rounded-xl p-5 sm:p-6 space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span id="brief-tag" class="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">Brief 1</span>
+            <h3 id="brief-title" class="text-base font-semibold text-white"></h3>
+          </div>
+          <span class="text-[11px] font-mono text-slate-400">Copy-protected document • Inspect claims C1–C8</span>
+        </div>
+
+        <div id="brief-document-box" class="bg-surface-950 border border-slate-800/90 rounded-xl p-5 space-y-3.5 no-copy" oncopy="return false" oncut="return false" oncontextmenu="return false">
+          <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-slate-400 border-b border-slate-800/80 pb-2">
+            <span id="brief-doc-header">AI-generated compliance memo</span>
+            <span class="text-amber-400">Contains 5 planted errors + 3 true claims</span>
+          </div>
+          <div id="brief-prose" class="text-sm text-slate-200 leading-relaxed space-y-3"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="step-2" class="scroll-mt-20 space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-wider text-accent">Step 2</span>
+          <h2 class="text-xl font-bold text-white mt-0.5">The hunt: primary source verification table</h2>
+        </div>
+        <span class="text-xs font-mono text-slate-400 bg-surface-850 px-3 py-1.5 rounded-lg border border-slate-800 self-start sm:self-auto">
+          Target: Verify all 8 claims and cite primary records
+        </span>
+      </div>
+
+      <p class="text-sm text-slate-300 leading-relaxed">
+        Investigate every claim from <span class="claim-badge">C1</span> to <span class="claim-badge">C8</span> using official primary sources. Do not guess: flagging a true claim as a trap counts as a <strong class="text-rose-300 font-medium">false alarm</strong>. For every claim you mark as <span class="font-mono text-xs text-rose-300">False / Trap</span>, select the specific trap category and write the accurate replacement fact backed by a statutory citation or official URL.
+      </p>
+
+      <div id="hunt-empty-notice" class="bg-surface-900 border border-slate-800 rounded-xl p-6 text-center text-xs text-slate-400">
+        Select your assigned brief in Step 1 above to load the 8 claims into the verification table.
+      </div>
+
+      <div id="hunt-table-wrapper" class="hidden space-y-4">
+        <div class="bg-surface-900 border border-slate-800 rounded-xl overflow-hidden shadow-lg">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-800 bg-surface-950/90 text-[11px] font-mono uppercase text-slate-400">
+                  <th class="py-3.5 px-4 w-[28%]">Claim in brief (C1–C8)</th>
+                  <th class="py-3.5 px-3 w-[18%]">Team verdict &amp; trap type</th>
+                  <th class="py-3.5 px-3 w-[27%]">Primary source &amp; how checked</th>
+                  <th class="py-3.5 px-4 w-[27%]">Verified real fact (or confirmation)</th>
+                </tr>
+              </thead>
+              <tbody id="verification-tbody" class="divide-y divide-slate-800/70 text-xs"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="step-3" class="scroll-mt-20 space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-wider text-accent">Step 3</span>
+          <h2 class="text-xl font-bold text-white mt-0.5">Scoring the traps and auditing false alarms</h2>
+        </div>
+        <span class="text-xs font-mono text-slate-400 bg-surface-850 px-3 py-1.5 rounded-lg border border-slate-800 self-start sm:self-auto">
+          Unlock key when announced by instructor
+        </span>
+      </div>
+
+      <div class="bg-surface-900 border border-slate-800 rounded-xl p-5 space-y-5">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div class="space-y-1">
+            <h3 class="text-sm font-semibold text-white">Unlock official trap key for your brief</h3>
+            <p class="text-xs text-slate-400">
+              When the verification phase ends, enter the 3-character unlock code for your brief provided by the instructor to reveal the planted traps and calculate your team's accuracy score.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <input id="unlock-code-input" type="text" maxlength="6" placeholder="Code (e.g. K9P)" class="w-36 text-xs font-mono uppercase rounded-lg px-3 py-2 border" />
+            <button onclick="unlockTrapKey()" class="text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-slate-950 px-4 py-2 rounded-lg transition-colors">
+              Unlock key
+            </button>
+          </div>
+        </div>
+
+        <div id="key-locked-banner" class="bg-surface-950 border border-slate-800/80 rounded-xl p-5 text-center space-y-1">
+          <div class="text-xs font-mono text-slate-400">Trap reveal key is currently locked</div>
+          <p class="text-xs text-slate-500">Complete all 8 rows in Step 2 first. Once the instructor writes the unlock codes on the board, enter your brief's code above.</p>
+        </div>
+
+        <div id="key-unlocked-panel" class="hidden space-y-5">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-surface-950 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-[11px] font-mono uppercase text-slate-400">Traps caught</div>
+              <div id="score-traps-caught" class="text-xl font-bold text-emerald-400 mt-1">0 / 5</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">Planted errors identified</div>
+            </div>
+            <div class="bg-surface-950 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-[11px] font-mono uppercase text-slate-400">True claims confirmed</div>
+              <div id="score-true-confirmed" class="text-xl font-bold text-sky-400 mt-1">0 / 3</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">Accurate facts verified</div>
+            </div>
+            <div class="bg-surface-950 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-[11px] font-mono uppercase text-slate-400">False alarms</div>
+              <div id="score-false-alarms" class="text-xl font-bold text-rose-400 mt-1">0</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">True claims flagged as false</div>
+            </div>
+            <div class="bg-surface-950 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-[11px] font-mono uppercase text-slate-400">Unchecked / missed</div>
+              <div id="score-missed" class="text-xl font-bold text-amber-400 mt-1">0</div>
+              <div class="text-[11px] text-slate-500 mt-0.5">Traps missed or left blank</div>
+            </div>
+          </div>
+
+          <div class="bg-surface-950 border border-slate-800 rounded-xl p-4 space-y-2.5">
+            <div class="text-xs font-mono uppercase tracking-wider text-emerald-400">Official ground-truth key</div>
+            <div id="official-key-list" class="divide-y divide-slate-800/80 text-xs"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch pt-2">
+          <div class="flex flex-col h-full">
+            <label class="block text-xs font-semibold text-slate-200 min-h-[2.5rem]">
+              1. Which planted trap was the hardest to catch or took the longest to verify, and what made it look trustworthy at first glance?
+            </label>
+            <textarea id="audit-hardest-trap" rows="3" placeholder="Name the claim (C1–C8), explain why its phrasing or decimal precision looked convincing, and describe how you proved it was false..." class="w-full text-xs rounded-lg p-2.5 border flex-1 mt-1"></textarea>
+          </div>
+          <div class="flex flex-col h-full">
+            <label class="block text-xs font-semibold text-slate-200 min-h-[2.5rem]">
+              2. Did your team miss any trap or trigger a false alarm (marking a true claim as false)? What caused the error in your search process?
+            </label>
+            <textarea id="audit-false-alarms" rows="3" placeholder="If you had zero misses or false alarms, explain how you confirmed the 3 true claims without over-flagging. Otherwise, diagnose what went wrong..." class="w-full text-xs rounded-lg p-2.5 border flex-1 mt-1"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="step-4" class="scroll-mt-20 space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-wider text-emerald-400">Step 4</span>
+          <h2 class="text-xl font-bold text-white mt-0.5">Debrief: why fabricated claims bypass human scepticism</h2>
+        </div>
+        <span class="text-xs font-mono text-slate-400 bg-surface-850 px-3 py-1.5 rounded-lg border border-slate-800 self-start sm:self-auto">
+          Class discussion
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-surface-900 border border-slate-800 rounded-xl p-5 space-y-2">
+          <h3 class="text-sm font-semibold text-white">1. The illusion of decimal precision and authority</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            When an AI text states that <span class="font-mono text-slate-200">34.7%</span> or <span class="font-mono text-slate-200">41.8%</span> of companies failed an audit in a named GUS, PARP, or UOKiK report, human readers rarely suspect invention. Specific decimals and institutional acronyms trigger authority bias, even though a language model generates a fake report title with the exact same ease as a real one.
+          </p>
+        </div>
+
+        <div class="bg-surface-900 border border-slate-800 rounded-xl p-5 space-y-2">
+          <h3 class="text-sm font-semibold text-white">2. Regulatory mashups and half-truths</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            The hardest hallucinations to spot are rarely pure fantasy. Models frequently combine a real statute number with a real penalty rate from a different law or invent a plausible subparagraph (such as <span class="font-mono text-slate-200">Art. 5(1)(z)</span>). Checking only that the main act exists is insufficient; you must read the exact article text.
+          </p>
+        </div>
+
+        <div class="bg-surface-900 border border-slate-800 rounded-xl p-5 space-y-2">
+          <h3 class="text-sm font-semibold text-white">3. Temporal drift and zombie laws</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Models trained on historical text—or search tools pulling top-ranked accounting blogs from 2022–2024—routinely present postponed deadlines (like the July 2024 KSeF rollout) or repealed laws (like the 20,000 PLN consumer cash limit) as binding current rules. Always check the effective date and consolidated text (<span class="font-mono text-slate-200">tekst jednolity</span>).
+          </p>
+        </div>
+
+        <div class="bg-surface-900 border border-slate-800 rounded-xl p-5 space-y-2">
+          <h3 class="text-sm font-semibold text-white">4. Geographic and US legal default bias</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Because English-language American legal and corporate material dominates training corpora, models silently import US concepts—at-will employment, FTC disclosure tags, CARB emissions, FICO credit scores, and Title 17 Fair Use—into Polish and EU business memos.
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-sky-950/60 via-surface-900 to-surface-900 border border-sky-500/30 rounded-xl p-5 flex items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="text-xs font-mono uppercase tracking-wider text-sky-400">Core takeaway</div>
+          <p class="text-sm sm:text-base font-semibold text-white">
+            "You cannot trust a fact you have not checked against a primary record, and 'it sounded right' is not checking."
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="step-5" class="scroll-mt-20 space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-wider text-amber-400">Step 5</span>
+          <h2 class="text-xl font-bold text-white mt-0.5">At-home reflection (for your critical portfolio)</h2>
+        </div>
+        <span class="text-xs font-mono text-slate-400 bg-surface-850 px-3 py-1.5 rounded-lg border border-slate-800 self-start sm:self-auto">
+          Complete individually in Word after class
+        </span>
+      </div>
+
+      <div class="bg-surface-900 border border-slate-800 rounded-xl p-5 sm:p-6 space-y-4">
+        <p class="text-sm text-slate-300 leading-relaxed">
+          Before leaving class today, click <strong class="text-white font-semibold">Copy completed log</strong> and paste your team's verification table and trap scores into your Microsoft Word portfolio document. At home, add a short individual reflection (150–250 words) addressing:
+        </p>
+        <ul class="space-y-2 text-xs sm:text-sm text-slate-300 list-disc list-inside">
+          <li>Which claim in your brief felt the most convincing before you checked it, and why did your initial gut instinct trust or distrust it?</li>
+          <li>What difference did you notice between searching general web articles/blogs versus going directly to primary registries (such as ISAP, GUS, Eurostat, or UOKiK)?</li>
+          <li>What concrete verification workflow will you apply when using AI to draft reports or research unfamiliar regulations in future projects?</li>
+        </ul>
+
+        <div class="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <span class="text-xs text-slate-400">Export your team's completed table and audit notes into Microsoft Word:</span>
+          <button onclick="copyFilledReport()"
+                  class="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold bg-sky-500 hover:bg-sky-400 text-slate-950 px-4 py-2 rounded-lg transition-colors shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+            </svg>
+            <span>Copy completed log for Word</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pt-6 border-t border-slate-800/80 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <div>AI literacy and critical thinking • Workshop 3: Fact-checking and source verification</div>
+    <div>All entries autosave locally in your browser</div>
+  </footer>
+
+  <script>
+    const BRIEFS = {
+      "1": {
+        title: "Polish B2B invoicing and mandatory e-invoicing (KSeF)",
+        header: "Executive compliance briefing • Finance & Accounting Department",
+        unlockCode: "K9P",
+        paragraphs: [
+          "To prepare our Wrocław wholesale subsidiary for upcoming Polish tax audits, management must review the current statutory framework governing B2B invoicing and electronic tax reporting. <span class='claim-badge'>C1</span> Under the amended Polish VAT Act, mandatory use of the National e-Invoicing System (KSeF) entered into force for all active VAT-registered businesses in Poland on 1 July 2024 without exceptions. <span class='claim-badge'>C2</span> All standard domestic B2B supplies of goods and services remain subject to the base Polish VAT rate of 23%, while statutory reduced rates of 8% and 5% apply to designated categories listed in the VAT Act.",
+          "Failure to issue invoices through the ministerial platform carries immediate financial exposure. <span class='claim-badge'>C3</span> Specifically, Article 106ga(4) of the VAT Act imposes an automatic minimum administrative fine of 5,000 PLN for every single invoice issued outside KSeF from the very first day of the system's operation. <span class='claim-badge'>C4</span> Furthermore, when settling B2B invoices exceeding 15,000 PLN gross, our accounting team must verify that the supplier's bank account is registered on the official Ministry of Finance White List of VAT taxpayers (Wykaz podatników VAT) to preserve tax deductibility and avoid joint liability.",
+          "Transitioning to structured XML invoicing has created friction across the Polish market. <span class='claim-badge'>C5</span> According to the Polish Agency for Enterprise Development (PARP) report titled \"Cyfryzacja rozliczeń MŚP 2025: Analiza obciążeń administracyjnych\" published in November 2025, exactly 34.7% of Polish medium-sized enterprises had their initial KSeF XML submissions rejected due to schema validation errors. <span class='claim-badge'>C6</span> Alongside digital invoicing, managers must remember that on 1 January 2024, the statutory cash payment limit for B2B transactions between Polish entrepreneurs was lowered from 15,000 PLN to 8,000 PLN gross.",
+          "From a technical archiving standpoint, our IT infrastructure can reduce local storage costs. <span class='claim-badge'>C7</span> Structured e-invoices submitted to KSeF follow the Ministry of Finance FA(2)/FA(3) XML schema and are archived directly within the state KSeF repository for 10 years from the end of the year in which they were issued. <span class='claim-badge'>C8</span> Finally, if our accounting clerks fail to follow these invoicing procedures, Polish labour regulations allow the company to terminate both salaried employees and B2B contractors immediately under standard \"at-will employment\" rules without notice periods or statutory severance."
+        ],
+        claims: [
+          {
+            id: "C1",
+            shortText: "Mandatory KSeF entered into force for all active VAT-registered businesses in Poland on 1 July 2024 without exceptions.",
+            isTrap: true,
+            trapCategory: "Outdated fact",
+            explanation: "TRAP (Outdated fact): The 1 July 2024 KSeF mandate was postponed by legislative amendment following technical audits; mandatory rollout was pushed to February/April 2026 (podatki.gov.pl / ISAP)."
+          },
+          {
+            id: "C2",
+            shortText: "Standard Polish VAT rate is 23%, with statutory reduced rates of 8% and 5% for designated categories.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: Art. 41 and Art. 146aa of the Polish VAT Act establish the 23% standard rate and 8% / 5% reduced rates (isap.sejm.gov.pl)."
+          },
+          {
+            id: "C3",
+            shortText: "Art. 106ga(4) of the VAT Act imposes an automatic minimum fine of 5,000 PLN per invoice issued outside KSeF from day one.",
+            isTrap: true,
+            trapCategory: "Regulatory mashup",
+            explanation: "TRAP (Regulatory mashup): Art. 106ga contains no 5,000 PLN minimum fine. KSeF penalties are governed by Art. 106ni (up to 100% of VAT or 18.7% of invoice total) and were deferred during the transitional period."
+          },
+          {
+            id: "C4",
+            shortText: "B2B payments exceeding 15,000 PLN gross require verifying the supplier's bank account on the official VAT White List.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: Art. 19 of the Entrepreneurs' Law and Art. 96b of the VAT Act mandate White List bank account verification for B2B transactions over 15,000 PLN gross."
+          },
+          {
+            id: "C5",
+            shortText: "PARP's November 2025 report 'Cyfryzacja rozliczeń MŚP 2025' found 34.7% of Polish SMEs had KSeF XML submissions rejected.",
+            isTrap: true,
+            trapCategory: "Fake statistic / Nonexistent source",
+            explanation: "TRAP (Fake statistic & Nonexistent source): Neither the PARP report title nor the 34.7% rejection figure exists in PARP's publication registry (parp.gov.pl)."
+          },
+          {
+            id: "C6",
+            shortText: "On 1 January 2024, the statutory B2B cash payment limit in Poland was lowered from 15,000 PLN to 8,000 PLN gross.",
+            isTrap: true,
+            trapCategory: "Outdated fact",
+            explanation: "TRAP (Outdated / repealed law): The Polski Ład provision lowering the B2B cash limit to 8,000 PLN was repealed before taking effect; the B2B limit remains 15,000 PLN gross."
+          },
+          {
+            id: "C7",
+            shortText: "Structured e-invoices in KSeF use the FA(2)/FA(3) XML schema and are stored in the state repository for 10 years.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: Art. 112aa of the VAT Act and Ministry of Finance KSeF documentation confirm the FA(2)/FA(3) schema and 10-year storage period."
+          },
+          {
+            id: "C8",
+            shortText: "Polish labour law allows immediate termination of salaried staff and B2B contractors under 'at-will employment' without notice.",
+            isTrap: true,
+            trapCategory: "Geographic / US bias",
+            explanation: "TRAP (Geographic / US bias): 'At-will employment' is a US legal doctrine. Polish employment requires statutory notice periods under the Labour Code (Kodeks pracy, Art. 30–36)."
+          }
+        ]
+      },
+      "2": {
+        title: "E-commerce returns and Omnibus price transparency in Poland",
+        header: "Legal & Commercial Operations Memo • Direct-to-Consumer Online Store",
+        unlockCode: "M4X",
+        paragraphs: [
+          "As our online store prepares its seasonal promotional campaign in Poland, our e-commerce team must strictly observe national consumer protection rules. <span class='claim-badge'>C1</span> Under Article 27 of the Polish Consumer Rights Act (Ustawa o prawach konsumenta), customers purchasing physical goods at a distance have 14 calendar days from taking possession of the item to withdraw from the contract without giving any reason. <span class='claim-badge'>C2</span> Whenever a customer exercises this 14-day withdrawal right, Polish law requires the online retailer to pay all return courier shipping costs back to the warehouse, and sellers are strictly prohibited from asking the consumer to pay direct return postage.",
+          "Promotional pricing displays on product pages are also tightly regulated. <span class='claim-badge'>C3</span> Following the Polish implementation of the EU Omnibus Directive (Article 4 of the Act on Information on Prices of Goods and Services), every price reduction announcement must display the lowest price applied by the merchant during the 30 days prior to the discount. <span class='claim-badge'>C4</span> Enforcement has intensified since the Office of Competition and Consumer Protection (UOKiK) published its landmark report \"Handel elektroniczny pod lupą 2025\", which revealed that 41.8% of audited Polish online clothing stores artificially inflated reference prices seven days before sales.",
+          "Customer service channels and product exemptions must be clearly stated in our terms of service. <span class='claim-badge'>C5</span> Under Article 38a of the Consumer Rights Act, online stores that fail to staff a dedicated telephone hotline for customer complaints face an automatic penalty equal to 2% of their daily gross revenue for each day the phone line is unavailable. <span class='claim-badge'>C6</span> However, under Article 38(3) of the Consumer Rights Act, the 14-day statutory right of withdrawal does not apply to non-prefabricated goods made to the consumer's individual specification or clearly personalised.",
+          "Finally, payment and influencer marketing rules require immediate checkout updates. <span class='claim-badge'>C7</span> Since 1 January 2024, Polish law prohibits individual B2C consumers from making cash-on-delivery (za pobraniem) or in-store cash payments reaching or exceeding 20,000 PLN gross, requiring bank transfers for all such consumer purchases. <span class='claim-badge'>C8</span> In addition, all Polish Instagram and TikTok creators promoting our store must comply with US Federal Trade Commission (FTC) 16 CFR Part 255 Endorsement Guides and include the mandatory tag #Ad_FTC in every Polish post."
+        ],
+        claims: [
+          {
+            id: "C1",
+            shortText: "Consumers buying goods online have 14 calendar days from receiving the item to withdraw without stating a reason (Art. 27 Consumer Rights Act).",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: Art. 27 of the Polish Consumer Rights Act (Ustawa o prawach konsumenta, isap.sejm.gov.pl) grants 14 calendar days to withdraw from distance contracts."
+          },
+          {
+            id: "C2",
+            shortText: "Polish law requires the online store to pay all return courier shipping costs back to the warehouse and forbids charging direct return postage to the customer.",
+            isTrap: true,
+            trapCategory: "Misattributed quote / rule",
+            explanation: "TRAP (Misattributed rule): Under Art. 34(2) of the Consumer Rights Act, the consumer bears the direct cost of returning the goods unless the trader agreed to bear it or failed to inform the consumer."
+          },
+          {
+            id: "C3",
+            shortText: "Under the Omnibus implementation (Art. 4 of the Price Information Act), promotions must show the lowest price from the 30 days prior to the discount.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: Art. 4(2) of the Act on Information on Prices of Goods and Services requires showing the lowest price from the 30 days preceding the reduction."
+          },
+          {
+            id: "C4",
+            shortText: "UOKiK's report 'Handel elektroniczny pod lupą 2025' found that 41.8% of Polish online clothing stores manipulated 30-day prices.",
+            isTrap: true,
+            trapCategory: "Fake statistic / Nonexistent source",
+            explanation: "TRAP (Fake statistic & Nonexistent source): UOKiK never published a report titled 'Handel elektroniczny pod lupą 2025' and the 41.8% statistic is fabricated (uokik.gov.pl)."
+          },
+          {
+            id: "C5",
+            shortText: "Art. 38a of the Consumer Rights Act imposes an automatic 2% daily gross revenue fine for failing to provide a telephone hotline.",
+            isTrap: true,
+            trapCategory: "Regulatory mashup",
+            explanation: "TRAP (Regulatory mashup): Sellers are not required to maintain a phone hotline if electronic contact is provided, and no 2% daily revenue fine exists under Art. 38a."
+          },
+          {
+            id: "C6",
+            shortText: "Under Art. 38(3) of the Consumer Rights Act, custom-made or personalised products are exempt from the 14-day withdrawal right.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: Art. 38(3) of the Consumer Rights Act explicitly exempts non-prefabricated goods made to the consumer's specification."
+          },
+          {
+            id: "C7",
+            shortText: "Since 1 January 2024, Polish law prohibits B2C consumers from making cash payments of 20,000 PLN or more.",
+            isTrap: true,
+            trapCategory: "Outdated fact",
+            explanation: "TRAP (Outdated / repealed law): The planned 20,000 PLN B2C consumer cash limit was repealed by the Sejm in 2023 before taking effect; no cash cap applies to individual consumers."
+          },
+          {
+            id: "C8",
+            shortText: "Polish influencers promoting a Polish store must follow US FTC 16 CFR Part 255 rules and use #Ad_FTC.",
+            isTrap: true,
+            trapCategory: "Geographic / US bias",
+            explanation: "TRAP (Geographic / US bias): US FTC regulations have no jurisdiction in Poland. Polish influencers are governed by UOKiK guidelines (#reklama or #współpraca płatna)."
+          }
+        ]
+      },
+      "3": {
+        title: "Electric delivery fleet and Wrocław Clean Transport Zone (SCT)",
+        header: "Operations & Fleet Strategy Brief • Lower Silesia Regional Logistics",
+        unlockCode: "R7V",
+        paragraphs: [
+          "To modernise our regional parcel delivery operations around Wrocław, this brief evaluates state subsidies, tax depreciation limits, and municipal traffic rules for electric light commercial vans (category N1, up to 3.5 tonnes). <span class='claim-badge'>C1</span> Under the national \"Mój Elektryk\" programme administered by the National Fund for Environmental Protection and Water Management (NFOŚiGW), businesses acquiring zero-emission N1 delivery vehicles can receive subsidies of up to 30% of eligible costs (capped at 70,000 PLN per vehicle) when committing to the required annual mileage threshold. <span class='claim-badge'>C2</span> Immediate fleet conversion is required because the City of Wrocław enforced a mandatory Clean Transport Zone (Strefa Czystego Transportu – SCT) on 1 July 2024, banning all diesel vans below Euro 5 from entering the city centre under penalty of automated camera fines.",
+          "Market adoption in our region has accelerated rapidly. <span class='claim-badge'>C3</span> According to the Statistics Poland (GUS) yearbook \"Transport drogowy i elektromobilność w Polsce 2025\", exactly 28.4% of all registered commercial N1 delivery vans operating in the Lower Silesian Voivodeship are now fully battery-electric vehicles. <span class='claim-badge'>C4</span> Tax regulations also favour zero-emission fleet investments: under Polish PIT and CIT rules, battery-electric passenger vehicles qualify for a higher tax depreciation and operating lease deduction limit of 225,000 PLN, compared to the 150,000 PLN cap applied to conventional internal combustion vehicles.",
+          "Operational routing and highway compliance must also be factored into our dispatch schedules. <span class='claim-badge'>C5</span> Under Article 148b of the Polish Road Traffic Law (Prawo o ruchu drogowym), electric cargo vans up to 3.5 tonnes are guaranteed permanent, unconditional access to all municipal bus lanes across Poland until 31 December 2030 without local road authority restrictions. <span class='claim-badge'>C6</span> For heavier vehicles exceeding 3.5 tonnes or transport of sensitive goods, operators must use the electronic e-TOLL tolling system and the SENT monitoring registry supervised by the National Revenue Administration (KAS).",
+          "Finally, driver payroll and compliance budgets for 2025 have been calculated below. <span class='claim-badge'>C7</span> Payroll projections assume that the statutory national minimum wage in Poland for full-time drivers remained frozen at 3,600 PLN gross per month throughout the entire calendar year 2025. <span class='claim-badge'>C8</span> To pass roadside inspections in Lower Silesia, every electric van must carry a valid California Air Resources Board (CARB) Zero-Emission certificate and maintain driver rest logs under US Department of Transportation (DOT) FMCSA hours-of-service rules."
+        ],
+        claims: [
+          {
+            id: "C1",
+            shortText: "The NFOŚiGW 'Mój Elektryk' programme offers N1 electric van subsidies up to 30% of eligible costs (up to 70,000 PLN).",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: Official NFOŚiGW 'Mój Elektryk' programme terms provide up to 30% / 70,000 PLN subsidies for zero-emission N1 commercial vehicles (elektromobilnosc.gov.pl)."
+          },
+          {
+            id: "C2",
+            shortText: "Wrocław enforced a mandatory Clean Transport Zone (SCT) on 1 July 2024 with automated camera fines for pre-Euro 5 diesels.",
+            isTrap: true,
+            trapCategory: "Outdated fact",
+            explanation: "TRAP (False / outdated local status): Wrocław did not implement a mandatory SCT on 1 July 2024; following consultations, binding rollout was postponed (wroclaw.pl)."
+          },
+          {
+            id: "C3",
+            shortText: "GUS report 'Transport drogowy i elektromobilność w Polsce 2025' states 28.4% of N1 vans in Lower Silesia are fully electric.",
+            isTrap: true,
+            trapCategory: "Fake statistic / Nonexistent source",
+            explanation: "TRAP (Fake statistic & Nonexistent source): Neither this GUS publication title nor the 28.4% electric van share exists; BEV share in commercial vans is in the low single digits (stat.gov.pl)."
+          },
+          {
+            id: "C4",
+            shortText: "Under Polish PIT and CIT rules, battery-electric passenger cars have a 225,000 PLN depreciation/leasing cap versus 150,000 PLN for combustion cars.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: Art. 23(1)(4) of the PIT Act and Art. 16(1)(4) of the CIT Act set the cap at 225,000 PLN for EVs and 150,000 PLN for standard combustion vehicles."
+          },
+          {
+            id: "C5",
+            shortText: "Art. 148b of the Polish Road Traffic Law grants electric vans permanent unconditional bus lane access until 31 December 2030.",
+            isTrap: true,
+            trapCategory: "Regulatory mashup",
+            explanation: "TRAP (Regulatory mashup): Bus lane access for EVs is governed by Art. 148a (not 148b), originally set until 1 January 2026 and subject to road authority occupancy rules."
+          },
+          {
+            id: "C6",
+            shortText: "Heavy transport (>3.5t) and regulated goods must use the e-TOLL and SENT systems supervised by KAS.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: The National Revenue Administration (KAS) operates e-TOLL (etoll.gov.pl) for vehicles over 3.5t and SENT (puesc.gov.pl) for monitored goods."
+          },
+          {
+            id: "C7",
+            shortText: "The statutory minimum wage in Poland remained frozen at 3,600 PLN gross per month throughout 2025.",
+            isTrap: true,
+            trapCategory: "Outdated fact",
+            explanation: "TRAP (Outdated fact): 3,600 PLN was the rate in late 2023. The minimum wage rose to 4,242 PLN / 4,300 PLN in 2024 and 4,666 PLN gross per month in 2025 (gov.pl)."
+          },
+          {
+            id: "C8",
+            shortText: "Polish delivery vans in Lower Silesia must carry California Air Resources Board (CARB) certificates and US DOT driver logs.",
+            isTrap: true,
+            trapCategory: "Geographic / US bias",
+            explanation: "TRAP (Geographic / US bias): CARB and US DOT are American regulators. Polish fleets follow EU Mobility Package rules enforced by the Polish Road Transport Inspection (ITD)."
+          }
+        ]
+      },
+      "4": {
+        title: "Sustainable packaging compliance and the SUP Directive in Poland",
+        header: "Environmental & Regulatory Compliance Brief • Hospitality Chain",
+        unlockCode: "T2L",
+        paragraphs: [
+          "Following the Polish implementation of the EU Single-Use Plastics (SUP) Directive, our chain of 14 bistro cafés in Wrocław and Poznań must audit its takeaway packaging workflow. <span class='claim-badge'>C1</span> Since 1 January 2024, Polish hospitality and retail businesses offering takeaway drinks or meals in single-use plastic packaging must collect a mandatory consumer levy of 0.20 PLN net per beverage cup and 0.25 PLN net per food container under the amended Act on Obligations of Entrepreneurs in Managing Certain Wastes. <span class='claim-badge'>C2</span> Under Article 3b of the Act, cafés must charge at least 2.50 PLN for every plastic cup and transfer the collected funds every Friday afternoon to the local City Hall (Urząd Miejski).",
+          "Product design rules for bottled drinks sold in our display fridges have also tightened. <span class='claim-badge'>C3</span> Since 1 July 2024, single-use plastic beverage containers up to 3 litres placed on the market must have caps and lids that remain permanently attached (tethered) to the container during use. <span class='claim-badge'>C4</span> Industry transition has been rapid: according to the Eurostat statistical bulletin \"Circular Packaging Compliance in Central Europe 2025\", exactly 63.9% of Polish cafés completely replaced plastic cups with edible seaweed vessels during 2024.",
+          "Beverage bottle collection and waste registry obligations require strict record-keeping. <span class='claim-badge'>C5</span> On 1 January 2024, Poland's mandatory nationwide Deposit Return System (system kaucyjny) entered into full operational force across all grocery stores and cafés, requiring a 0.50 PLN deposit on every PET bottle and aluminium can sold. <span class='claim-badge'>C6</span> Additionally, all businesses introducing packaged goods or charging SUP fees in Poland must hold an active registration number in the BDO database (Baza danych o produktach i opakowaniach oraz o gospodarce odpadami) and submit annual electronic reports.",
+          "Non-compliance carries severe institutional sanctions. <span class='claim-badge'>C7</span> In October 2024, National Bank of Poland (NBP) President Adam Glapiński issued a formal KNF banking supervision ruling fining \"Wrocławskie Kawiarnie Społeczne\" 4.2 million PLN for handing out untethered plastic coffee lids, stating that \"plastic lids threaten Polish monetary stability.\" <span class='claim-badge'>C8</span> To offset packaging compliance costs, our Polish company can register as a Delaware Public Benefit Corporation with the US Environmental Protection Agency (EPA) and deduct federal Internal Revenue Code Section 45W green credits directly on its Polish CIT-8 tax return."
+        ],
+        claims: [
+          {
+            id: "C1",
+            shortText: "Since 1 January 2024, Polish businesses must collect a statutory consumer fee of 0.20 PLN net per plastic beverage cup and 0.25 PLN net per plastic food container.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: The Polish SUP Act and Regulation of the Minister of Climate and Environment of 7 December 2023 set rates of 0.20 PLN (cups) and 0.25 PLN (food containers) from 1 Jan 2024."
+          },
+          {
+            id: "C2",
+            shortText: "Art. 3b requires charging 2.50 PLN per plastic cup and transferring the collected fees every Friday to the local City Hall (Urząd Miejski).",
+            isTrap: true,
+            trapCategory: "Regulatory mashup",
+            explanation: "TRAP (Regulatory mashup): The fee is 0.20/0.25 PLN (not 2.50 PLN), and revenues are remitted annually by 15 March of the following year to the Marshal's Office (Urząd Marszałkowski)."
+          },
+          {
+            id: "C3",
+            shortText: "Since 1 July 2024, single-use plastic beverage containers up to 3 litres must have caps and lids that remain tethered to the container.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: EU Directive 2019/904 and the Polish SUP Act required tethered caps on plastic beverage containers up to 3L starting 1 July 2024."
+          },
+          {
+            id: "C4",
+            shortText: "Eurostat's report 'Circular Packaging Compliance in Central Europe 2025' found 63.9% of Polish cafés switched to edible seaweed cups.",
+            isTrap: true,
+            trapCategory: "Fake statistic / Nonexistent source",
+            explanation: "TRAP (Fake statistic & Nonexistent source): Neither this Eurostat report title nor the 63.9% edible seaweed cup statistic exists (ec.europa.eu/eurostat)."
+          },
+          {
+            id: "C5",
+            shortText: "Poland's mandatory nationwide Deposit Return System (system kaucyjny) launched across all stores on 1 January 2024.",
+            isTrap: true,
+            trapCategory: "Outdated fact",
+            explanation: "TRAP (Outdated / false launch date): The Polish deposit return system did not launch on 1 January 2024; it was scheduled for 2025 and delayed to October 2025 (gov.pl/web/klimat)."
+          },
+          {
+            id: "C6",
+            shortText: "Businesses placing packaged goods or charging SUP fees in Poland must register in the BDO database and submit annual reports.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: The Act on Waste requires active registration and annual reporting in the BDO portal (bdo.mos.gov.pl)."
+          },
+          {
+            id: "C7",
+            shortText: "NBP President Adam Glapiński issued a KNF ruling fining 'Wrocławskie Kawiarnie Społeczne' 4.2M PLN for untethered plastic coffee lids.",
+            isTrap: true,
+            trapCategory: "Misattributed quote / rule",
+            explanation: "TRAP (Misattributed quote / fabricated ruling): NBP and KNF regulate monetary policy and banking, not plastic cups (enforced by Inspekcja Handlowa / WIOŚ). The ruling and quote are fabricated."
+          },
+          {
+            id: "C8",
+            shortText: "A Polish café chain can register with the US EPA as a Delaware corporation and deduct federal IRS tax credits on its Polish CIT-8 return.",
+            isTrap: true,
+            trapCategory: "Geographic / US bias",
+            explanation: "TRAP (Geographic / US bias): US EPA and IRS rules apply only in the United States and cannot be deducted on Polish CIT-8 corporate tax filings."
+          }
+        ]
+      },
+      "5": {
+        title: "Wrocław student transport, housing, and employment guide",
+        header: "Student Welfare & Legal Orientation Guide • First-Year University Handbook",
+        unlockCode: "W8N",
+        paragraphs: [
+          "Moving to Wrocław for your first year of university studies requires understanding local transport discounts, student tax rules, and Polish tenancy law. <span class='claim-badge'>C1</span> Full-time university students in Poland under the age of 26 who hold a valid Polish student ID (legitymacja studencka) are entitled by statute to a 51% discount on statutory PKP rail tickets and a 50% discount on Wrocław MPK municipal public transport tickets. <span class='claim-badge'>C2</span> According to the Public Transport Department (ZTP Wrocław) report \"Mobilność Akademicka Wrocławia 2025\", exactly 74.6% of Wrocław university students commute to morning lectures using the municipal year-round high-speed Odra river ferry network (Tramwaj Wodny).",
+          "Working part-time while studying in Wrocław is governed by favourable tax rules, provided you sign the right contract. <span class='claim-badge'>C3</span> Under Article 21(1)(148) of the Polish Personal Income Tax (PIT) Act – commonly known as the \"ulga dla młodych\" – individuals under age 26 are exempt from paying PIT on gross earnings up to 85,528 PLN per calendar year from employment contracts (umowa o pracę) and contracts of mandate (umowa zlecenie). <span class='claim-badge'>C4</span> This under-26 tax exemption also automatically exempts students from paying the 23% VAT in grocery stores and applies equally to contracts for specific work (umowa o dzieło) and B2B sole proprietorships.",
+          "When reviewing part-time job offers, students should check the statutory minimum wage floor. <span class='claim-badge'>C5</span> For the entire calendar year 2025, the Polish statutory minimum hourly wage for contracts of mandate (umowa zlecenie) is set at 22.80 PLN gross per hour. <span class='claim-badge'>C6</span> When renting a private flat in Wrocław, Article 6(4) of the Polish Act on the Protection of Tenants' Rights (Ustawa o ochronie praw lokatorów) stipulates that the landlord must return the security deposit (kaucja) within one month from the day the tenant vacates the apartment, after deducting any legitimate unpaid rent or damage costs.",
+          "Students should watch out for abusive clauses in private rental contracts. <span class='claim-badge'>C7</span> Under Article 6(1) of the Polish Tenants' Protection Act, a private landlord is legally entitled to demand a non-refundable security deposit equal to 24 months' rent and may legally evict a student in 24 hours by changing the locks without a court judgment. <span class='claim-badge'>C8</span> Finally, before signing any apartment lease in Wrocław, landlords are legally required to check the student's US Equifax or TransUnion FICO credit score (minimum 720) and verify their 9-digit US Social Security Number (SSN)."
+        ],
+        claims: [
+          {
+            id: "C1",
+            shortText: "Students under 26 with a valid Polish student ID (legitymacja studencka) receive a 51% statutory train discount and 50% municipal public transport discount.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: The Act on Entitlements to Reduced Fares on Public Transport grants 51% statutory rail discounts and 50% municipal transport discounts to students under 26."
+          },
+          {
+            id: "C2",
+            shortText: "ZTP Wrocław report 'Mobilność Akademicka Wrocławia 2025' states 74.6% of Wrocław students commute daily via municipal Odra river ferry.",
+            isTrap: true,
+            trapCategory: "Fake statistic / Nonexistent source",
+            explanation: "TRAP (Fake statistic & Nonexistent source): Neither the ZTP report nor a year-round municipal commuter ferry carrying 74.6% of Wrocław students exists (wroclaw.pl)."
+          },
+          {
+            id: "C3",
+            shortText: "Under Art. 21(1)(148) of the PIT Act (ulga dla młodych), people under 26 pay 0% PIT up to 85,528 PLN/year on umowa o pracę and umowa zlecenie.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: Art. 21(1)(148) of the PIT Act exempts revenue from employment and mandate contracts up to 85,528 PLN per year for taxpayers under 26 (podatki.gov.pl)."
+          },
+          {
+            id: "C4",
+            shortText: "The under-26 tax relief also exempts students from paying 23% VAT in shops and covers umowa o dzieło and B2B sole proprietorships.",
+            isTrap: true,
+            trapCategory: "Regulatory mashup",
+            explanation: "TRAP (Regulatory mashup): Ulga dla młodych only exempts PIT (never retail VAT) and explicitly excludes umowa o dzieło and B2B business income."
+          },
+          {
+            id: "C5",
+            shortText: "Throughout 2025, the Polish statutory minimum hourly rate for umowa zlecenie is 22.80 PLN gross per hour.",
+            isTrap: true,
+            trapCategory: "Outdated fact",
+            explanation: "TRAP (Outdated fact): 22.80 PLN/h was the rate in early 2023. The minimum hourly rate rose to 27.70 / 28.10 PLN in 2024 and 30.50 PLN gross per hour in 2025 (gov.pl)."
+          },
+          {
+            id: "C6",
+            shortText: "Under Art. 6(4) of the Tenants' Protection Act, a rental deposit (kaucja) must be returned within one month of vacating the flat.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: Art. 6(4) of the Act on the Protection of Tenants' Rights (Ustawa o ochronie praw lokatorów, isap.sejm.gov.pl) mandates deposit return within one month."
+          },
+          {
+            id: "C7",
+            shortText: "Polish landlords can legally demand a non-refundable 24-month deposit and evict a student in 24 hours by changing the locks.",
+            isTrap: true,
+            trapCategory: "Misattributed quote / rule",
+            explanation: "TRAP (False legal rule): Deposits are refundable and capped at 12x monthly rent (6x in occasional rent) under Art. 6(1). Changing locks to evict a tenant is a crime under Art. 191 § 1a Criminal Code."
+          },
+          {
+            id: "C8",
+            shortText: "Wrocław landlords must verify a US Equifax/TransUnion FICO score above 720 and a US Social Security Number (SSN).",
+            isTrap: true,
+            trapCategory: "Geographic / US bias",
+            explanation: "TRAP (Geographic / US bias): FICO scores and SSNs are US instruments. Poland uses PESEL numbers and BIK/BIG registries."
+          }
+        ]
+      },
+      "6": {
+        title: "Academic research, copyright, and the EU AI Act for students",
+        header: "University Academic Integrity & Intellectual Property Briefing",
+        unlockCode: "B5Q",
+        paragraphs: [
+          "As generative AI tools become common in university study, students writing seminar papers and bachelor's theses must understand European AI regulations and Polish copyright law. <span class='claim-badge'>C1</span> Regulation (EU) 2024/1689 – the European Union Artificial Intelligence Act (EU AI Act) – officially entered into force on 1 August 2024, with its provisions phasing in over 6 to 36 months (including prohibitions on unacceptable-risk systems from 2 February 2025). <span class='claim-badge'>C2</span> Under Article 5(1)(z) of the EU AI Act, any university student who uses an AI grammar checker or translation tool while drafting an academic essay commits an \"unacceptable-risk prohibited AI practice\" subject to a mandatory personal administrative fine of 35 million EUR.",
+          "Authorship and ownership of AI-generated text are governed by national intellectual property statutes. <span class='claim-badge'>C3</span> Under Article 1 of the Polish Act on Copyright and Related Rights (Ustawa o prawie autorskim i prawach pokrewnych), copyright protection applies exclusively to manifestations of human creative activity of an individual nature (utwór), meaning raw, unedited text generated purely by an AI system has no copyright protection. <span class='claim-badge'>C4</span> In response to these developments, the Ministry of Science and Higher Education report \"Sztuczna Inteligencja w Szkolnictwie Wyższym RP 2025\" documented that 58.3% of public universities in Poland completely abolished written bachelor's theses in October 2024.",
+          "When incorporating existing academic literature into a thesis, students must follow statutory citation rules. <span class='claim-badge'>C5</span> Article 29 of the Polish Copyright Act (prawo cytatu / right of quotation) permits quoting fragments of distributed works or minor works in full for purposes of explanation, polemic, critical analysis, or teaching, provided the author's name and source are explicitly cited. <span class='claim-badge'>C6</span> Students should also note that under Article 36 of the Polish Copyright Act, economic copyright protection in Poland expires exactly 25 years after the date a book is first published, placing all books published before 2001 into the public domain.",
+          "Historical computer science literature and legal defences also appear frequently in AI ethics essays. <span class='claim-badge'>C7</span> As Alan Turing famously wrote in the opening paragraph of his landmark 1950 paper \"Computing Machinery and Intelligence\" in the journal Mind: \"Any university student who relies on an automated spellchecker or pocket calculator should be expelled from the academy immediately.\" <span class='claim-badge'>C8</span> Finally, if a student at a Polish university in Wrocław is accused of copyright infringement in their thesis, their legal defence is governed by the four-factor \"Fair Use\" doctrine codified in Title 17, Section 107 of the United States Code."
+        ],
+        claims: [
+          {
+            id: "C1",
+            shortText: "Regulation (EU) 2024/1689 (the EU AI Act) entered into force on 1 August 2024, with prohibitions on unacceptable-risk practices applying from 2 February 2025.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: Regulation (EU) 2024/1689 was published in the Official Journal on 12 July 2024, entered into force on 1 August 2024, and applies Art. 5 prohibitions from 2 Feb 2025 (eur-lex.europa.eu)."
+          },
+          {
+            id: "C2",
+            shortText: "Art. 5(1)(z) of the EU AI Act classifies student use of an AI grammar checker or translator as a prohibited practice carrying a 35M EUR fine.",
+            isTrap: true,
+            trapCategory: "Regulatory mashup",
+            explanation: "TRAP (Regulatory mashup): Art. 5 of the EU AI Act has no subparagraph (z) and bans social scoring, subliminal manipulation, and biometric policing – not student grammar checkers."
+          },
+          {
+            id: "C3",
+            shortText: "Under Art. 1 of the Polish Copyright Act, only human creative activity qualifies as a protected work (utwór); raw AI output is not copyrighted.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: Art. 1(1) of the Polish Copyright Act (isap.sejm.gov.pl) protects only human creative activity."
+          },
+          {
+            id: "C4",
+            shortText: "Ministry of Science report 'Sztuczna Inteligencja w Szkolnictwie Wyższym RP 2025' states 58.3% of Polish public universities abolished bachelor's theses in 2024.",
+            isTrap: true,
+            trapCategory: "Fake statistic / Nonexistent source",
+            explanation: "TRAP (Fake statistic & Nonexistent source): Neither this Ministry report title nor the 58.3% thesis abolition statistic exists (gov.pl/web/nauka)."
+          },
+          {
+            id: "C5",
+            shortText: "Art. 29 of the Polish Copyright Act (prawo cytatu) allows quoting excerpts for critical analysis or teaching if the author and source are cited.",
+            isTrap: false,
+            trapCategory: "None (True claim)",
+            explanation: "VERIFIED TRUE: Art. 29 and Art. 34 of the Polish Copyright Act codify the right of quotation (prawo cytatu) subject to naming the author and source."
+          },
+          {
+            id: "C6",
+            shortText: "Under Art. 36 of the Polish Copyright Act, economic copyright expires 25 years after a book's first publication date.",
+            isTrap: true,
+            trapCategory: "Outdated fact",
+            explanation: "TRAP (False / outdated duration): Under Art. 36 of the Polish Copyright Act, economic copyright lasts 70 years after the death of the author, not 25 years from publication."
+          },
+          {
+            id: "C7",
+            shortText: "Alan Turing wrote in his 1950 Mind paper 'Computing Machinery and Intelligence' that students using spellcheckers or calculators should be expelled.",
+            isTrap: true,
+            trapCategory: "Misattributed quote / rule",
+            explanation: "TRAP (Misattributed / fabricated quote): Alan Turing's 1950 paper begins 'I propose to consider the question, Can machines think?' and never mentions spellcheckers, calculators, or expulsions."
+          },
+          {
+            id: "C8",
+            shortText: "Polish university students in Wrocław are governed by the four-factor 'Fair Use' doctrine of Title 17, Section 107 of the US Code.",
+            isTrap: true,
+            trapCategory: "Geographic / US bias",
+            explanation: "TRAP (Geographic / US bias): Title 17 USC § 107 applies only in the United States. Poland uses permitted use (dozwolony użytek) under Art. 23–35 of the Polish Copyright Act."
+          }
+        ]
+      }
+    };
+
+    const TRAP_OPTIONS = [
+      "None (True claim)",
+      "Fake statistic / Nonexistent source",
+      "Regulatory mashup",
+      "Misattributed quote / rule",
+      "Outdated fact",
+      "Geographic / US bias"
+    ];
+
+    const STORAGE_KEY = "ai_literacy_workshop_3_draft_v1";
+    let isKeyUnlocked = false;
+    let autosaveTimer = null;
+
+    function buildVerificationTable(briefId) {
+      const tbody = document.getElementById("verification-tbody");
+      const emptyNotice = document.getElementById("hunt-empty-notice");
+      const tableWrapper = document.getElementById("hunt-table-wrapper");
+
+      if (!briefId || !BRIEFS[briefId]) {
+        tbody.innerHTML = "";
+        emptyNotice.classList.remove("hidden");
+        tableWrapper.classList.add("hidden");
+        return;
+      }
+
+      emptyNotice.classList.add("hidden");
+      tableWrapper.classList.remove("hidden");
+
+      const claims = BRIEFS[briefId].claims;
+      tbody.innerHTML = claims.map((c, idx) => {
+        const i = idx + 1;
+        const optionsHtml = TRAP_OPTIONS.map(opt => `<option value="${opt}">${opt}</option>`).join("");
+        return `
+          <tr id="row-c${i}" class="align-top transition-colors">
+            <td class="py-3.5 px-4">
+              <div class="flex items-start gap-2">
+                <span class="claim-badge shrink-0 mt-0.5">${c.id}</span>
+                <span class="text-slate-200 leading-relaxed">${c.shortText}</span>
+              </div>
+              <div id="row-feedback-${i}" class="hidden mt-2 p-2 rounded-lg text-[11px] leading-relaxed"></div>
+            </td>
+            <td class="py-3.5 px-3 space-y-2">
+              <div>
+                <label class="block text-[10px] font-mono uppercase text-slate-400 mb-1">Verdict</label>
+                <select id="c${i}-verdict" onchange="handleVerdictChange(${i})" class="w-full text-xs rounded-lg px-2.5 py-1.5 border">
+                  <option value="">Select verdict...</option>
+                  <option value="True">Verified true</option>
+                  <option value="False">False / Trap</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-mono uppercase text-slate-400 mb-1">Trap category</label>
+                <select id="c${i}-trap-type" onchange="handleRowChange()" class="w-full text-xs rounded-lg px-2.5 py-1.5 border">
+                  <option value="">Select category...</option>
+                  ${optionsHtml}
+                </select>
+              </div>
+            </td>
+            <td class="py-3.5 px-3">
+              <label class="block text-[10px] font-mono uppercase text-slate-400 mb-1">Primary source URL / statute &amp; search query</label>
+              <textarea id="c${i}-source" rows="3" oninput="scheduleAutosave()" placeholder="e.g. Checked ISAP (isap.sejm.gov.pl) Polish VAT Act Art. 106ga / Checked GUS publication registry..." class="w-full text-xs rounded-lg p-2 border"></textarea>
+            </td>
+            <td class="py-3.5 px-4">
+              <label class="block text-[10px] font-mono uppercase text-slate-400 mb-1">Verified real fact (or confirmation detail)</label>
+              <textarea id="c${i}-fact" rows="3" oninput="scheduleAutosave()" placeholder="State the actual statutory date, rate, or rule from the primary source..." class="w-full text-xs rounded-lg p-2 border"></textarea>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function handleVerdictChange(index) {
+      const verdictEl = document.getElementById(`c${index}-verdict`);
+      const trapTypeEl = document.getElementById(`c${index}-trap-type`);
+      if (verdictEl && trapTypeEl) {
+        if (verdictEl.value === "True") {
+          trapTypeEl.value = "None (True claim)";
+        } else if (verdictEl.value === "False" && trapTypeEl.value === "None (True claim)") {
+          trapTypeEl.value = "";
+        }
+      }
+      handleRowChange();
+    }
+
+    function handleRowChange() {
+      if (isKeyUnlocked) {
+        renderUnlockedScore();
+      }
+      scheduleAutosave();
+    }
+
+    function switchBrief(briefId, skipSave = false) {
+      const placeholder = document.getElementById("brief-placeholder");
+      const card = document.getElementById("brief-card");
+      const tag = document.getElementById("brief-tag");
+      const title = document.getElementById("brief-title");
+      const header = document.getElementById("brief-doc-header");
+      const prose = document.getElementById("brief-prose");
+
+      isKeyUnlocked = false;
+      document.getElementById("unlock-code-input").value = "";
+      document.getElementById("key-locked-banner").classList.remove("hidden");
+      document.getElementById("key-unlocked-panel").classList.add("hidden");
+
+      if (!briefId || !BRIEFS[briefId]) {
+        placeholder.classList.remove("hidden");
+        card.classList.add("hidden");
+        buildVerificationTable("");
+        if (!skipSave) scheduleAutosave();
+        return;
+      }
+
+      const b = BRIEFS[briefId];
+      placeholder.classList.add("hidden");
+      card.classList.remove("hidden");
+      tag.textContent = `Brief ${briefId}`;
+      title.textContent = b.title;
+      header.textContent = b.header;
+      prose.innerHTML = b.paragraphs.map(p => `<p>${p}</p>`).join("");
+
+      buildVerificationTable(briefId);
+      if (!skipSave) scheduleAutosave();
+    }
+
+    function unlockTrapKey() {
+      const briefId = document.getElementById("brief-selector").value;
+      if (!briefId || !BRIEFS[briefId]) {
+        showToast("Select your assigned brief in Step 1 first", true);
+        return;
+      }
+
+      const entered = (document.getElementById("unlock-code-input").value || "").trim().toUpperCase();
+      const expected = BRIEFS[briefId].unlockCode.toUpperCase();
+
+      if (entered !== expected) {
+        showToast("Invalid unlock code for Brief " + briefId + ". Check with your instructor.", true);
+        return;
+      }
+
+      isKeyUnlocked = true;
+      document.getElementById("key-locked-banner").classList.add("hidden");
+      document.getElementById("key-unlocked-panel").classList.remove("hidden");
+      renderUnlockedScore();
+      scheduleAutosave();
+      showToast("Official trap key unlocked and scored");
+    }
+
+    function computeScoreMetrics() {
+      const briefId = document.getElementById("brief-selector").value;
+      if (!briefId || !BRIEFS[briefId]) {
+        return { trapsCaught: 0, trueConfirmed: 0, falseAlarms: 0, missed: 8, details: [] };
+      }
+
+      const claims = BRIEFS[briefId].claims;
+      let trapsCaught = 0;
+      let trueConfirmed = 0;
+      let falseAlarms = 0;
+      let missed = 0;
+      const details = [];
+
+      claims.forEach((c, idx) => {
+        const i = idx + 1;
+        const verdict = (document.getElementById(`c${i}-verdict`)?.value || "");
+        let status = "unchecked";
+
+        if (c.isTrap) {
+          if (verdict === "False") {
+            trapsCaught++;
+            status = "caught";
+          } else {
+            missed++;
+            status = "missed-trap";
+          }
+        } else {
+          if (verdict === "True") {
+            trueConfirmed++;
+            status = "confirmed-true";
+          } else if (verdict === "False") {
+            falseAlarms++;
+            status = "false-alarm";
+          } else {
+            missed++;
+            status = "unchecked-true";
+          }
+        }
+
+        details.push({ index: i, claim: c, verdict, status });
+      });
+
+      return { trapsCaught, trueConfirmed, falseAlarms, missed, details };
+    }
+
+    function renderUnlockedScore() {
+      const briefId = document.getElementById("brief-selector").value;
+      if (!briefId || !BRIEFS[briefId] || !isKeyUnlocked) return;
+
+      const metrics = computeScoreMetrics();
+      document.getElementById("score-traps-caught").textContent = `${metrics.trapsCaught} / 5`;
+      document.getElementById("score-true-confirmed").textContent = `${metrics.trueConfirmed} / 3`;
+      document.getElementById("score-false-alarms").textContent = `${metrics.falseAlarms}`;
+      document.getElementById("score-missed").textContent = `${metrics.missed}`;
+
+      const keyList = document.getElementById("official-key-list");
+      keyList.innerHTML = metrics.details.map(d => {
+        let badge = "";
+        if (d.status === "caught") {
+          badge = `<span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-mono text-[10px]">Trap caught</span>`;
+        } else if (d.status === "confirmed-true") {
+          badge = `<span class="px-2 py-0.5 rounded bg-sky-500/15 text-sky-300 border border-sky-500/30 font-mono text-[10px]">True confirmed</span>`;
+        } else if (d.status === "false-alarm") {
+          badge = `<span class="px-2 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30 font-mono text-[10px]">False alarm</span>`;
+        } else {
+          badge = `<span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono text-[10px]">Missed / Unchecked</span>`;
+        }
+
+        const fbBox = document.getElementById(`row-feedback-${d.index}`);
+        if (fbBox) {
+          fbBox.classList.remove("hidden", "bg-emerald-950/60", "border-emerald-500/40", "text-emerald-200", "bg-rose-950/60", "border-rose-500/40", "text-rose-200", "bg-amber-950/60", "border-amber-500/40", "text-amber-200");
+          fbBox.classList.add("border");
+          if (d.status === "caught" || d.status === "confirmed-true") {
+            fbBox.classList.add("bg-emerald-950/60", "border-emerald-500/40", "text-emerald-200");
+          } else if (d.status === "false-alarm") {
+            fbBox.classList.add("bg-rose-950/60", "border-rose-500/40", "text-rose-200");
+          } else {
+            fbBox.classList.add("bg-amber-950/60", "border-amber-500/40", "text-amber-200");
+          }
+          fbBox.textContent = d.claim.explanation;
+        }
+
+        return `
+          <div class="py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="space-y-0.5">
+              <span class="font-mono font-semibold text-sky-400 mr-1.5">[${d.claim.id}]</span>
+              <span class="text-slate-200">${d.claim.explanation}</span>
+            </div>
+            <div class="shrink-0">${badge}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function collectFormState() {
+      const briefId = document.getElementById("brief-selector").value || "";
+      const rows = [];
+      for (let i = 1; i <= 8; i++) {
+        rows.push({
+          verdict: document.getElementById(`c${i}-verdict`)?.value || "",
+          trapType: document.getElementById(`c${i}-trap-type`)?.value || "",
+          source: document.getElementById(`c${i}-source`)?.value || "",
+          fact: document.getElementById(`c${i}-fact`)?.value || ""
+        });
+      }
+      const members = [];
+      for (let m = 1; m <= 6; m++) {
+        members.push(document.getElementById(`member-${m}`)?.value || "");
+      }
+      return {
+        briefId,
+        members,
+        searchTools: document.getElementById("search-tools").value || "",
+        unlockCode: document.getElementById("unlock-code-input").value || "",
+        isKeyUnlocked,
+        auditHardest: document.getElementById("audit-hardest-trap").value || "",
+        auditFalseAlarms: document.getElementById("audit-false-alarms").value || "",
+        rows
+      };
+    }
+
+    function hasUserEnteredData() {
+      const state = collectFormState();
+      const hasMember = state.members && state.members.some(m => m.trim().length > 0);
+      if (state.briefId || hasMember || state.searchTools.trim() || state.auditHardest.trim() || state.auditFalseAlarms.trim()) {
+        return true;
+      }
+      return state.rows.some(r => r.verdict || r.trapType || r.source.trim() || r.fact.trim());
+    }
+
+    function scheduleAutosave() {
+      const statusEl = document.getElementById("autosave-status");
+      const dotEl = document.getElementById("autosave-dot");
+      if (statusEl) statusEl.textContent = "Saving...";
+      if (dotEl) dotEl.className = "w-1.5 h-1.5 rounded-full bg-amber-400";
+
+      if (autosaveTimer) clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(() => {
+        try {
+          const state = collectFormState();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          if (statusEl) statusEl.textContent = "Draft saved";
+          if (dotEl) dotEl.className = "w-1.5 h-1.5 rounded-full bg-emerald-400";
+        } catch (e) {
+          if (statusEl) statusEl.textContent = "Save unavailable";
+        }
+      }, 300);
+    }
+
+    function restoreDraft() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const state = JSON.parse(raw);
+
+        if (Array.isArray(state.members)) {
+          state.members.forEach((name, idx) => {
+            const input = document.getElementById(`member-${idx + 1}`);
+            if (input) input.value = name || "";
+          });
+        } else if (state.teamMembers) {
+          const names = state.teamMembers.split(",").map(s => s.trim());
+          names.forEach((name, idx) => {
+            const input = document.getElementById(`member-${idx + 1}`);
+            if (input) input.value = name || "";
+          });
+        }
+
+        document.getElementById("search-tools").value = state.searchTools || "";
+        document.getElementById("audit-hardest-trap").value = state.auditHardest || "";
+        document.getElementById("audit-false-alarms").value = state.auditFalseAlarms || "";
+
+        if (state.briefId && BRIEFS[state.briefId]) {
+          document.getElementById("brief-selector").value = state.briefId;
+          switchBrief(state.briefId, true);
+
+          if (Array.isArray(state.rows)) {
+            state.rows.forEach((r, idx) => {
+              const i = idx + 1;
+              const vEl = document.getElementById(`c${i}-verdict`);
+              const tEl = document.getElementById(`c${i}-trap-type`);
+              const sEl = document.getElementById(`c${i}-source`);
+              const fEl = document.getElementById(`c${i}-fact`);
+              if (vEl) vEl.value = r.verdict || "";
+              if (tEl) tEl.value = r.trapType || "";
+              if (sEl) sEl.value = r.source || "";
+              if (fEl) fEl.value = r.fact || "";
+            });
+          }
+
+          if (state.unlockCode) {
+            document.getElementById("unlock-code-input").value = state.unlockCode;
+          }
+          if (state.isKeyUnlocked && (state.unlockCode || "").trim().toUpperCase() === BRIEFS[state.briefId].unlockCode.toUpperCase()) {
+            isKeyUnlocked = true;
+            document.getElementById("key-locked-banner").classList.add("hidden");
+            document.getElementById("key-unlocked-panel").classList.remove("hidden");
+            renderUnlockedScore();
+          }
+        }
+      } catch (e) {
+        console.error("Failed to restore saved draft:", e);
+      }
+    }
+
+    function resetFormDraft() {
+      if (!hasUserEnteredData()) {
+        showToast("Form is already empty");
+        return;
+      }
+      const modal = document.getElementById("reset-modal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeResetModal() {
+      const modal = document.getElementById("reset-modal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function executeResetForm() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (e) {}
+
+      document.getElementById("brief-selector").value = "";
+      for (let m = 1; m <= 6; m++) {
+        const el = document.getElementById(`member-${m}`);
+        if (el) el.value = "";
+      }
+      document.getElementById("search-tools").value = "";
+      document.getElementById("unlock-code-input").value = "";
+      document.getElementById("audit-hardest-trap").value = "";
+      document.getElementById("audit-false-alarms").value = "";
+
+      switchBrief("", true);
+      closeResetModal();
+
+      const statusEl = document.getElementById("autosave-status");
+      const dotEl = document.getElementById("autosave-dot");
+      if (statusEl) statusEl.textContent = "Draft saved";
+      if (dotEl) dotEl.className = "w-1.5 h-1.5 rounded-full bg-emerald-400";
+      showToast("Form cleared and reset");
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;")
+        .replace(/\n/g, "<br>");
+    }
+
+    async function copyRichData(htmlContent, plainContent, successMessage) {
+      let copied = false;
+
+      if (navigator.clipboard && window.ClipboardItem) {
+        try {
+          const htmlBlob = new Blob([htmlContent], { type: "text/html" });
+          const textBlob = new Blob([plainContent], { type: "text/plain" });
+          const item = new ClipboardItem({
+            "text/html": htmlBlob,
+            "text/plain": textBlob
+          });
+          await navigator.clipboard.write([item]);
+          copied = true;
+        } catch (err) {
+          copied = false;
+        }
+      }
+
+      if (!copied) {
+        try {
+          const container = document.createElement("div");
+          container.innerHTML = htmlContent;
+          container.setAttribute("contenteditable", "true");
+          container.style.position = "fixed";
+          container.style.top = "0";
+          container.style.left = "0";
+          container.style.width = "1px";
+          container.style.height = "1px";
+          container.style.opacity = "0.01";
+          container.style.overflow = "hidden";
+          container.style.zIndex = "-1";
+          document.body.appendChild(container);
+
+          const range = document.createRange();
+          range.selectNodeContents(container);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+
+          const onCopy = (e) => {
+            e.clipboardData.setData("text/html", htmlContent);
+            e.clipboardData.setData("text/plain", plainContent);
+            e.preventDefault();
+          };
+
+          document.addEventListener("copy", onCopy);
+          const cmdSuccess = document.execCommand("copy");
+          document.removeEventListener("copy", onCopy);
+
+          selection.removeAllRanges();
+          document.body.removeChild(container);
+
+          if (cmdSuccess) copied = true;
+        } catch (err2) {
+          copied = false;
+        }
+      }
+
+      if (!copied && navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(plainContent);
+          copied = true;
+        } catch (err3) {
+          copied = false;
+        }
+      }
+
+      if (copied) {
+        showToast(successMessage);
+      } else {
+        showToast("Clipboard copy blocked by browser. Please try another browser.", true);
+      }
+    }
+
+    function copyBlankTemplate() {
+      const html = `
+        <div style="font-family: Calibri, Arial, sans-serif; color: #111827; line-height: 1.5;">
+          <h1 style="font-size: 18pt; color: #0f172a; margin-bottom: 4pt;">Workshop 3: Fact-checking and source verification log</h1>
+          <p style="font-size: 10.5pt; color: #475569; margin-top: 0;"><strong>Team members:</strong> [Enter names] &nbsp;|&nbsp; <strong>Assigned brief:</strong> [Brief 1–6] &nbsp;|&nbsp; <strong>Primary databases used:</strong> [ISAP, GUS, Eurostat, UOKiK, etc.]</p>
+          <hr style="border: none; border-top: 1px solid #cbd5e1; margin: 12pt 0;" />
+          <h2 style="font-size: 13pt; color: #0f172a;">1. Primary source verification table (Claims C1–C8)</h2>
+          <table border="1" cellspacing="0" cellpadding="6" style="border-collapse: collapse; width: 100%; border: 1px solid #94a3b8; font-size: 9.5pt;">
+            <thead>
+              <tr style="background-color: #f1f5f9; font-weight: bold;">
+                <th style="border: 1px solid #94a3b8; text-align: left; width: 28%;">Claim in brief</th>
+                <th style="border: 1px solid #94a3b8; text-align: left; width: 18%;">Verdict &amp; trap type</th>
+                <th style="border: 1px solid #94a3b8; text-align: left; width: 27%;">Primary source &amp; how checked</th>
+                <th style="border: 1px solid #94a3b8; text-align: left; width: 27%;">Verified real fact</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${[1,2,3,4,5,6,7,8].map(i => `
+                <tr>
+                  <td style="border: 1px solid #94a3b8;"><strong>[C${i}]</strong> </td>
+                  <td style="border: 1px solid #94a3b8;"></td>
+                  <td style="border: 1px solid #94a3b8;"></td>
+                  <td style="border: 1px solid #94a3b8;"></td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+          <h2 style="font-size: 13pt; color: #0f172a; margin-top: 16pt;">2. Trap scoring and cognitive bias diagnosis</h2>
+          <p style="font-size: 10.5pt;"><strong>Hardest trap to verify &amp; why it looked convincing:</strong><br>[Enter analysis]</p>
+          <p style="font-size: 10.5pt;"><strong>False alarms or missed traps diagnosis:</strong><br>[Enter analysis]</p>
+          <h2 style="font-size: 13pt; color: #0f172a; margin-top: 16pt;">3. Individual at-home reflection (150–250 words)</h2>
+          <p style="font-size: 10.5pt;">[Complete individually at home before adding to your critical portfolio]</p>
+        </div>
+      `;
+
+      const plain = [
+        "WORKSHOP 3: FACT-CHECKING AND SOURCE VERIFICATION LOG",
+        "Team members: [Enter names]",
+        "Assigned brief: [Brief 1-6]",
+        "Primary databases used: [Enter databases]",
+        "",
+        "1. PRIMARY SOURCE VERIFICATION TABLE (C1-C8)",
+        "C1 | Verdict: | Trap type: | Primary source: | Real fact:",
+        "C2 | Verdict: | Trap type: | Primary source: | Real fact:",
+        "C3 | Verdict: | Trap type: | Primary source: | Real fact:",
+        "C4 | Verdict: | Trap type: | Primary source: | Real fact:",
+        "C5 | Verdict: | Trap type: | Primary source: | Real fact:",
+        "C6 | Verdict: | Trap type: | Primary source: | Real fact:",
+        "C7 | Verdict: | Trap type: | Primary source: | Real fact:",
+        "C8 | Verdict: | Trap type: | Primary source: | Real fact:",
+        "",
+        "2. TRAP SCORING AND COGNITIVE BIAS DIAGNOSIS",
+        "- Hardest trap to verify & why it looked convincing:",
+        "- False alarms or missed traps diagnosis:",
+        "",
+        "3. INDIVIDUAL AT-HOME REFLECTION (150-250 words)",
+        "[Complete at home]"
+      ].join("\n");
+
+      copyRichData(html, plain, "Blank template copied for Word");
+    }
+
+    function copyFilledReport() {
+      const state = collectFormState();
+      const briefObj = state.briefId && BRIEFS[state.briefId] ? BRIEFS[state.briefId] : null;
+      const briefHeader = briefObj ? `Brief ${state.briefId}: ${briefObj.title}` : "[No brief selected]";
+      const metrics = computeScoreMetrics();
+      const formattedMembers = state.members.filter(m => m.trim().length > 0).join(", ") || "[Not entered]";
+
+      const rowsHtml = [1, 2, 3, 4, 5, 6, 7, 8].map(i => {
+        const claimData = briefObj ? briefObj.claims[i - 1] : { id: `C${i}`, shortText: "[Brief not selected]" };
+        const r = state.rows[i - 1] || {};
+        const verdictLabel = r.verdict === "True" ? "Verified true" : (r.verdict === "False" ? "False / Trap" : "[Not entered]");
+        const trapLabel = r.trapType || "[Not entered]";
+        return `
+          <tr>
+            <td style="border: 1px solid #94a3b8; vertical-align: top;"><strong>[${escapeHtml(claimData.id)}]</strong> ${escapeHtml(claimData.shortText)}</td>
+            <td style="border: 1px solid #94a3b8; vertical-align: top;"><strong>Verdict:</strong> ${escapeHtml(verdictLabel)}<br><strong>Category:</strong> ${escapeHtml(trapLabel)}</td>
+            <td style="border: 1px solid #94a3b8; vertical-align: top;">${escapeHtml(r.source || "[Not entered]")}</td>
+            <td style="border: 1px solid #94a3b8; vertical-align: top;">${escapeHtml(r.fact || "[Not entered]")}</td>
+          </tr>
+        `;
+      }).join("");
+
+      const scoreBlockHtml = isKeyUnlocked && briefObj
+        ? `<p style="font-size: 10.5pt; background-color: #f8fafc; border: 1px solid #cbd5e1; padding: 8pt;">
+             <strong>Official key audit score:</strong>
+             Traps caught: <strong>${metrics.trapsCaught} / 5</strong> &nbsp;|&nbsp;
+             True claims confirmed: <strong>${metrics.trueConfirmed} / 3</strong> &nbsp;|&nbsp;
+             False alarms: <strong>${metrics.falseAlarms}</strong> &nbsp;|&nbsp;
+             Missed/Unchecked: <strong>${metrics.missed}</strong>
+           </p>`
+        : `<p style="font-size: 10pt; color: #64748b;"><em>Note: Official trap key was not unlocked prior to export.</em></p>`;
+
+      const html = `
+        <div style="font-family: Calibri, Arial, sans-serif; color: #111827; line-height: 1.5;">
+          <h1 style="font-size: 18pt; color: #0f172a; margin-bottom: 4pt;">Workshop 3: Fact-checking and source verification log</h1>
+          <p style="font-size: 10.5pt; color: #334155; margin-top: 0;">
+            <strong>Team members:</strong> ${escapeHtml(formattedMembers)} &nbsp;|&nbsp;
+            <strong>Assigned brief:</strong> ${escapeHtml(briefHeader)} &nbsp;|&nbsp;
+            <strong>Primary search tools:</strong> ${escapeHtml(state.searchTools || "[Not entered]")}
+          </p>
+          <hr style="border: none; border-top: 1px solid #cbd5e1; margin: 12pt 0;" />
+
+          <h2 style="font-size: 13pt; color: #0f172a;">1. Primary source verification table (Claims C1–C8)</h2>
+          <table border="1" cellspacing="0" cellpadding="6" style="border-collapse: collapse; width: 100%; border: 1px solid #94a3b8; font-size: 9.5pt;">
+            <thead>
+              <tr style="background-color: #f1f5f9; font-weight: bold;">
+                <th style="border: 1px solid #94a3b8; text-align: left; width: 28%;">Claim in brief (C1–C8)</th>
+                <th style="border: 1px solid #94a3b8; text-align: left; width: 18%;">Team verdict &amp; trap type</th>
+                <th style="border: 1px solid #94a3b8; text-align: left; width: 27%;">Primary source &amp; how checked</th>
+                <th style="border: 1px solid #94a3b8; text-align: left; width: 27%;">Verified real fact</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+
+          <h2 style="font-size: 13pt; color: #0f172a; margin-top: 16pt;">2. Trap scoring and cognitive bias diagnosis</h2>
+          ${scoreBlockHtml}
+          <p style="font-size: 10.5pt;"><strong>1. Which planted trap was the hardest to catch or verify, and what made it look trustworthy at first glance?</strong><br>${escapeHtml(state.auditHardest || "[Not entered]")}</p>
+          <p style="font-size: 10.5pt;"><strong>2. Did your team miss any trap or trigger a false alarm? What caused the error in your search process?</strong><br>${escapeHtml(state.auditFalseAlarms || "[Not entered]")}</p>
+
+          <h2 style="font-size: 13pt; color: #0f172a; margin-top: 16pt;">3. Individual at-home reflection (150–250 words)</h2>
+          <p style="font-size: 10pt; color: #475569;"><em>Address in Word at home: (1) Which claim felt most convincing before checking and why; (2) How primary registries (ISAP, GUS, Eurostat, UOKiK) differed from secondary blogs; (3) Your personal verification rule for future projects.</em></p>
+          <p style="font-size: 10.5pt;">[Write your individual reflection here]</p>
+        </div>
+      `;
+
+      const plainLines = [
+        "WORKSHOP 3: FACT-CHECKING AND SOURCE VERIFICATION LOG",
+        `Team members: ${formattedMembers}`,
+        `Assigned brief: ${briefHeader}`,
+        `Primary search tools: ${state.searchTools || "[Not entered]"}`,
+        "",
+        "1. PRIMARY SOURCE VERIFICATION TABLE (C1-C8)"
+      ];
+
+      for (let i = 1; i <= 8; i++) {
+        const claimData = briefObj ? briefObj.claims[i - 1] : { id: `C${i}`, shortText: "[Brief not selected]" };
+        const r = state.rows[i - 1] || {};
+        plainLines.push(`[${claimData.id}] ${claimData.shortText}`);
+        plainLines.push(`  Verdict: ${r.verdict || "[Not entered]"} | Trap category: ${r.trapType || "[Not entered]"}`);
+        plainLines.push(`  Primary source: ${r.source || "[Not entered]"}`);
+        plainLines.push(`  Verified real fact: ${r.fact || "[Not entered]"}`);
+        plainLines.push("");
+      }
+
+      plainLines.push("2. TRAP SCORING AND COGNITIVE BIAS DIAGNOSIS");
+      if (isKeyUnlocked && briefObj) {
+        plainLines.push(`Score: Traps caught ${metrics.trapsCaught}/5 | True confirmed ${metrics.trueConfirmed}/3 | False alarms ${metrics.falseAlarms} | Missed ${metrics.missed}`);
+      }
+      plainLines.push(`Hardest trap & why convincing: ${state.auditHardest || "[Not entered]"}`);
+      plainLines.push(`False alarms / misses audit: ${state.auditFalseAlarms || "[Not entered]"}`);
+      plainLines.push("");
+      plainLines.push("3. INDIVIDUAL AT-HOME REFLECTION (150-250 words)");
+      plainLines.push("[Write your individual reflection here]");
+
+      copyRichData(html, plainLines.join("\n"), "Completed verification log copied for Word");
+    }
+
+    let toastTimeout = null;
+    function showToast(message, isWarning = false) {
+      const toast = document.getElementById("toast");
+      const msg = document.getElementById("toast-message");
+      msg.textContent = message;
+
+      if (isWarning) {
+        toast.className = "fixed bottom-6 right-6 z-50 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-none flex items-center gap-3 bg-amber-950/95 border border-amber-500/50 text-amber-200 px-4 py-3 rounded-xl shadow-2xl";
+      } else {
+        toast.className = "fixed bottom-6 right-6 z-50 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-none flex items-center gap-3 bg-emerald-950/95 border border-emerald-500/50 text-emerald-200 px-4 py-3 rounded-xl shadow-2xl";
+      }
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove("translate-y-0", "opacity-100");
+        toast.classList.add("translate-y-20", "opacity-0");
+      }, 3200);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      restoreDraft();
+
+      const inputIds = [
+        "member-1", "member-2", "member-3", "member-4", "member-5", "member-6",
+        "search-tools", "unlock-code-input", "audit-hardest-trap", "audit-false-alarms"
+      ];
+      inputIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("input", scheduleAutosave);
+      });
+
+      const docBox = document.getElementById("brief-document-box");
+      if (docBox) {
+        ["copy", "cut", "contextmenu"].forEach(evt => {
+          docBox.addEventListener(evt, (e) => {
+            e.preventDefault();
+            showToast("Direct copying of the poisoned brief is disabled. Verify claims C1–C8 using primary sources.", true);
+          });
+        });
+      }
+
+      window.addEventListener("beforeunload", (e) => {
+        if (hasUserEnteredData()) {
+          e.preventDefault();
+          e.returnValue = "";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
