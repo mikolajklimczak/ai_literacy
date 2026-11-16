@@ -1,0 +1,2302 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workshop 4: Spotting manipulation – Student guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        surface: {
+                            950: '#090d16',
+                            900: '#0f1623',
+                            850: '#151e2f',
+                            800: '#1e293b',
+                            700: '#334155',
+                            600: '#475569',
+                        },
+                        accent: {
+                            DEFAULT: '#38bdf8',
+                            hover: '#0284c7',
+                            muted: 'rgba(56, 189, 248, 0.12)',
+                        },
+                        emeraldAccent: '#10b981',
+                        amberAccent: '#f59e0b',
+                        roseAccent: '#f43f5e',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #090d16;
+            color: #e2e8f0;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f1623;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        input[type="text"], textarea, select {
+            background-color: #151e2f;
+            border-color: #334155;
+            color: #f8fafc;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+        }
+        input[type="text"]:disabled, textarea:disabled, select:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            background-color: #0f1623;
+        }
+        /* Live Publication Preview Themes */
+        .pub-preview-academic {
+            background-color: #ffffff;
+            color: #0f172a;
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+        .pub-preview-brochure {
+            background-color: #f8fafc;
+            color: #0f172a;
+            font-family: 'Inter', sans-serif;
+        }
+        .pub-preview-press {
+            background-color: #fafaf9;
+            color: #1c1917;
+            font-family: 'Inter', sans-serif;
+        }
+        /* Toast notification */
+        #toast {
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(16px);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Modal backdrop */
+        #reset-modal {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+        #reset-modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        #reset-modal-card {
+            transform: scale(0.95);
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #reset-modal.open #reset-modal-card {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-sky-500/30 selection:text-sky-200">
+
+    <!-- Top Navigation Bar (Pinned, matching W1-W3) -->
+    <header class="sticky top-0 z-40 bg-surface-950/95 backdrop-blur-md border-b border-surface-800">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-8 h-8 rounded-lg bg-accent-muted border border-sky-500/30 flex items-center justify-center text-accent font-mono font-semibold text-sm shrink-0">
+                    W4
+                </div>
+                <div class="min-w-0">
+                    <h1 class="text-sm sm:text-base font-semibold text-white truncate">Workshop 4: Spotting manipulation</h1>
+                    <p class="text-xs text-slate-400 hidden sm:block truncate">AI literacy and critical thinking</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+                <!-- Autosave Indicator + Reset Trigger -->
+                <div id="autosave-status" class="hidden md:flex items-center gap-1.5 text-xs text-slate-400 px-2.5 py-1.5 rounded-lg bg-surface-900 border border-surface-800 whitespace-nowrap" title="Your work is automatically saved in this browser">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emeraldAccent inline-block"></span>
+                    <span id="autosave-text">Draft saved</span>
+                </div>
+                <button onclick="openResetModal()" class="text-xs text-slate-400 hover:text-roseAccent px-2 py-1.5 rounded-lg transition-colors whitespace-nowrap" title="Clear all saved inputs">
+                    Reset form
+                </button>
+                <a href="https://www.office.com/launch/word" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-surface-700 transition-colors whitespace-nowrap">
+                    <svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                    <span>Open Word Online</span>
+                </a>
+                <button onclick="copyBlankTemplate()"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-surface-700 transition-colors whitespace-nowrap">
+                    <svg class="w-3.5 h-3.5 text-emeraldAccent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span class="hidden sm:inline">Copy blank template</span>
+                    <span class="sm:hidden">Blank</span>
+                </button>
+                <button onclick="copyCompletedLog()"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-accent hover:bg-accent-hover text-slate-950 font-semibold transition-colors shadow-sm shadow-sky-500/10 whitespace-nowrap">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                    </svg>
+                    <span>Copy completed log</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- Hero & Session Overview -->
+        <section class="space-y-6">
+            <div class="space-y-2">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                    Engineering and auditing persuasive manipulation
+                </h2>
+                <p class="text-slate-400 text-sm sm:text-base max-w-3xl leading-relaxed">
+                    In business and consumer life, manipulation rarely looks like an obvious tabloid lie. Persuasive documents blend real statutory facts with selective framing, omitted baselines, and authoritative visual layout ("the theatre of rigour"). In this workshop, you will first construct a deceptive publication using your AI tool and modular layout blocks, and then conduct a forensic audit on another team's work.
+                </p>
+            </div>
+
+            <!-- 4-Step Overview Bar -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="bg-surface-900 border border-surface-800 rounded-xl p-4">
+                    <div class="flex items-center justify-between text-xs font-mono text-sky-400 mb-1">
+                        <span>STEP 1</span>
+                    </div>
+                    <h3 class="font-semibold text-white text-sm">Format &amp; premise</h3>
+                    <p class="text-xs text-slate-400 mt-1">Select your instructor-assigned format, choose one of three scenarios, and plan your truth-to-manipulation ratio.</p>
+                </div>
+                <div class="bg-surface-900 border border-surface-800 rounded-xl p-4">
+                    <div class="flex items-center justify-between text-xs font-mono text-sky-400 mb-1">
+                        <span>STEP 2</span>
+                    </div>
+                    <h3 class="font-semibold text-white text-sm">Build publication &amp; key</h3>
+                    <p class="text-xs text-slate-400 mt-1">Draft text with your AI tool, assemble styled layout blocks, record one core claim per block in your secret key, and export.</p>
+                </div>
+                <div class="bg-surface-900 border border-surface-800 rounded-xl p-4">
+                    <div class="flex items-center justify-between text-xs font-mono text-sky-400 mb-1">
+                        <span>STEP 3</span>
+                    </div>
+                    <h3 class="font-semibold text-white text-sm">Forensic peer audit</h3>
+                    <p class="text-xs text-slate-400 mt-1">Import another team's <code>.json</code> packet via Microsoft Teams, discover the core claim in each block, and log verdicts.</p>
+                </div>
+                <div class="bg-surface-900 border border-surface-800 rounded-xl p-4">
+                    <div class="flex items-center justify-between text-xs font-mono text-sky-400 mb-1">
+                        <span>STEP 4</span>
+                    </div>
+                    <h3 class="font-semibold text-white text-sm">Reveal &amp; debrief</h3>
+                    <p class="text-xs text-slate-400 mt-1">Unlock your partner's key once with their 4-digit PIN (locking your audit table), compare results, and export to Word.</p>
+                </div>
+            </div>
+
+            <!-- Team & Tools Setup Card (40:60 split matching W3) -->
+            <div class="bg-surface-900/60 border border-surface-800 rounded-xl p-5 flex flex-col md:flex-row gap-6">
+                <div class="md:w-[40%] space-y-2.5">
+                    <h3 class="text-xs font-mono uppercase tracking-wider text-slate-400">Rules of the manipulation ratio</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Effective disinformation hides inside verifiable truth. Every layout block you create must contain <strong class="text-white">exactly one core verifiable claim</strong> (which the auditing team will have to discover on their own). Across your whole publication, you must include at least <strong class="text-rose-300">2 false or manipulated claims</strong> and at least <strong class="text-emerald-300">1 completely true verifiable claim for every 2 false ones</strong>.
+                    </p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        You may include extra true claims beyond the minimum to make the audit harder. Use any conversational AI tool to draft text, and check primary sources (<code>ISAP</code>, <code>GUS</code>, <code>UOKiK</code>, <code>NBP</code>) to anchor your true statements.
+                    </p>
+                </div>
+                <div class="md:w-[60%] space-y-3 border-t md:border-t-0 md:border-l border-surface-800 pt-4 md:pt-0 md:pl-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label for="team-name" class="block text-xs font-medium text-slate-400 mb-1">Team name / Table number</label>
+                            <input type="text" id="team-name" placeholder="e.g., Table 4 – Audit Squad" oninput="triggerAutosave()"
+                                   class="w-full px-3 py-1.5 rounded-lg border text-xs">
+                        </div>
+                        <div>
+                            <label for="ai-tools-used" class="block text-xs font-medium text-slate-400 mb-1">AI tool &amp; verification sources used</label>
+                            <input type="text" id="ai-tools-used" placeholder="e.g., ChatGPT, Claude, ISAP, GUS, UOKiK" oninput="triggerAutosave()"
+                                   class="w-full px-3 py-1.5 rounded-lg border text-xs">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">Group members</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                            <input type="text" id="member-1" placeholder="Member 1" oninput="triggerAutosave()" class="w-full px-2.5 py-1.5 rounded-lg border text-xs">
+                            <input type="text" id="member-2" placeholder="Member 2" oninput="triggerAutosave()" class="w-full px-2.5 py-1.5 rounded-lg border text-xs">
+                            <input type="text" id="member-3" placeholder="Member 3" oninput="triggerAutosave()" class="w-full px-2.5 py-1.5 rounded-lg border text-xs">
+                            <input type="text" id="member-4" placeholder="Member 4" oninput="triggerAutosave()" class="w-full px-2.5 py-1.5 rounded-lg border text-xs">
+                            <input type="text" id="member-5" placeholder="Member 5" oninput="triggerAutosave()" class="w-full px-2.5 py-1.5 rounded-lg border text-xs">
+                            <input type="text" id="member-6" placeholder="Member 6" oninput="triggerAutosave()" class="w-full px-2.5 py-1.5 rounded-lg border text-xs">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 1: Assigned Format & Topic Selection -->
+        <section class="space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+                <div>
+                    <span class="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold">Step 1</span>
+                    <h2 class="text-xl font-bold text-white">Select your assigned format and scenario topic</h2>
+                </div>
+            </div>
+
+            <p class="text-slate-300 text-sm leading-relaxed">
+                Your instructor will assign your team one of three publication formats below. Once assigned, choose one of the three scenario topics inside that format. Selecting a topic automatically fills in the publication title and header metadata in Step 2 so you can begin building your blocks.
+            </p>
+
+            <div class="bg-surface-900 border border-surface-800 rounded-xl p-5 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="assigned-format" class="block text-xs font-semibold uppercase tracking-wider text-sky-400 mb-2">
+                            1. Instructor-assigned format
+                        </label>
+                        <select id="assigned-format" onchange="handleFormatChange(this.value)"
+                                class="w-full px-3.5 py-2.5 rounded-lg border text-sm font-medium bg-surface-850">
+                            <option value="">Choose your assigned format (1–3)...</option>
+                            <option value="format1">Format 1: The "Anti-Textbook" (Academic chapter with a rigged premise)</option>
+                            <option value="format2">Format 2: The "Harmful Practices Guide" (Pseudoscientific advisory brochure)</option>
+                            <option value="format3">Format 3: "Counterfactual Market Crisis" (Multi-source media &amp; PR packet)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="selected-topic" class="block text-xs font-semibold uppercase tracking-wider text-sky-400 mb-2">
+                            2. Scenario topic (3 options per format)
+                        </label>
+                        <select id="selected-topic" onchange="handleTopicChange(this.value)" disabled
+                                class="w-full px-3.5 py-2.5 rounded-lg border text-sm font-medium bg-surface-850 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <option value="">Select an assigned format first...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Dynamic Scenario Brief Display -->
+                <div id="scenario-brief-container">
+                    <div class="bg-surface-850/60 border border-dashed border-surface-700 rounded-xl p-6 text-center space-y-1.5">
+                        <p class="text-sm font-medium text-slate-300">No format and topic selected yet</p>
+                        <p class="text-xs text-slate-400">Select your instructor-assigned format and one of the three topics above to view your premise and drafting instructions.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 2: Modular Layout Builder + Live Ratio Tracker + Secret Author Key -->
+        <section class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+                <div>
+                    <span class="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold">Step 2</span>
+                    <h2 class="text-xl font-bold text-white">Assemble your publication from layout blocks &amp; log your secret key</h2>
+                </div>
+            </div>
+
+            <!-- Live Ratio Enforcement Banner -->
+            <div id="ratio-banner" class="rounded-xl p-4 border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-surface-900 border-amber-500/40">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                        <span id="ratio-status-badge" class="px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            RATIO INCOMPLETE
+                        </span>
+                        <span class="text-sm font-semibold text-white">Truth-to-manipulation tracker (minimum 1 true per 2 false/manipulated)</span>
+                    </div>
+                    <p id="ratio-explanation" class="text-xs text-slate-300">
+                        You need at least <strong>2 false/manipulated blocks</strong> and at least <strong>1 true verifiable block</strong>. Adding a 3rd or 4th false block requires at least 2 true blocks; adding a 5th or 6th requires at least 3 true blocks.
+                    </p>
+                </div>
+                <div class="flex items-center gap-3 shrink-0 font-mono text-xs">
+                    <div class="px-3 py-2 rounded-lg bg-surface-950 border border-surface-800 text-center">
+                        <div class="text-[10px] text-slate-400 uppercase">False / Manip.</div>
+                        <div id="count-false" class="text-base font-bold text-rose-400">0</div>
+                    </div>
+                    <div class="px-3 py-2 rounded-lg bg-surface-950 border border-surface-800 text-center">
+                        <div class="text-[10px] text-slate-400 uppercase">True Anchors</div>
+                        <div id="count-true" class="text-base font-bold text-emerald-400">0</div>
+                    </div>
+                    <div class="px-3 py-2 rounded-lg bg-surface-950 border border-surface-800 text-center">
+                        <div class="text-[10px] text-slate-400 uppercase">Min. True Req.</div>
+                        <div id="count-req-true" class="text-base font-bold text-sky-400">1</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Two-Column Workspace: Left = Block Builder + Author Key | Right = Live Rendered Publication -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+                <!-- LEFT COLUMN: Document Metadata + Block Cards + Author Key (7 cols) -->
+                <div class="lg:col-span-7 space-y-5">
+
+                    <!-- Publication Header & Metadata (Theme enforced by assigned format) -->
+                    <div class="bg-surface-900 border border-surface-800 rounded-xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold">Publication header &amp; metadata</h3>
+                            <span id="enforced-theme-label" class="text-[11px] font-mono text-slate-400">Theme: Academic textbook</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="sm:col-span-2">
+                                <label for="pub-title" class="block text-[11px] font-medium text-slate-400 mb-1">Main publication title</label>
+                                <input type="text" id="pub-title" placeholder="Select a scenario topic in Step 1 or enter a title..." oninput="updatePreviewAndSave()"
+                                       class="w-full px-3 py-1.5 rounded-lg border text-xs font-semibold">
+                            </div>
+                            <div>
+                                <label for="pub-subtitle" class="block text-[11px] font-medium text-slate-400 mb-1">Subtitle / Section tag</label>
+                                <input type="text" id="pub-subtitle" placeholder="e.g., Chapter 4 • Applied Financial Strategy" oninput="updatePreviewAndSave()"
+                                       class="w-full px-3 py-1.5 rounded-lg border text-xs">
+                            </div>
+                            <div>
+                                <label for="pub-author" class="block text-[11px] font-medium text-slate-400 mb-1">Fictional publisher / Institution</label>
+                                <input type="text" id="pub-author" placeholder="e.g., Institute of Managerial Efficiency" oninput="updatePreviewAndSave()"
+                                       class="w-full px-3 py-1.5 rounded-lg border text-xs">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add Block Toolbar -->
+                    <div class="bg-surface-900 border border-surface-800 rounded-xl p-4 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-mono uppercase tracking-wider text-slate-400">+ Add layout block (each block embeds 1 core claim)</span>
+                            <button onclick="loadStarterBlocks()" class="text-[11px] text-sky-400 hover:text-sky-300 underline">Load 5-block starter scaffold</button>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="addBlock('lead')" class="px-2.5 py-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 border border-surface-700 text-xs font-medium text-slate-200 transition-colors">
+                                + Body paragraph
+                            </button>
+                            <button onclick="addBlock('definition')" class="px-2.5 py-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 border border-surface-700 text-xs font-medium text-sky-300 transition-colors">
+                                + Definition / Rule box
+                            </button>
+                            <button onclick="addBlock('chart')" class="px-2.5 py-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 border border-surface-700 text-xs font-medium text-emerald-300 transition-colors">
+                                + CSS bar chart
+                            </button>
+                            <button onclick="addBlock('quote')" class="px-2.5 py-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 border border-surface-700 text-xs font-medium text-amber-300 transition-colors">
+                                + Expert quote / Review
+                            </button>
+                            <button onclick="addBlock('table')" class="px-2.5 py-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 border border-surface-700 text-xs font-medium text-purple-300 transition-colors">
+                                + Comparison table (3x3)
+                            </button>
+                            <button onclick="addBlock('questions')" class="px-2.5 py-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 border border-surface-700 text-xs font-medium text-rose-300 transition-colors">
+                                + Review questions
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Blocks List -->
+                    <div id="blocks-editor-container" class="space-y-4">
+                        <!-- Rendered by JS -->
+                    </div>
+
+                    <!-- Creator Secret Verification PIN (Read-only, randomized once per session and saved in localStorage) -->
+                    <div class="bg-surface-900 border border-surface-800 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h4 class="text-xs font-semibold text-white">Creator team's 4-digit unlock PIN</h4>
+                            <p class="text-[11px] text-slate-400">Automatically generated for your session. Share this PIN with your partner team in Step 4 so they can unlock your secret key once.</p>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span id="author-pin-display" class="w-24 px-3 py-1.5 rounded-lg bg-surface-950 border border-sky-500/40 font-mono text-sm font-bold text-center text-sky-400 select-all">
+                                ----
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Live Typeset Publication Preview + Peer Packet Export (5 cols) -->
+                <div class="lg:col-span-5 lg:sticky lg:top-20 space-y-4">
+                    <div class="bg-surface-900 border border-surface-800 rounded-2xl p-4 space-y-3 shadow-xl">
+                        <div class="flex items-center justify-between border-b border-surface-800 pb-2.5">
+                            <span class="text-xs font-mono uppercase tracking-wider text-emeraldAccent font-semibold">Live publication preview</span>
+                            <span class="text-[11px] text-slate-400">Clean view</span>
+                        </div>
+
+                        <!-- Rendered Paper Document -->
+                        <div id="live-publication-preview" class="rounded-xl p-5 border border-slate-300 shadow-inner max-h-[600px] overflow-y-auto space-y-4 pub-preview-academic">
+                            <!-- Rendered by JS -->
+                        </div>
+
+                        <!-- Peer Exchange Export Buttons (Primary JSON + Smaller Download PDF Button) -->
+                        <div class="pt-3 border-t border-surface-800 space-y-2">
+                            <div class="text-xs font-semibold text-white">Send your publication to another group (without answer key):</div>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                                <button onclick="downloadPeerPacketJSON()" class="flex-grow flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-semibold transition-colors shadow">
+                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                    </svg>
+                                    <span>Download peer packet (.json)</span>
+                                </button>
+                                <button onclick="downloadCleanPublicationPDF()" class="shrink-0 flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-[11px] font-medium text-emerald-300 transition-colors" title="Open print dialog to save clean publication as PDF">
+                                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <span>Download PDF</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 3: Forensic Audit of Partner Team's Publication -->
+        <section class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-800 pb-3">
+                <div>
+                    <span class="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold">Step 3</span>
+                    <h2 class="text-xl font-bold text-white">Import and audit another team's publication</h2>
+                </div>
+                <span class="text-xs font-mono text-amber-300 bg-amber-950/40 px-3 py-1.5 rounded-lg border border-amber-500/30 self-start sm:self-auto">
+                    1 core claim per block • Discover &amp; verify each block
+                </span>
+            </div>
+
+            <p class="text-slate-300 text-sm leading-relaxed">
+                Receive the peer packet file (<code>.json</code>) from another team via Microsoft Teams and upload it below. Each block contains <strong>one core verifiable claim</strong> embedded in the text, chart, or table – your team must identify that claim, record it in the <strong>Claim</strong> column, verify whether it is true or manipulated, and explain your findings in <strong>Comments</strong>. Complete the entire table before unlocking the key in Step 4 – once unlocked, your audit answers are locked permanently.
+            </p>
+
+            <!-- Import Partner Packet File Input -->
+            <div class="bg-surface-900 border border-surface-800 rounded-xl p-5">
+                <label for="peer-json-file" class="block text-xs font-semibold uppercase tracking-wider text-sky-400 mb-2">
+                    Upload partner's .json packet file from Teams
+                </label>
+                <input type="file" id="peer-json-file" accept=".json" onchange="handlePeerFileUpload(event)"
+                       class="block w-full text-xs text-slate-300 file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-500 file:text-slate-950 hover:file:bg-sky-400 cursor-pointer bg-surface-850 rounded-lg border border-surface-700 p-1">
+            </div>
+
+            <!-- Partner Publication Viewer + Forensic Audit Table -->
+            <div id="peer-audit-workspace" class="space-y-6">
+                <!-- Rendered by renderPeerAuditWorkspace() -->
+            </div>
+        </section>
+
+        <!-- STEP 4: Reveal Partner Key & Debrief -->
+        <section class="space-y-6 pb-8">
+            <div class="border-b border-surface-800 pb-3">
+                <span class="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold">Step 4</span>
+                <h2 class="text-xl font-bold text-white">Reveal partner answer key &amp; debrief</h2>
+            </div>
+
+            <!-- Unlock Partner Answer Key Card -->
+            <div class="bg-surface-900 border border-surface-800 rounded-xl p-5 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <h3 class="text-sm font-bold text-white">Unlock creator team's secret key</h3>
+                        <p class="text-xs text-slate-400">
+                            Ask the team whose publication you audited for their 4-digit Unlock PIN. <strong class="text-amber-300">This can only be unlocked once</strong> – doing so permanently locks your Step 3 forensic audit table and generates the official comparison results table for your Word log.
+                        </p>
+                    </div>
+                    <div id="unlock-controls-wrapper" class="flex items-center gap-2 shrink-0">
+                        <input type="text" id="unlock-pin-input" maxlength="4" placeholder="4-digit PIN"
+                               class="w-28 px-3 py-2 rounded-lg border font-mono text-xs text-center">
+                        <button id="reveal-key-btn" onclick="revealPartnerKey()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors">
+                            Reveal key &amp; score
+                        </button>
+                    </div>
+                </div>
+                <div id="audit-score-results" class="hidden pt-3 border-t border-surface-800">
+                    <!-- Rendered once unlocked -->
+                </div>
+            </div>
+
+            <!-- Debrief Reflection Questions -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-surface-900 border border-surface-800 rounded-xl p-5 flex flex-col h-full">
+                    <label for="debrief-1" class="block text-sm font-semibold text-white min-h-[2.5rem]">
+                        1. How did visual formatting and true anchoring facts disguise the manipulation?
+                    </label>
+                    <p class="text-xs text-slate-400 mt-1 mb-2">
+                        Discuss which block in your partner's publication looked most credible at first glance and why.
+                    </p>
+                    <textarea id="debrief-1" rows="3" oninput="triggerAutosave()"
+                              placeholder="Explain how layout blocks, charts, or true opening facts affected your initial judgment..."
+                              class="w-full flex-1 px-3 py-2 rounded-lg border text-xs resize-y"></textarea>
+                </div>
+
+                <div class="bg-surface-900 border border-surface-800 rounded-xl p-5 flex flex-col h-full">
+                    <label for="debrief-2" class="block text-sm font-semibold text-white min-h-[2.5rem]">
+                        2. What verification rule prevents false alarms without falling for persuasive framing?
+                    </label>
+                    <p class="text-xs text-slate-400 mt-1 mb-2">
+                        Reflect on the balance between verifying primary sources and avoiding blind scepticism toward true facts.
+                    </p>
+                    <textarea id="debrief-2" rows="3" oninput="triggerAutosave()"
+                              placeholder="Summarize the verification habit your team found most reliable..."
+                              class="w-full flex-1 px-3 py-2 rounded-lg border text-xs resize-y"></textarea>
+                </div>
+            </div>
+
+            <!-- Core Takeaway Banner -->
+            <div class="bg-gradient-to-r from-surface-900 via-sky-950/30 to-surface-900 border border-sky-500/30 rounded-xl p-6 text-center space-y-2">
+                <span class="text-xs font-mono uppercase tracking-widest text-sky-400">Session takeaway</span>
+                <p class="text-base sm:text-lg font-medium text-white max-w-2xl mx-auto">
+                    "Soon you won't be able to tell real from synthetic by looking. Surface fluency and visual layout prove nothing; provenance and baseline verification are your only defense."
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-surface-800/80 bg-surface-950 py-6 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <span>AI literacy and critical thinking • Workshop 4 student guide</span>
+            <div class="flex items-center gap-4">
+                <button onclick="copyCompletedLog()" class="text-sky-400 hover:text-sky-300 font-medium transition-colors">
+                    Copy completed log for Word &rarr;
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom Confirmation Modal for Resetting Form -->
+    <div id="reset-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title">
+        <div id="reset-modal-card" class="bg-surface-900 border border-surface-700 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5">
+            <div class="flex items-start gap-3.5">
+                <div class="w-10 h-10 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <div class="space-y-1">
+                    <h3 id="reset-modal-title" class="text-base font-bold text-white">Reset entire form?</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Are you sure you want to clear all blocks, your author key, the imported peer audit table, and your debrief notes? This action cannot be undone.
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-surface-800">
+                <button onclick="closeResetModal()" class="px-4 py-2 rounded-lg text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-surface-700 transition-colors">
+                    Cancel
+                </button>
+                <button onclick="executeResetForm()" class="px-4 py-2 rounded-lg text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white transition-colors shadow-sm">
+                    Yes, reset form
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 flex items-center gap-2.5 bg-surface-800 border border-sky-500/40 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-xl shadow-black/40">
+        <svg class="w-4 h-4 text-emeraldAccent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span id="toast-message">Copied to clipboard</span>
+    </div>
+
+    <script>
+        // Format & Scenario Data (3 Instructor-Assigned Formats x 3 Subtle, Realistic Topics with High-Level Bulleted Angles)
+        const FORMAT_DATA = {
+            format1: {
+                name: 'Format 1: The "Anti-Textbook" (Academic chapter with a rigged premise)',
+                theme: 'academic',
+                themeLabel: 'Theme: Academic textbook',
+                description: 'Build a formal university textbook section complete with numbered headings, boxed definitions, comparative tables or charts, and review questions. The chapter must look 100% objective while steering students toward a flawed financial or managerial conclusion.',
+                topics: {
+                    '1A': {
+                        title: 'Topic 1A: "Rolling credit velocity: Why utilizing Buy-Now-Pay-Later (BNPL) and revolving micro-credit beats keeping a student emergency fund"',
+                        premise: 'Argue that keeping cash in a traditional savings account loses value to inflation, whereas zero-cash buffers combined with rolling BNPL installments and short-term credit lines maximize purchasing power and build a superior BIK credit score.',
+                        trueAnchorsList: [
+                            'Statutory caps on non-interest consumer credit costs under Polish law',
+                            'Official central bank reference interest rates or historical inflation figures',
+                            'The fact that deferred payment obligations are reported to credit bureaus'
+                        ],
+                        manipulationList: [
+                            'Omitting how multiple active installments affect long-term creditworthiness scoring',
+                            'Presenting historical peak inflation figures as if they reflect current conditions',
+                            'Inventing an institutional liquidity index or study to support zero-cash reserves'
+                        ]
+                    },
+                    '1B': {
+                        title: 'Topic 1B: "Strategic persistence in digital transformation: Why extending over-budget IT implementations outperforms early project termination"',
+                        premise: 'Present a formal management textbook chapter arguing that halting an over-budget ERP or software rollout destroys accumulated organizational learning, so committing extra capital to troubled projects yields higher long-term ROI than pivoting.',
+                        trueAnchorsList: [
+                            'General accounting rules for capitalizing versus expensing software development costs',
+                            'Established baseline statistics on the frequency of IT project schedule overruns',
+                            'Standard definitions of organizational switching costs in enterprise software'
+                        ],
+                        manipulationList: [
+                            'Reframing the sunk-cost fallacy as a positive management principle',
+                            'Fabricating a longitudinal industry study showing high recovery rates on doubled budgets',
+                            'Omitting opportunity costs from a side-by-side financial comparison table'
+                        ]
+                    },
+                    '1C': {
+                        title: 'Topic 1C: "Why registering a B2B sole proprietorship (JDG) is financially superior to a mandate contract (umowa zlecenie) for 19-year-old students"',
+                        premise: 'Present an accounting textbook section proving that first-year university students earning 3,500 PLN/month keep more net income on B2B than on a standard student mandate contract.',
+                        trueAnchorsList: [
+                            'Introductory social security reliefs available to newly registered sole proprietors in Poland',
+                            'Preferential contribution bases during the first two years of business activity',
+                            'Standard deductible business expense rules for self-employed contractors'
+                        ],
+                        manipulationList: [
+                            'Omitting the existing tax and social security exemptions enjoyed by students under 26 on mandate contracts',
+                            'Leaving mandatory monthly health insurance contributions out of the B2B net-income calculation',
+                            'Using a skewed income comparison table tailored to a much higher earnings bracket'
+                        ]
+                    }
+                }
+            },
+            format2: {
+                name: 'Format 2: The "Harmful Practices Guide" (Pseudoscientific advisory brochure)',
+                theme: 'brochure',
+                themeLabel: 'Theme: Executive brochure',
+                description: 'Design an executive advisory brochure or wellness brief that uses academic jargon, boxed research summaries, comparative charts, and testimonials to promote a harmful workplace, academic, or compliance practice.',
+                topics: {
+                    '2A': {
+                        title: 'Topic 2A: "Continuous availability and algorithmic telemetry: Why always-on digital monitoring improves remote team wellbeing"',
+                        premise: 'Advise SME managers that continuous desktop activity tracking, automated 5-minute idle alerts, and evening response expectations reduce coordination anxiety and improve remote employee wellbeing.',
+                        trueAnchorsList: [
+                            'General Polish Labour Code rules governing remote work arrangements and employer oversight',
+                            'Established psychological concepts linking clear expectations to reduced role ambiguity',
+                            'Basic statutory definitions of employee privacy protections'
+                        ],
+                        manipulationList: [
+                            'Misstating procedural notice requirements for introducing electronic workplace monitoring',
+                            'Citing a fabricated regional workplace wellbeing audit with implausible burnout reductions',
+                            'Framing constant surveillance as employee autonomy while omitting turnover risks'
+                        ]
+                    },
+                    '2B': {
+                        title: 'Topic 2B: "Biphasic sleep compression and targeted supplementation: Why cutting night sleep to 4.5 hours improves exam retention"',
+                        premise: 'Use sleep-cycle terminology and real safety thresholds to argue that compressing nocturnal sleep to 4.5 hours paired with scheduled caffeine and supplement micro-dosing outperforms an 8-hour sleep schedule during exam sessions.',
+                        trueAnchorsList: [
+                            'Average length of human ultradian sleep cycles and alternating sleep stages',
+                            'Biochemical mechanism and approximate half-life of caffeine in healthy adults',
+                            'Published European food safety thresholds for single and daily caffeine intake'
+                        ],
+                        manipulationList: [
+                            'Claiming shortened sleep preserves declarative memory consolidation that actually occurs in late sleep stages',
+                            'Inventing a local medical university clinical trial to validate the protocol',
+                            'Omitting cumulative sleep-debt cognitive decline from a short-term performance chart'
+                        ]
+                    },
+                    '2C': {
+                        title: 'Topic 2C: "Automated compliance: Why replacing human quality control and customer support with AI chatbots reduces risk significantly"',
+                        premise: 'Advise e-commerce directors to phase out human compliance review and customer support oversight, delegating refund approvals, contract checks, and consumer complaint handling directly to AI chatbots to lower legal exposure.',
+                        trueAnchorsList: [
+                            'EU AI Act transparency rules requiring disclosure when users interact with an AI system',
+                            'Maximum statutory turnover-based fines for collective consumer interest violations in Poland',
+                            'Basic commercial benefits of automated response speed in first-line support'
+                        ],
+                        manipulationList: [
+                            'Inventing a regulatory fine-reduction clause for errors made by certified automated systems',
+                            'Ignoring established legal liability holding companies responsible for chatbot misrepresentations',
+                            'Skewing cost-versus-risk charts by excluding remediation and reputational penalties'
+                        ]
+                    }
+                }
+            },
+            format3: {
+                name: 'Format 3: "Counterfactual Market Crisis" (Multi-source media & PR packet)',
+                theme: 'press',
+                themeLabel: 'Theme: Press & forum dossier',
+                description: 'Assemble a multi-source dossier documenting a plausible Wrocław business or student-life market shock that never happened. Combine a news report, astroturfed consumer reviews, a data chart, and an official statement that cross-cite each other (circular citation laundering).',
+                topics: {
+                    '3A': {
+                        title: 'Topic 3A: "The 2026 Wrocław student housing freeze: How a municipal student tenancy surcharge triggered a landlord withdrawal"',
+                        premise: 'Create a press and forum dossier claiming the Wrocław City Council passed an emergency Student Tenancy Surcharge, causing 40% of landlords in Krzyki and Śródmieście to freeze deposits or pull listings.',
+                        trueAnchorsList: [
+                            'Statutory deadlines for returning tenant security deposits under Polish tenancy law',
+                            'Official statistical office figures on Wrocław university student enrollment',
+                            'General municipal authority over local residential property tax ceilings'
+                        ],
+                        manipulationList: [
+                            'Circular citation laundering between a fake news report and an invented landlord association survey',
+                            'Coordinated synthetic forum comments amplifying panic over fabricated deposit freezes',
+                            'Presenting a local municipal tax rule as a targeted student rental surcharge'
+                        ]
+                    },
+                    '3B': {
+                        title: 'Topic 3B: "The cashless café boycott around the UEW campus: How default 18% AI tipping prompts drove away students"',
+                        premise: 'Build a dossier claiming a regional coffee chain near UEW lost 60% of its customers in three weeks after introducing default 18% algorithmic peak-hour service prompts and refusing cash payments under 50 PLN.',
+                        trueAnchorsList: [
+                            'Polish statutory rules obliging brick-and-mortar merchants to accept legal tender cash',
+                            'Consumer price transparency rules prohibiting hidden mandatory surcharges',
+                            'General market trends in contactless payment adoption in Polish cities'
+                        ],
+                        manipulationList: [
+                            'Claiming a nonexistent legal exemption for automated or self-service point-of-sale terminals',
+                            'Fabricating a regional gastronomy chamber bulletin to corroborate boycott losses',
+                            'Planting astroturfed customer reviews designed to trigger emotional outrage'
+                        ]
+                    },
+                    '3C': {
+                        title: 'Topic 3C: "The peak-hour transit reform: How Wrocław replaced flat semester discounts with congestion-based student fares"',
+                        premise: 'Assemble a commuter packet claiming Wrocław replaced the flat 50% student transit discount with a congestion tariff where the 50% discount applies only off-peak (10:00–15:00) while morning rush trams carry a mandatory peak surcharge.',
+                        trueAnchorsList: [
+                            'Statutory 50% public transit discount guaranteed to university students under Polish higher education law',
+                            'Current official prices for standard and resident-discounted Wrocław semester tickets',
+                            'General municipal transit operator fare zones and validation rules'
+                        ],
+                        manipulationList: [
+                            'Citing a fabricated city council resolution overriding national statutory student discounts',
+                            'Presenting a manipulated rush-hour passenger capacity chart to justify surge pricing',
+                            'Quoting an invented student government endorsement of the peak-hour surcharge'
+                        ]
+                    }
+                }
+            }
+        };
+
+        const MANIPULATION_TECHNIQUES = [
+            'True & accurate verifiable fact (Anchor)',
+            'Numerical anchoring & omitted baseline',
+            'Theatre of rigour (Fake study / Nonexistent report)',
+            'Regulatory mashup / Misquoted statute article',
+            'Astroturfing & circular citation laundering',
+            'Asymmetric risk framing & false decoy',
+            'Emotional urgency / Outrage trigger'
+        ];
+
+        const STORAGE_KEY = 'ai_literacy_w4_draft_v5';
+        let saveTimeout = null;
+
+        function generateRandomPin() {
+            return Math.floor(1000 + Math.random() * 9000).toString();
+        }
+
+        let appState = {
+            teamName: '',
+            aiToolsUsed: '',
+            members: ['', '', '', '', '', ''],
+            assignedFormat: '',
+            selectedTopic: '',
+            previewTheme: 'academic',
+            pubTitle: '',
+            pubSubtitle: '',
+            pubAuthor: '',
+            authorPin: generateRandomPin(),
+            blocks: [],
+            peerPacket: null,
+            peerAuditRows: [],
+            keyRevealed: false,
+            unlockedScoreSummary: null,
+            debrief1: '',
+            debrief2: ''
+        };
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function stripLeadingNumberPrefix(str) {
+            if (!str) return '';
+            return String(str).replace(/^\d+\.\s*/, '');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            msgEl.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2800);
+        }
+
+        function getFormattedMembersList(membersArr) {
+            const clean = (membersArr || []).map(m => (m || '').trim()).filter(Boolean);
+            return clean.length > 0 ? clean.join(', ') : 'Not specified';
+        }
+
+        function getFormatAndTopicLabels(formatKey, topicKey) {
+            const fmtObj = FORMAT_DATA[formatKey];
+            const fmtName = fmtObj ? fmtObj.name : 'Not specified';
+            const topObj = (fmtObj && topicKey && fmtObj.topics[topicKey]) ? fmtObj.topics[topicKey] : null;
+            const topTitle = topObj ? topObj.title : 'Not specified';
+            return { fmtName, topTitle };
+        }
+
+        function syncEnforcedThemeBadge() {
+            const fmt = FORMAT_DATA[appState.assignedFormat];
+            const theme = fmt ? fmt.theme : (appState.previewTheme || 'academic');
+            const label = fmt
+                ? fmt.themeLabel
+                : (theme === 'brochure' ? 'Theme: Executive brochure' : (theme === 'press' ? 'Theme: Press & forum dossier' : 'Theme: Academic textbook'));
+            appState.previewTheme = theme;
+            const badgeEl = document.getElementById('enforced-theme-label');
+            if (badgeEl) {
+                badgeEl.textContent = label;
+            }
+        }
+
+        // Format & Topic Selection Handlers (Enforces assigned format theme and populates header/metadata)
+        function handleFormatChange(formatKey) {
+            appState.assignedFormat = formatKey;
+            appState.selectedTopic = '';
+            const topicSelect = document.getElementById('selected-topic');
+
+            if (!formatKey || !FORMAT_DATA[formatKey]) {
+                appState.previewTheme = 'academic';
+                syncEnforcedThemeBadge();
+                topicSelect.innerHTML = '<option value="">Select an assigned format first...</option>';
+                topicSelect.disabled = true;
+                renderScenarioBriefBox();
+                updatePreviewAndSave();
+                return;
+            }
+
+            const fmt = FORMAT_DATA[formatKey];
+            appState.previewTheme = fmt.theme;
+            syncEnforcedThemeBadge();
+
+            topicSelect.disabled = false;
+            let opts = '<option value="">Choose one of the 3 scenario topics...</option>';
+            Object.entries(fmt.topics).forEach(([tKey, tVal]) => {
+                opts += `<option value="${tKey}">${escapeHtml(tVal.title)}</option>`;
+            });
+            topicSelect.innerHTML = opts;
+            renderScenarioBriefBox();
+            updatePreviewAndSave();
+        }
+
+        function applyTopicMetadata(formatKey, topicKey) {
+            if (!formatKey || !topicKey || !FORMAT_DATA[formatKey] || !FORMAT_DATA[formatKey].topics[topicKey]) {
+                return;
+            }
+            const tObj = FORMAT_DATA[formatKey].topics[topicKey];
+            appState.pubTitle = tObj.title.replace(/^Topic \d[A-C]:\s*"|"\s*$/g, '');
+            appState.pubSubtitle = formatKey === 'format1'
+                ? 'University Curriculum Module • Section 4.2'
+                : (formatKey === 'format2' ? 'Executive Best-Practice Advisory Report' : 'Special Investigative Market Dossier');
+            appState.pubAuthor = formatKey === 'format1'
+                ? 'Department of Applied Economic Studies'
+                : (formatKey === 'format2' ? 'Central European Performance Institute' : 'Lower Silesia Business Monitor');
+
+            document.getElementById('pub-title').value = appState.pubTitle;
+            document.getElementById('pub-subtitle').value = appState.pubSubtitle;
+            document.getElementById('pub-author').value = appState.pubAuthor;
+        }
+
+        function handleTopicChange(topicKey) {
+            appState.selectedTopic = topicKey;
+            renderScenarioBriefBox();
+            if (topicKey) {
+                applyTopicMetadata(appState.assignedFormat, topicKey);
+            }
+            updatePreviewAndSave();
+        }
+
+        function renderScenarioBriefBox() {
+            const container = document.getElementById('scenario-brief-container');
+            const fmt = FORMAT_DATA[appState.assignedFormat];
+            if (!fmt) {
+                container.innerHTML = `
+                    <div class="bg-surface-850/60 border border-dashed border-surface-700 rounded-xl p-6 text-center space-y-1.5">
+                        <p class="text-sm font-medium text-slate-300">No format and topic selected yet</p>
+                        <p class="text-xs text-slate-400">Select your instructor-assigned format and one of the three topics above to view your premise and drafting instructions.</p>
+                    </div>`;
+                return;
+            }
+
+            const topicObj = appState.selectedTopic ? fmt.topics[appState.selectedTopic] : null;
+            if (!topicObj) {
+                container.innerHTML = `
+                    <div class="bg-surface-850 border border-surface-700 rounded-xl p-4 space-y-2">
+                        <div class="text-xs font-mono text-sky-400 uppercase font-semibold">${escapeHtml(fmt.name)}</div>
+                        <p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(fmt.description)}</p>
+                        <p class="text-xs text-amber-300">Now select one of the three topics in dropdown #2 to populate your publication header.</p>
+                    </div>`;
+                return;
+            }
+
+            const trueItemsHTML = (topicObj.trueAnchorsList || [])
+                .map(item => `<li>${escapeHtml(item)}</li>`)
+                .join('');
+            const manipItemsHTML = (topicObj.manipulationList || [])
+                .map(item => `<li>${escapeHtml(item)}</li>`)
+                .join('');
+
+            container.innerHTML = `
+                <div class="bg-surface-850 border border-sky-500/30 rounded-xl p-5 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-surface-700 pb-2.5">
+                        <span class="text-xs font-mono text-sky-400 font-semibold">${escapeHtml(fmt.name)}</span>
+                    </div>
+                    <h4 class="text-sm font-bold text-white">${escapeHtml(topicObj.title)}</h4>
+                    <p class="text-xs text-slate-300 leading-relaxed"><strong class="text-white">Core deceptive premise:</strong> ${escapeHtml(topicObj.premise)}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                        <div class="bg-emerald-950/30 border border-emerald-500/25 rounded-lg p-3.5">
+                            <div class="text-[11px] font-mono uppercase text-emerald-400 font-semibold mb-1.5">General directions for TRUE anchor blocks</div>
+                            <ul class="list-disc pl-4 space-y-1 text-xs text-slate-300 leading-relaxed">
+                                ${trueItemsHTML}
+                            </ul>
+                        </div>
+                        <div class="bg-rose-950/30 border border-rose-500/25 rounded-lg p-3.5">
+                            <div class="text-[11px] font-mono uppercase text-rose-400 font-semibold mb-1.5">General directions for FALSE / MANIPULATED blocks</div>
+                            <ul class="list-disc pl-4 space-y-1 text-xs text-slate-300 leading-relaxed">
+                                ${manipItemsHTML}
+                            </ul>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        // Ratio Logic: At least 2 FALSE, and at least ceil(FALSE / 2) TRUE
+        function computeRatioStats() {
+            const totalBlocks = appState.blocks.length;
+            const falseCount = appState.blocks.filter(b => b.truthStatus === 'FALSE').length;
+            const trueCount = appState.blocks.filter(b => b.truthStatus === 'TRUE').length;
+            const requiredTrue = Math.max(1, Math.ceil(falseCount / 2));
+            const isValid = falseCount >= 2 && trueCount >= requiredTrue;
+
+            return { totalBlocks, falseCount, trueCount, requiredTrue, isValid };
+        }
+
+        function updateRatioBanner() {
+            const stats = computeRatioStats();
+            document.getElementById('count-false').textContent = stats.falseCount;
+            document.getElementById('count-true').textContent = stats.trueCount;
+            document.getElementById('count-req-true').textContent = stats.requiredTrue;
+
+            const banner = document.getElementById('ratio-banner');
+            const badge = document.getElementById('ratio-status-badge');
+            const expl = document.getElementById('ratio-explanation');
+
+            if (stats.isValid) {
+                banner.className = 'rounded-xl p-4 border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-emerald-950/20 border-emerald-500/40';
+                badge.className = 'px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+                badge.textContent = 'RATIO VALID';
+                expl.innerHTML = `Your publication currently has <strong>${stats.falseCount} false/manipulated</strong> and <strong>${stats.trueCount} true</strong> core claims (minimum required true: ${stats.requiredTrue}). You can add extra true or false blocks as long as the ratio stays valid.`;
+            } else {
+                banner.className = 'rounded-xl p-4 border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-surface-900 border-amber-500/40';
+                badge.className = 'px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30';
+                badge.textContent = 'RATIO INCOMPLETE';
+                if (stats.falseCount < 2) {
+                    expl.innerHTML = `Add at least <strong>${2 - stats.falseCount} more false/manipulated block(s)</strong> (minimum 2 required) and at least <strong>${stats.requiredTrue} true block(s)</strong>.`;
+                } else {
+                    expl.innerHTML = `With <strong>${stats.falseCount} false/manipulated blocks</strong>, you need at least <strong>${stats.requiredTrue} true verifiable block(s)</strong> (currently ${stats.trueCount}). Add ${stats.requiredTrue - stats.trueCount} more true block(s) or switch a block to TRUE.`;
+                }
+            }
+        }
+
+        // Modular Block Creation & Management (1 Core Claim per Block, sealed in Secret Author Key)
+        function createBlockObject(type, heading = '', body = '', truthStatus = 'FALSE', technique = 'Numerical anchoring & omitted baseline', authorNote = '', extra = {}) {
+            return {
+                id: 'blk_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                type,
+                heading,
+                body,
+                targetClaim: extra.targetClaim || '',
+                truthStatus,
+                technique,
+                authorNote,
+                quoteAuthor: extra.quoteAuthor || 'Dr. Marek Kowalczyk, Senior Advisory Fellow',
+                bar1Label: extra.bar1Label || 'Traditional Model',
+                bar1Val: extra.bar1Val ?? 28,
+                bar2Label: extra.bar2Label || 'Standard Benchmark',
+                bar2Val: extra.bar2Val ?? 41,
+                bar3Label: extra.bar3Label || 'Recommended Strategy',
+                bar3Val: extra.bar3Val ?? 89,
+                tableRows: extra.tableRows || [
+                    ['Metric / Dimension', 'Conventional Option', 'Recommended Option'],
+                    ['Projected 12-Month Yield', '4.2% gross', '19.8% net adjusted'],
+                    ['Compliance Overhead', 'High (manual review)', 'Near zero (automated)']
+                ]
+            };
+        }
+
+        function addBlock(type) {
+            let newBlk;
+            if (type === 'lead') {
+                newBlk = createBlockObject('lead', 'Executive overview', 'Paste your AI-drafted paragraph here. Weave one verifiable claim into natural prose.', 'FALSE', 'Numerical anchoring & omitted baseline', '', {
+                    targetClaim: ''
+                });
+            } else if (type === 'definition') {
+                newBlk = createBlockObject('definition', 'Key statutory rule or definition', 'State the rule, statutory article, or research definition here.', 'TRUE', 'True & accurate verifiable fact (Anchor)', '', {
+                    targetClaim: ''
+                });
+            } else if (type === 'chart') {
+                newBlk = createBlockObject('chart', 'Comparative performance index (%)', 'Source: Internal Longitudinal Benchmark Survey (2025–2026).', 'FALSE', 'Numerical anchoring & omitted baseline', '', {
+                    targetClaim: 'The recommended strategy achieves an 89% efficiency rating compared to 28% for the traditional model.'
+                });
+            } else if (type === 'quote') {
+                newBlk = createBlockObject('quote', 'Expert commentary', '"Our empirical tracking confirms that adopting this approach eliminates traditional bottlenecks within the first quarter."', 'FALSE', 'Astroturfing & circular citation laundering', '', {
+                    targetClaim: ''
+                });
+            } else if (type === 'table') {
+                newBlk = createBlockObject('table', 'Side-by-side comparison', 'Summary of structural trade-offs across options.', 'FALSE', 'Asymmetric risk framing & false decoy', '', {
+                    targetClaim: ''
+                });
+            } else {
+                newBlk = createBlockObject('questions', 'Verification & review questions', '1. Why does the conventional baseline underperform under current market conditions?\n2. Which regulatory threshold governs implementation?', 'FALSE', 'Asymmetric risk framing & false decoy', '', {
+                    targetClaim: ''
+                });
+            }
+            appState.blocks.push(newBlk);
+            renderBlocksEditor();
+            updatePreviewAndSave();
+        }
+
+        function loadStarterBlocks() {
+            const fmtKey = appState.assignedFormat || 'format1';
+            const topKey = appState.selectedTopic;
+            if (fmtKey && topKey && FORMAT_DATA[fmtKey] && FORMAT_DATA[fmtKey].topics[topKey] && !appState.pubTitle) {
+                applyTopicMetadata(fmtKey, topKey);
+            }
+
+            appState.blocks = [
+                createBlockObject('lead', 'Introduction & core premise', 'Paste your opening paragraph generated with your AI tool here. Weave in your first verifiable claim amidst normal introductory context.', 'TRUE', 'True & accurate verifiable fact (Anchor)', 'Specify the exact statute, GUS table, or official registry proving this claim is true.', {
+                    targetClaim: 'Record the 1 core verifiable claim embedded in Block #1...'
+                }),
+                createBlockObject('definition', 'Institutional framework & baseline rule', 'Paste a boxed definition, statutory rule, or research summary drafted with your AI tool.', 'FALSE', 'Regulatory mashup / Misquoted statute article', 'Explain how the statute or baseline was distorted or misquoted.', {
+                    targetClaim: 'Record the 1 core claim embedded in Block #2...'
+                }),
+                createBlockObject('chart', 'Empirical benchmark comparison (%)', 'Adjust the three bar labels and values below to create a visual anchor.', 'FALSE', 'Numerical anchoring & omitted baseline', 'Explain what baseline or denominator was omitted from the chart.', {
+                    targetClaim: 'Record the exact numerical comparison claim embedded in this chart...',
+                    bar1Label: 'Baseline Option',
+                    bar1Val: 24,
+                    bar2Label: 'Industry Average',
+                    bar2Val: 39,
+                    bar3Label: 'Proposed Strategy',
+                    bar3Val: 86
+                }),
+                createBlockObject('quote', 'Independent practitioner testimony', '"Paste a realistic expert quote or customer review generated with your AI tool."', 'FALSE', 'Astroturfing & circular citation laundering', 'Explain why this quote represents manufactured consensus or circular citation.', {
+                    targetClaim: 'Record the 1 specific claim embedded in this quote...'
+                }),
+                createBlockObject('questions', 'Statutory compliance & review check', 'Add a second genuine statutory fact or closing review question to reinforce credibility.', 'TRUE', 'True & accurate verifiable fact (Anchor)', 'Cite the exact primary source confirming this second true anchor.', {
+                    targetClaim: 'Record the second genuine verifiable claim embedded in Block #5...'
+                })
+            ];
+
+            renderBlocksEditor();
+            updatePreviewAndSave();
+            showToast('5-block starter scaffold loaded');
+        }
+
+        function moveBlock(index, direction) {
+            const target = index + direction;
+            if (target < 0 || target >= appState.blocks.length) return;
+            const temp = appState.blocks[index];
+            appState.blocks[index] = appState.blocks[target];
+            appState.blocks[target] = temp;
+            renderBlocksEditor();
+            updatePreviewAndSave();
+        }
+
+        function removeBlock(index) {
+            appState.blocks.splice(index, 1);
+            renderBlocksEditor();
+            updatePreviewAndSave();
+        }
+
+        function updateBlockField(index, field, value) {
+            if (!appState.blocks[index]) return;
+            appState.blocks[index][field] = value;
+            if (field === 'truthStatus') {
+                if (value === 'TRUE') {
+                    appState.blocks[index].technique = 'True & accurate verifiable fact (Anchor)';
+                } else if (appState.blocks[index].technique === 'True & accurate verifiable fact (Anchor)') {
+                    appState.blocks[index].technique = 'Numerical anchoring & omitted baseline';
+                }
+                renderBlocksEditor();
+            }
+            updatePreviewAndSave();
+        }
+
+        function updateTableCell(blockIdx, r, c, val) {
+            if (!appState.blocks[blockIdx]) return;
+            appState.blocks[blockIdx].tableRows[r][c] = val;
+            updatePreviewAndSave();
+        }
+
+        function renderBlocksEditor() {
+            const container = document.getElementById('blocks-editor-container');
+            if (appState.blocks.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-surface-900 border border-dashed border-surface-700 rounded-xl p-6 text-center space-y-2">
+                        <p class="text-sm font-medium text-slate-300">No layout blocks added yet</p>
+                        <p class="text-xs text-slate-400">Click the "+ Add" buttons above (or click "Load 5-block starter scaffold") to assemble your publication.</p>
+                    </div>`;
+                return;
+            }
+
+            const typeLabels = {
+                lead: 'Body paragraph',
+                definition: 'Definition / Rule box',
+                chart: 'CSS bar chart',
+                quote: 'Expert quote / Review',
+                table: 'Comparison table (3x3)',
+                questions: 'Review questions'
+            };
+
+            container.innerHTML = appState.blocks.map((blk, idx) => {
+                const isTrue = blk.truthStatus === 'TRUE';
+                const borderAccent = isTrue ? 'border-emerald-500/35' : 'border-rose-500/35';
+
+                let extraControls = '';
+                if (blk.type === 'quote') {
+                    extraControls = `
+                        <div>
+                            <label class="block text-[11px] text-slate-400 mb-1">Attribution / Source name</label>
+                            <input type="text" value="${escapeHtml(blk.quoteAuthor)}" oninput="updateBlockField(${idx}, 'quoteAuthor', this.value)"
+                                   class="w-full px-2.5 py-1.5 rounded border text-xs">
+                        </div>`;
+                } else if (blk.type === 'chart') {
+                    extraControls = `
+                        <div class="grid grid-cols-3 gap-2 bg-surface-950/60 p-2.5 rounded-lg border border-surface-800">
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Bar 1 label &amp; %</label>
+                                <input type="text" value="${escapeHtml(blk.bar1Label)}" oninput="updateBlockField(${idx}, 'bar1Label', this.value)" class="w-full px-2 py-1 rounded border text-xs mb-1">
+                                <input type="number" min="0" max="100" value="${blk.bar1Val}" oninput="updateBlockField(${idx}, 'bar1Val', Number(this.value))" class="w-full px-2 py-1 rounded border text-xs bg-surface-850 text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Bar 2 label &amp; %</label>
+                                <input type="text" value="${escapeHtml(blk.bar2Label)}" oninput="updateBlockField(${idx}, 'bar2Label', this.value)" class="w-full px-2 py-1 rounded border text-xs mb-1">
+                                <input type="number" min="0" max="100" value="${blk.bar2Val}" oninput="updateBlockField(${idx}, 'bar2Val', Number(this.value))" class="w-full px-2 py-1 rounded border text-xs bg-surface-850 text-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">Bar 3 label &amp; %</label>
+                                <input type="text" value="${escapeHtml(blk.bar3Label)}" oninput="updateBlockField(${idx}, 'bar3Label', this.value)" class="w-full px-2 py-1 rounded border text-xs mb-1">
+                                <input type="number" min="0" max="100" value="${blk.bar3Val}" oninput="updateBlockField(${idx}, 'bar3Val', Number(this.value))" class="w-full px-2 py-1 rounded border text-xs bg-surface-850 text-white">
+                            </div>
+                        </div>`;
+                } else if (blk.type === 'table') {
+                    extraControls = `
+                        <div class="space-y-1 bg-surface-950/60 p-2.5 rounded-lg border border-surface-800">
+                            <label class="block text-[10px] text-slate-400">Table cells (Row 1 = headers)</label>
+                            ${blk.tableRows.map((rArr, rIdx) => `
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    ${rArr.map((cell, cIdx) => `
+                                        <input type="text" value="${escapeHtml(cell)}" oninput="updateTableCell(${idx}, ${rIdx}, ${cIdx}, this.value)"
+                                               class="w-full px-2 py-1 rounded border text-xs ${rIdx === 0 ? 'font-semibold text-sky-300' : ''}">
+                                    `).join('')}
+                                </div>
+                            `).join('')}
+                        </div>`;
+                }
+
+                return `
+                    <div class="bg-surface-900 border ${borderAccent} rounded-xl p-4 space-y-3 shadow-sm">
+                        <div class="flex items-center justify-between gap-2 border-b border-surface-800 pb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded bg-surface-800 text-xs font-mono font-bold text-white">Block #${idx + 1}</span>
+                                <span class="text-xs font-mono text-slate-400">${typeLabels[blk.type] || blk.type}</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button onclick="moveBlock(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="px-2 py-1 rounded bg-surface-800 hover:bg-surface-700 disabled:opacity-30 text-xs text-slate-300" title="Move up">&uarr;</button>
+                                <button onclick="moveBlock(${idx}, 1)" ${idx === appState.blocks.length - 1 ? 'disabled' : ''} class="px-2 py-1 rounded bg-surface-800 hover:bg-surface-700 disabled:opacity-30 text-xs text-slate-300" title="Move down">&darr;</button>
+                                <button onclick="removeBlock(${idx})" class="px-2 py-1 rounded bg-rose-950/50 hover:bg-rose-900/60 text-xs text-rose-300 ml-1" title="Delete block">Remove</button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2.5">
+                            <div>
+                                <label class="block text-[11px] text-slate-400 mb-1">Block heading / Caption (numbered automatically in preview)</label>
+                                <input type="text" value="${escapeHtml(blk.heading)}" oninput="updateBlockField(${idx}, 'heading', this.value)"
+                                       class="w-full px-2.5 py-1.5 rounded border text-xs font-semibold">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-slate-400 mb-1">Public text content (paste drafted text from your AI tool)</label>
+                                <textarea rows="3" oninput="updateBlockField(${idx}, 'body', this.value)"
+                                          class="w-full px-2.5 py-1.5 rounded border text-xs resize-y">${escapeHtml(blk.body)}</textarea>
+                            </div>
+                            ${extraControls}
+                        </div>
+
+                        <!-- Secret Author Key Box (Sealed until Step 4; NOT revealed in peer publication) -->
+                        <div class="pt-2.5 border-t border-surface-800 bg-surface-950/70 rounded-lg p-3 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[11px] font-mono uppercase tracking-wider font-semibold ${isTrue ? 'text-emerald-400' : 'text-rose-400'}">
+                                    Secret Author Key (Sealed until Step 4 – hidden from auditors)
+                                </span>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-sky-300 font-medium mb-1">
+                                    Core claim embedded in Block #${idx + 1} (for your secret key only; auditors must discover it)
+                                </label>
+                                <input type="text" value="${escapeHtml(blk.targetClaim)}" oninput="updateBlockField(${idx}, 'targetClaim', this.value)"
+                                       placeholder="Record the exact 1 claim embedded in this block..."
+                                       class="w-full px-2.5 py-1.5 rounded border text-xs">
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 mb-1">Ground-truth classification</label>
+                                    <select onchange="updateBlockField(${idx}, 'truthStatus', this.value)"
+                                            class="w-full px-2.5 py-1.5 rounded border text-xs font-semibold ${isTrue ? 'text-emerald-300' : 'text-rose-300'}">
+                                        <option value="TRUE" ${isTrue ? 'selected' : ''}>TRUE (100% verifiable anchor)</option>
+                                        <option value="FALSE" ${!isTrue ? 'selected' : ''}>FALSE / MANIPULATED (Trap)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 mb-1">Technique / Anchor type</label>
+                                    <select onchange="updateBlockField(${idx}, 'technique', this.value)"
+                                            class="w-full px-2.5 py-1.5 rounded border text-xs">
+                                        ${MANIPULATION_TECHNIQUES.map(t => `<option value="${escapeHtml(t)}" ${blk.technique === t ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-400 mb-1">
+                                    ${isTrue ? 'Primary source proving this claim is true (statute, GUS, official tariff)' : 'Explanation of how this claim was manipulated & what the real baseline is'}
+                                </label>
+                                <input type="text" value="${escapeHtml(blk.authorNote)}" oninput="updateBlockField(${idx}, 'authorNote', this.value)"
+                                       placeholder="${isTrue ? 'e.g., Art. 105 Higher Education Act / UrbanCard official tariff' : 'e.g., Omitted the 0% PIT under-26 exemption on umowa zlecenie'}"
+                                       class="w-full px-2.5 py-1.5 rounded border text-xs">
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        // Generate Clean Publication HTML (Prefixed with block number; no "BLOCK #*" labels; never reveals targetClaim)
+        function generatePublicationHTML(dataObj) {
+            const title = escapeHtml(dataObj.pubTitle || 'Untitled Publication');
+            const subtitle = escapeHtml(dataObj.pubSubtitle || 'Section 1 • Analytical Brief');
+            const author = escapeHtml(dataObj.pubAuthor || 'Applied Research Group');
+            const theme = dataObj.previewTheme || 'academic';
+
+            const headerBorder = theme === 'academic' ? '#1e293b' : (theme === 'brochure' ? '#0284c7' : '#b45309');
+
+            let blocksHtml = (dataObj.blocks || []).map((blk, idx) => {
+                const rawHeading = stripLeadingNumberPrefix(blk.heading || 'Section');
+                const numberedHeading = `${idx + 1}. ${escapeHtml(rawHeading)}`;
+                const body = escapeHtml(blk.body || '').replace(/\n/g, '<br>');
+
+                if (blk.type === 'definition') {
+                    return `
+                        <div style="border-left: 4px solid ${headerBorder}; background: #f1f5f9; padding: 12px 14px; margin: 12px 0; border-radius: 4px; break-inside: avoid;">
+                            <div style="font-weight: 700; font-size: 10.5pt; color: #0f172a; margin-bottom: 4px;">${numberedHeading}</div>
+                            <div style="font-size: 10pt; color: #334155; line-height: 1.5;">${body}</div>
+                        </div>`;
+                } else if (blk.type === 'quote') {
+                    return `
+                        <blockquote style="border-left: 3px solid #64748b; padding-left: 14px; margin: 12px 0; font-style: italic; color: #334155; break-inside: avoid;">
+                            <div style="font-weight: 700; font-style: normal; font-size: 9.5pt; color: #475569; margin-bottom: 3px;">${numberedHeading}</div>
+                            <div style="font-size: 10pt; line-height: 1.5;">${body}</div>
+                            <div style="font-style: normal; font-size: 9pt; font-weight: 600; color: #0f172a; margin-top: 4px;">– ${escapeHtml(blk.quoteAuthor || '')}</div>
+                        </blockquote>`;
+                } else if (blk.type === 'chart') {
+                    const b1 = Math.max(0, Math.min(100, Number(blk.bar1Val) || 0));
+                    const b2 = Math.max(0, Math.min(100, Number(blk.bar2Val) || 0));
+                    const b3 = Math.max(0, Math.min(100, Number(blk.bar3Val) || 0));
+                    return `
+                        <div style="border: 1px solid #cbd5e1; background: #ffffff; padding: 12px; margin: 12px 0; border-radius: 6px; break-inside: avoid;">
+                            <div style="font-weight: 700; font-size: 10.5pt; color: #0f172a; margin-bottom: 6px;">${numberedHeading}</div>
+                            <table style="width: 100%; border-collapse: collapse; font-size: 9.5pt;">
+                                <tr>
+                                    <td style="width: 34%; padding: 4px 6px; color: #334155;">${escapeHtml(blk.bar1Label)}</td>
+                                    <td style="width: 52%; padding: 4px 6px;"><div style="background:#e2e8f0; height:12px; width:100%;"><div style="background:#64748b; height:12px; width:${b1}%;"></div></div></td>
+                                    <td style="width: 14%; padding: 4px 6px; font-weight:700; text-align:right;">${b1}%</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px 6px; color: #334155;">${escapeHtml(blk.bar2Label)}</td>
+                                    <td style="padding: 4px 6px;"><div style="background:#e2e8f0; height:12px; width:100%;"><div style="background:#0284c7; height:12px; width:${b2}%;"></div></div></td>
+                                    <td style="padding: 4px 6px; font-weight:700; text-align:right;">${b2}%</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px 6px; color: #0f172a; font-weight:600;">${escapeHtml(blk.bar3Label)}</td>
+                                    <td style="padding: 4px 6px;"><div style="background:#e2e8f0; height:12px; width:100%;"><div style="background:#059669; height:12px; width:${b3}%;"></div></div></td>
+                                    <td style="padding: 4px 6px; font-weight:700; text-align:right; color:#059669;">${b3}%</td>
+                                </tr>
+                            </table>
+                            <div style="font-size: 8.5pt; color: #64748b; margin-top: 6px;">${body}</div>
+                        </div>`;
+                } else if (blk.type === 'table') {
+                    const rows = blk.tableRows || [];
+                    const trs = rows.map((r, rI) => {
+                        const tag = rI === 0 ? 'th' : 'td';
+                        const bg = rI === 0 ? 'background:#e2e8f0; font-weight:700;' : '';
+                        return `<tr>${r.map(c => `<${tag} style="border:1px solid #cbd5e1; padding:6px 8px; text-align:left; font-size:9.5pt; ${bg}">${escapeHtml(c)}</${tag}>`).join('')}</tr>`;
+                    }).join('');
+                    return `
+                        <div style="margin: 12px 0; break-inside: avoid;">
+                            <div style="font-weight: 700; font-size: 10.5pt; color: #0f172a; margin-bottom: 4px;">${numberedHeading}</div>
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 4px;">${trs}</table>
+                            <div style="font-size: 9pt; color: #475569;">${body}</div>
+                        </div>`;
+                } else if (blk.type === 'questions') {
+                    return `
+                        <div style="border: 1px solid #94a3b8; background: #f8fafc; padding: 12px; margin: 12px 0; border-radius: 4px; break-inside: avoid;">
+                            <div style="font-weight: 700; font-size: 10.5pt; color: #0f172a; margin-bottom: 4px;">${numberedHeading}</div>
+                            <div style="font-size: 9.5pt; color: #1e293b; line-height: 1.5;">${body}</div>
+                        </div>`;
+                } else {
+                    return `
+                        <div style="margin: 12px 0; break-inside: avoid;">
+                            <div style="font-weight: 700; font-size: 11pt; color: #0f172a; margin-bottom: 4px;">${numberedHeading}</div>
+                            <div style="font-size: 10pt; color: #1e293b; line-height: 1.55;">${body}</div>
+                        </div>`;
+                }
+            }).join('');
+
+            if (!blocksHtml) {
+                blocksHtml = `<p style="color:#64748b; font-size:10pt; font-style:italic;">Add layout blocks on the left to see your formatted publication appear here.</p>`;
+            }
+
+            return `
+                <div style="border-bottom: 2px solid ${headerBorder}; padding-bottom: 10px; margin-bottom: 14px;">
+                    <div style="font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.06em; color: ${headerBorder}; font-weight: 700;">${subtitle}</div>
+                    <div style="font-size: 15pt; font-weight: 700; color: #0f172a; line-height: 1.25; margin: 4px 0;">${title}</div>
+                    <div style="font-size: 9pt; color: #475569;">Published by: ${author}</div>
+                </div>
+                ${blocksHtml}
+            `;
+        }
+
+        function updatePreviewAndSave() {
+            appState.pubTitle = document.getElementById('pub-title').value;
+            appState.pubSubtitle = document.getElementById('pub-subtitle').value;
+            appState.pubAuthor = document.getElementById('pub-author').value;
+
+            syncEnforcedThemeBadge();
+
+            const previewEl = document.getElementById('live-publication-preview');
+            previewEl.className = `rounded-xl p-5 border border-slate-300 shadow-inner max-h-[600px] overflow-y-auto space-y-4 pub-preview-${appState.previewTheme}`;
+            previewEl.innerHTML = generatePublicationHTML(appState);
+
+            updateRatioBanner();
+            triggerAutosave();
+        }
+
+        // Build Peer Packet (Does NOT expose targetClaim in public blocks; seals it inside sealedVerificationPayload)
+        function buildPeerPacketObject() {
+            syncInputsToState();
+            const pin = (appState.authorPin || generateRandomPin()).trim();
+            const sealedKey = appState.blocks.map((b, i) => ({
+                blockNum: i + 1,
+                heading: stripLeadingNumberPrefix(b.heading),
+                targetClaim: b.targetClaim,
+                truthStatus: b.truthStatus,
+                technique: b.technique,
+                authorNote: b.authorNote
+            }));
+
+            const encodedKey = btoa(unescape(encodeURIComponent(JSON.stringify({ pin, key: sealedKey }))));
+            const cleanMembers = (appState.members || []).map(m => (m || '').trim()).filter(Boolean);
+
+            return {
+                version: 'w4_v5',
+                createdByTeam: appState.teamName || 'Creator Team',
+                createdByMembers: cleanMembers,
+                assignedFormat: appState.assignedFormat,
+                selectedTopic: appState.selectedTopic,
+                previewTheme: appState.previewTheme,
+                pubTitle: appState.pubTitle,
+                pubSubtitle: appState.pubSubtitle,
+                pubAuthor: appState.pubAuthor,
+                blocks: appState.blocks.map(b => ({
+                    type: b.type,
+                    heading: stripLeadingNumberPrefix(b.heading),
+                    body: b.body,
+                    quoteAuthor: b.quoteAuthor,
+                    bar1Label: b.bar1Label,
+                    bar1Val: b.bar1Val,
+                    bar2Label: b.bar2Label,
+                    bar2Val: b.bar2Val,
+                    bar3Label: b.bar3Label,
+                    bar3Val: b.bar3Val,
+                    tableRows: b.tableRows
+                })),
+                sealedVerificationPayload: encodedKey
+            };
+        }
+
+        function downloadPeerPacketJSON() {
+            const stats = computeRatioStats();
+            if (!stats.isValid) {
+                showToast('Please satisfy the ratio rule before exporting your peer packet');
+                return;
+            }
+            const packet = buildPeerPacketObject();
+            const blob = new Blob([JSON.stringify(packet, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const safeTeam = (appState.teamName || 'team').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            a.href = url;
+            a.download = `w4_peer_packet_${safeTeam}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Downloaded peer packet (.json) for Teams');
+        }
+
+        // Download Clean Publication as PDF (via self-contained browser print-to-PDF window)
+        function downloadCleanPublicationPDF() {
+            const stats = computeRatioStats();
+            if (!stats.isValid) {
+                showToast('Please satisfy the ratio rule before exporting');
+                return;
+            }
+            syncInputsToState();
+            const fontStack = appState.previewTheme === 'academic'
+                ? "Georgia, 'Times New Roman', serif"
+                : "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            const safeTitle = escapeHtml(appState.pubTitle || 'Workshop_4_Publication');
+            const pubHtml = generatePublicationHTML(appState);
+
+            const printWindow = window.open('', '_blank', 'width=850,height=950');
+            if (!printWindow) {
+                showToast('Pop-up blocked – please allow pop-ups to save as PDF');
+                return;
+            }
+
+            printWindow.document.open();
+            printWindow.document.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>${safeTitle}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 18mm 18mm 18mm;
+        }
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: ${fontStack};
+            color: #0f172a;
+            background: #ffffff;
+        }
+        .sheet {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 12px 0;
+        }
+        .meta-bar {
+            font-family: monospace;
+            font-size: 8.5pt;
+            color: #64748b;
+            border-bottom: 1px dashed #cbd5e1;
+            padding-bottom: 6px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="sheet">
+        <div class="meta-bar">
+            <span>Workshop 4 • Peer Audit Publication</span>
+            <span>Created by: ${escapeHtml(appState.teamName || 'Team')}</span>
+        </div>
+        ${pubHtml}
+    </div>
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.focus();
+                window.print();
+            }, 250);
+        };
+    <\/script>
+</body>
+</html>`);
+            printWindow.document.close();
+            showToast('Opened PDF print dialog – choose "Save as PDF"');
+        }
+
+        // Step 3: Import Partner Packet (.json file)
+        function handlePeerFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    loadPeerPacketIntoState(parsed);
+                } catch (err) {
+                    showToast('Invalid JSON packet file');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function loadPeerPacketIntoState(packet) {
+            if (!packet || !Array.isArray(packet.blocks)) {
+                showToast('Packet does not contain valid publication blocks');
+                return;
+            }
+            appState.peerPacket = packet;
+            appState.keyRevealed = false;
+            appState.unlockedScoreSummary = null;
+            appState.peerAuditRows = packet.blocks.map((b, idx) => ({
+                blockNum: idx + 1,
+                heading: stripLeadingNumberPrefix(b.heading || 'Section'),
+                discoveredClaim: '',
+                verdict: '',
+                suspectedTechnique: '',
+                comments: ''
+            }));
+            renderPeerAuditWorkspace();
+            syncStep4LockUI();
+            triggerAutosave();
+            showToast(`Loaded publication from ${packet.createdByTeam || 'partner team'}`);
+        }
+
+        function updatePeerAuditRow(idx, field, value) {
+            if (appState.keyRevealed) {
+                showToast('Audit table is locked after unlocking the creator key');
+                return;
+            }
+            if (!appState.peerAuditRows[idx]) return;
+            appState.peerAuditRows[idx][field] = value;
+            triggerAutosave();
+        }
+
+        function renderPeerAuditWorkspace() {
+            const container = document.getElementById('peer-audit-workspace');
+            const pkt = appState.peerPacket;
+
+            if (!pkt) {
+                container.innerHTML = `
+                    <div class="bg-surface-900 border border-surface-800 rounded-xl p-6 text-center space-y-1.5">
+                        <p class="text-sm font-medium text-slate-300">No partner packet loaded yet</p>
+                        <p class="text-xs text-slate-400">Upload the <code>.json</code> file sent by your partner team above to render their publication and generate the audit table.</p>
+                    </div>`;
+                return;
+            }
+
+            const isLocked = Boolean(appState.keyRevealed);
+            const disabledAttr = isLocked ? 'disabled' : '';
+            const themeClass = `pub-preview-${pkt.previewTheme || 'academic'}`;
+
+            const senderMembersStr = getFormattedMembersList(pkt.createdByMembers);
+            const viewerHTML = `
+                <div class="bg-surface-900 border border-sky-500/30 rounded-2xl p-5 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-surface-800 pb-2.5">
+                        <div>
+                            <span class="text-xs font-mono text-sky-400 font-semibold">Imported partner publication</span>
+                            <h3 class="text-sm font-bold text-white">Sending team: ${escapeHtml(pkt.createdByTeam || 'Partner Team')} (${pkt.blocks.length} sections to audit)</h3>
+                            <p class="text-[11px] text-slate-400">Sending group members: ${escapeHtml(senderMembersStr)}</p>
+                        </div>
+                    </div>
+                    <div class="rounded-xl p-5 border border-slate-300 max-h-[500px] overflow-y-auto space-y-4 ${themeClass}">
+                        ${generatePublicationHTML(pkt)}
+                    </div>
+                </div>`;
+
+            const lockBannerHTML = isLocked
+                ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 text-[11px] font-mono text-amber-300 font-semibold">
+                    LOCKED (Creator key unlocked in Step 4)
+                   </span>`
+                : `<span class="text-[11px] font-mono text-slate-400">Editable until key is unlocked in Step 4</span>`;
+
+            const rowsHTML = appState.peerAuditRows.map((row, idx) => {
+                const numberedLabel = `${idx + 1}. ${stripLeadingNumberPrefix(row.heading || 'Section')}`;
+                return `
+                <tr class="border-b border-surface-800 align-top">
+                    <td class="p-3 text-xs font-semibold text-slate-200 max-w-[180px]" title="${escapeHtml(numberedLabel)}">
+                        ${escapeHtml(numberedLabel)}
+                    </td>
+                    <td class="p-3">
+                        <textarea ${disabledAttr} rows="2" oninput="updatePeerAuditRow(${idx}, 'discoveredClaim', this.value)" placeholder="Paste or summarize the 1 core claim found in section ${idx + 1}..." class="w-full px-2.5 py-1.5 rounded border text-xs resize-y">${escapeHtml(row.discoveredClaim || '')}</textarea>
+                    </td>
+                    <td class="p-3">
+                        <select ${disabledAttr} onchange="updatePeerAuditRow(${idx}, 'verdict', this.value)" class="w-full px-2.5 py-1.5 rounded border text-xs font-semibold">
+                            <option value="" ${row.verdict === '' ? 'selected' : ''}>Select verdict...</option>
+                            <option value="TRUE" ${row.verdict === 'TRUE' ? 'selected' : ''}>TRUE (Accurate anchor)</option>
+                            <option value="FALSE" ${row.verdict === 'FALSE' ? 'selected' : ''}>FALSE / MANIPULATED</option>
+                        </select>
+                    </td>
+                    <td class="p-3">
+                        <select ${disabledAttr} onchange="updatePeerAuditRow(${idx}, 'suspectedTechnique', this.value)" class="w-full px-2.5 py-1.5 rounded border text-xs">
+                            <option value="">Select mechanism...</option>
+                            ${MANIPULATION_TECHNIQUES.map(t => `<option value="${escapeHtml(t)}" ${row.suspectedTechnique === t ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td class="p-3">
+                        <textarea ${disabledAttr} rows="2" oninput="updatePeerAuditRow(${idx}, 'comments', this.value)" placeholder="Primary source checked, ground-truth baseline, and audit notes..." class="w-full px-2.5 py-1.5 rounded border text-xs resize-y">${escapeHtml(row.comments || '')}</textarea>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            container.innerHTML = `
+                ${viewerHTML}
+                <div class="bg-surface-900 border ${isLocked ? 'border-amber-500/30' : 'border-surface-800'} rounded-2xl overflow-hidden shadow-lg">
+                    <div class="p-4 border-b border-surface-800 flex flex-wrap items-center justify-between gap-2">
+                        <h3 class="text-sm font-bold text-white">Forensic peer audit table</h3>
+                        ${lockBannerHTML}
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-surface-850 text-[11px] font-mono uppercase text-slate-400 border-b border-surface-700">
+                                    <th class="p-3">Block</th>
+                                    <th class="p-3 min-w-[210px]">Claim (discovered)</th>
+                                    <th class="p-3 min-w-[155px]">Your verdict</th>
+                                    <th class="p-3 min-w-[195px]">Identified technique</th>
+                                    <th class="p-3 min-w-[230px]">Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rowsHTML}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`;
+        }
+
+        // Step 4: One-Time Unlock of Creator Team's Secret Key + Permanent Lock of Step 3
+        function revealPartnerKey() {
+            if (appState.keyRevealed) {
+                showToast('The creator key has already been unlocked and cannot be regenerated');
+                return;
+            }
+            const pkt = appState.peerPacket;
+            if (!pkt || !pkt.sealedVerificationPayload) {
+                showToast('Import a partner .json packet in Step 3 first');
+                return;
+            }
+
+            // Ensure every block in the forensic audit table has a selected verdict before locking
+            const missingVerdicts = appState.peerAuditRows.filter(r => !r.verdict).length;
+            if (missingVerdicts > 0) {
+                showToast(`Select a TRUE/FALSE verdict for all ${missingVerdicts} remaining block(s) before unlocking`);
+                return;
+            }
+
+            const enteredPin = (document.getElementById('unlock-pin-input').value || '').trim();
+            try {
+                const decoded = JSON.parse(decodeURIComponent(escape(atob(pkt.sealedVerificationPayload))));
+                if (enteredPin !== decoded.pin) {
+                    showToast('Incorrect 4-digit PIN – ask the creator team for their PIN');
+                    return;
+                }
+
+                syncInputsToState();
+                appState.keyRevealed = true;
+                appState.unlockedScoreSummary = buildUnlockedScoreSummary(decoded.key);
+
+                renderPeerAuditWorkspace();
+                syncStep4LockUI();
+                triggerAutosave();
+                showToast('Partner key unlocked – Step 3 audit table is now locked');
+            } catch (e) {
+                showToast('Could not decode verification payload');
+            }
+        }
+
+        function buildUnlockedScoreSummary(secretKey) {
+            const pkt = appState.peerPacket || {};
+            const { fmtName, topTitle } = getFormatAndTopicLabels(pkt.assignedFormat, pkt.selectedTopic);
+
+            let catches = 0;
+            let totalFalse = 0;
+            let trueVerified = 0;
+            let totalTrue = 0;
+            let falseAlarms = 0;
+
+            const rows = secretKey.map((item, idx) => {
+                const studentRow = appState.peerAuditRows[idx] || {};
+                const actual = item.truthStatus;
+                const guessed = studentRow.verdict || '–';
+
+                if (actual === 'FALSE') {
+                    totalFalse++;
+                    if (guessed === 'FALSE') catches++;
+                } else {
+                    totalTrue++;
+                    if (guessed === 'TRUE') trueVerified++;
+                    if (guessed === 'FALSE') falseAlarms++;
+                }
+
+                let outcome = 'MISSED';
+                if (guessed === actual) {
+                    outcome = 'MATCH';
+                } else if (guessed === 'FALSE' && actual === 'TRUE') {
+                    outcome = 'FALSE ALARM';
+                }
+
+                return {
+                    blockNum: idx + 1,
+                    heading: stripLeadingNumberPrefix(item.heading || studentRow.heading || 'Section'),
+                    discoveredClaim: studentRow.discoveredClaim || '–',
+                    creatorClaim: item.targetClaim || '–',
+                    actual,
+                    guessed,
+                    outcome,
+                    technique: item.technique || '',
+                    authorNote: item.authorNote || ''
+                };
+            });
+
+            return {
+                sendingTeam: pkt.createdByTeam || 'Not specified',
+                sendingMembers: getFormattedMembersList(pkt.createdByMembers),
+                sendingFormat: fmtName,
+                sendingTopic: topTitle,
+                sendingPubTitle: pkt.pubTitle || 'Untitled Publication',
+                receivingTeam: appState.teamName || 'Not specified',
+                receivingMembers: getFormattedMembersList(appState.members),
+                catches,
+                totalFalse,
+                trueVerified,
+                totalTrue,
+                falseAlarms,
+                rows
+            };
+        }
+
+        function syncStep4LockUI() {
+            const pinInput = document.getElementById('unlock-pin-input');
+            const revealBtn = document.getElementById('reveal-key-btn');
+            const resultsDiv = document.getElementById('audit-score-results');
+
+            if (appState.keyRevealed && appState.unlockedScoreSummary) {
+                if (pinInput) {
+                    pinInput.disabled = true;
+                }
+                if (revealBtn) {
+                    revealBtn.disabled = true;
+                    revealBtn.textContent = 'Key unlocked (Locked)';
+                    revealBtn.className = 'px-4 py-2 rounded-lg bg-surface-800 text-slate-400 border border-surface-700 text-xs font-semibold cursor-not-allowed';
+                }
+                renderUnlockedScoreboard(appState.unlockedScoreSummary);
+            } else {
+                if (pinInput) {
+                    pinInput.disabled = false;
+                }
+                if (revealBtn) {
+                    revealBtn.disabled = false;
+                    revealBtn.textContent = 'Reveal key & score';
+                    revealBtn.className = 'px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors';
+                }
+                if (resultsDiv) {
+                    resultsDiv.classList.add('hidden');
+                    resultsDiv.innerHTML = '';
+                }
+            }
+        }
+
+        function renderUnlockedScoreboard(summary) {
+            const resultsDiv = document.getElementById('audit-score-results');
+            if (!resultsDiv || !summary) return;
+
+            const comparisonRows = (summary.rows || []).map(r => {
+                const matchBadge = r.outcome === 'MATCH'
+                    ? '<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[11px]">MATCH</span>'
+                    : (r.outcome === 'FALSE ALARM'
+                        ? '<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[11px]">FALSE ALARM</span>'
+                        : '<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono text-[11px]">MISSED</span>');
+
+                return `
+                    <tr class="border-b border-surface-800 text-xs align-top">
+                        <td class="p-2.5 text-slate-200 font-semibold">
+                            ${r.blockNum}. ${escapeHtml(r.heading)}
+                        </td>
+                        <td class="p-2.5 text-slate-300">
+                            <div><span class="text-[10px] font-mono uppercase text-slate-400">Auditor found:</span> ${escapeHtml(r.discoveredClaim)}</div>
+                            <div class="mt-1"><span class="text-[10px] font-mono uppercase text-sky-400">Creator intended:</span> ${escapeHtml(r.creatorClaim)}</div>
+                        </td>
+                        <td class="p-2.5 font-semibold ${r.actual === 'TRUE' ? 'text-emerald-400' : 'text-rose-400'}">${escapeHtml(r.actual)}</td>
+                        <td class="p-2.5 font-semibold">${escapeHtml(r.guessed)}</td>
+                        <td class="p-2.5">${matchBadge}</td>
+                        <td class="p-2.5 text-slate-300"><strong>${escapeHtml(r.technique)}:</strong> ${escapeHtml(r.authorNote)}</td>
+                    </tr>`;
+            }).join('');
+
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.innerHTML = `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs bg-surface-950/70 border border-surface-800 rounded-xl p-3.5">
+                        <div class="space-y-1">
+                            <div class="text-[11px] font-mono uppercase text-sky-400 font-semibold">Sending / Creator Group</div>
+                            <div class="text-white font-semibold">${escapeHtml(summary.sendingTeam)}</div>
+                            <div class="text-slate-400">Members: ${escapeHtml(summary.sendingMembers)}</div>
+                            <div class="text-slate-400">Publication: ${escapeHtml(summary.sendingPubTitle)}</div>
+                        </div>
+                        <div class="space-y-1 border-t md:border-t-0 md:border-l border-surface-800 pt-2.5 md:pt-0 md:pl-3.5">
+                            <div class="text-[11px] font-mono uppercase text-emerald-400 font-semibold">Receiving / Auditing Group</div>
+                            <div class="text-white font-semibold">${escapeHtml(summary.receivingTeam)}</div>
+                            <div class="text-slate-400">Members: ${escapeHtml(summary.receivingMembers)}</div>
+                            <div class="text-slate-400">Status: Audit locked &amp; verified</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3 text-center">
+                        <div class="bg-surface-950 border border-emerald-500/30 rounded-lg p-3">
+                            <div class="text-[11px] font-mono text-slate-400 uppercase">Manipulations caught</div>
+                            <div class="text-lg font-bold text-emerald-400">${summary.catches} / ${summary.totalFalse}</div>
+                        </div>
+                        <div class="bg-surface-950 border border-sky-500/30 rounded-lg p-3">
+                            <div class="text-[11px] font-mono text-slate-400 uppercase">True anchors verified</div>
+                            <div class="text-lg font-bold text-sky-400">${summary.trueVerified} / ${summary.totalTrue}</div>
+                        </div>
+                        <div class="bg-surface-950 border border-amber-500/30 rounded-lg p-3">
+                            <div class="text-[11px] font-mono text-slate-400 uppercase">False alarms</div>
+                            <div class="text-lg font-bold text-amber-400">${summary.falseAlarms}</div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-lg border border-surface-800">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-surface-850 text-[11px] font-mono uppercase text-slate-400 border-b border-surface-700">
+                                    <th class="p-2.5">Block</th>
+                                    <th class="p-2.5">Claim comparison</th>
+                                    <th class="p-2.5">Actual</th>
+                                    <th class="p-2.5">Your verdict</th>
+                                    <th class="p-2.5">Result</th>
+                                    <th class="p-2.5">Creator's secret key note</th>
+                                </tr>
+                            </thead>
+                            <tbody>${comparisonRows}</tbody>
+                        </table>
+                    </div>
+                </div>`;
+        }
+
+        // Cross-Platform Rich HTML + Plain Text Clipboard Copy (Windows + macOS Safari WebKit compliant)
+        function copyRichData(htmlString, plainString, successMessage) {
+            if (navigator.clipboard && window.ClipboardItem) {
+                try {
+                    const htmlBlob = new Blob([htmlString], { type: 'text/html' });
+                    const textBlob = new Blob([plainString], { type: 'text/plain' });
+                    const item = new ClipboardItem({
+                        'text/html': htmlBlob,
+                        'text/plain': textBlob
+                    });
+                    navigator.clipboard.write([item]).then(() => {
+                        showToast(successMessage);
+                    }).catch(() => {
+                        fallbackCopyDOM(htmlString, successMessage);
+                    });
+                    return;
+                } catch (err) {
+                    fallbackCopyDOM(htmlString, successMessage);
+                    return;
+                }
+            }
+            fallbackCopyDOM(htmlString, successMessage);
+        }
+
+        function fallbackCopyDOM(htmlString, successMessage) {
+            const container = document.createElement('div');
+            container.setAttribute('contenteditable', 'true');
+            container.style.position = 'fixed';
+            container.style.left = '-9999px';
+            container.style.top = '0';
+            container.style.opacity = '0';
+            container.innerHTML = htmlString;
+            document.body.appendChild(container);
+
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(container);
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            let ok = false;
+            try {
+                ok = document.execCommand('copy');
+            } catch (e) {
+                ok = false;
+            }
+            selection.removeAllRanges();
+            document.body.removeChild(container);
+
+            if (ok) {
+                showToast(successMessage);
+            } else {
+                showToast('Clipboard blocked by browser – please allow clipboard permissions');
+            }
+        }
+
+        // Export Full Completed Log for Word (Including Step 4 Unlocked Results Table)
+        function copyCompletedLog() {
+            syncInputsToState();
+            const teamName = escapeHtml(appState.teamName || 'Not specified');
+            const tools = escapeHtml(appState.aiToolsUsed || 'Not specified');
+            const members = escapeHtml(getFormattedMembersList(appState.members));
+
+            const { fmtName, topTitle } = getFormatAndTopicLabels(appState.assignedFormat, appState.selectedTopic);
+            const stats = computeRatioStats();
+
+            const authorKeyRows = appState.blocks.map((b, i) => `
+                <tr>
+                    <td style="border:1px solid #cbd5e1; padding:6px;">${i + 1}. ${escapeHtml(stripLeadingNumberPrefix(b.heading))}</td>
+                    <td style="border:1px solid #cbd5e1; padding:6px;"><em>${escapeHtml(b.targetClaim)}</em></td>
+                    <td style="border:1px solid #cbd5e1; padding:6px; font-weight:bold; color:${b.truthStatus === 'TRUE' ? '#059669' : '#e11d48'};">${b.truthStatus}</td>
+                    <td style="border:1px solid #cbd5e1; padding:6px;">${escapeHtml(b.technique)}</td>
+                    <td style="border:1px solid #cbd5e1; padding:6px;">${escapeHtml(b.authorNote)}</td>
+                </tr>`).join('') || '<tr><td colspan="5" style="border:1px solid #cbd5e1; padding:6px;">No blocks created</td></tr>';
+
+            const peerAuditTableRows = appState.peerAuditRows.map((r, i) => `
+                <tr>
+                    <td style="border:1px solid #cbd5e1; padding:6px;">${i + 1}. ${escapeHtml(stripLeadingNumberPrefix(r.heading))}</td>
+                    <td style="border:1px solid #cbd5e1; padding:6px;">${escapeHtml(r.discoveredClaim || '–')}</td>
+                    <td style="border:1px solid #cbd5e1; padding:6px; font-weight:bold;">${escapeHtml(r.verdict || '–')}</td>
+                    <td style="border:1px solid #cbd5e1; padding:6px;">${escapeHtml(r.suspectedTechnique || '–')}</td>
+                    <td style="border:1px solid #cbd5e1; padding:6px;">${escapeHtml(r.comments || '–')}</td>
+                </tr>`).join('') || '<tr><td colspan="5" style="border:1px solid #cbd5e1; padding:6px;">No partner publication audited</td></tr>';
+
+            let resultsSectionHtml = '<p style="font-size:10pt; color:#64748b;"><em>Creator team key has not been unlocked yet.</em></p>';
+            let resultsPlainText = '4. UNLOCKED AUDIT RESULTS TABLE: Not unlocked yet.\n';
+
+            if (appState.keyRevealed && appState.unlockedScoreSummary) {
+                const s = appState.unlockedScoreSummary;
+                const currentReceivingTeam = appState.teamName || s.receivingTeam || 'Not specified';
+                const currentReceivingMembers = getFormattedMembersList(appState.members);
+
+                const resRowsHtml = (s.rows || []).map(r => `
+                    <tr>
+                        <td style="border:1px solid #cbd5e1; padding:6px;">${r.blockNum}. ${escapeHtml(stripLeadingNumberPrefix(r.heading))}</td>
+                        <td style="border:1px solid #cbd5e1; padding:6px;"><strong>Auditor:</strong> ${escapeHtml(r.discoveredClaim)}<br><strong>Creator:</strong> ${escapeHtml(r.creatorClaim)}</td>
+                        <td style="border:1px solid #cbd5e1; padding:6px; font-weight:bold; color:${r.actual === 'TRUE' ? '#059669' : '#e11d48'};">${escapeHtml(r.actual)}</td>
+                        <td style="border:1px solid #cbd5e1; padding:6px; font-weight:bold;">${escapeHtml(r.guessed)}</td>
+                        <td style="border:1px solid #cbd5e1; padding:6px; font-weight:bold;">${escapeHtml(r.outcome)}</td>
+                        <td style="border:1px solid #cbd5e1; padding:6px;"><strong>${escapeHtml(r.technique)}:</strong> ${escapeHtml(r.authorNote)}</td>
+                    </tr>`).join('');
+
+                resultsSectionHtml = `
+                    <table style="width:100%; border-collapse:collapse; font-size:9.5pt; margin-bottom:10px;">
+                        <tr style="background:#f1f5f9;">
+                            <th style="border:1px solid #cbd5e1; padding:6px; text-align:left; width:50%;">Sending / Creator Group</th>
+                            <th style="border:1px solid #cbd5e1; padding:6px; text-align:left; width:50%;">Receiving / Auditing Group</th>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #cbd5e1; padding:6px; vertical-align:top;">
+                                <strong>Team:</strong> ${escapeHtml(s.sendingTeam)}<br>
+                                <strong>Members:</strong> ${escapeHtml(s.sendingMembers)}<br>
+                                <strong>Format:</strong> ${escapeHtml(s.sendingFormat)}<br>
+                                <strong>Publication:</strong> ${escapeHtml(s.sendingPubTitle)}
+                            </td>
+                            <td style="border:1px solid #cbd5e1; padding:6px; vertical-align:top;">
+                                <strong>Team:</strong> ${escapeHtml(currentReceivingTeam)}<br>
+                                <strong>Members:</strong> ${escapeHtml(currentReceivingMembers)}<br>
+                                <strong>Score summary:</strong> ${s.catches}/${s.totalFalse} Manipulations caught | ${s.trueVerified}/${s.totalTrue} True anchors verified | ${s.falseAlarms} False alarms
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width:100%; border-collapse:collapse; font-size:9.5pt;">
+                        <thead>
+                            <tr style="background:#e2e8f0;">
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Block</th>
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Claim comparison</th>
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Actual</th>
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Auditor verdict</th>
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Result</th>
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Creator's secret key note</th>
+                            </tr>
+                        </thead>
+                        <tbody>${resRowsHtml}</tbody>
+                    </table>`;
+
+                resultsPlainText = `4. UNLOCKED AUDIT RESULTS TABLE:\nSending Group: ${s.sendingTeam} (${s.sendingMembers})\nReceiving Group: ${currentReceivingTeam} (${currentReceivingMembers})\nScore: ${s.catches}/${s.totalFalse} caught, ${s.trueVerified}/${s.totalTrue} true verified, ${s.falseAlarms} false alarms\n` +
+                    (s.rows || []).map(r => `${r.blockNum}. ${r.heading}: Actual=${r.actual}, Verdict=${r.guessed}, Result=${r.outcome} (${r.technique}: ${r.authorNote})`).join('\n') + '\n';
+            }
+
+            const d1 = escapeHtml(document.getElementById('debrief-1').value || '').replace(/\n/g, '<br>');
+            const d2 = escapeHtml(document.getElementById('debrief-2').value || '').replace(/\n/g, '<br>');
+
+            const htmlDoc = `
+                <div style="font-family:Calibri, Arial, sans-serif; color:#0f172a; line-height:1.4;">
+                    <h1 style="font-size:18pt; color:#0f172a; border-bottom:2px solid #0284c7; padding-bottom:6px;">Workshop 4: Spotting manipulation – Team log</h1>
+                    <p style="font-size:10.5pt;">
+                        <strong>Team name:</strong> ${teamName}<br>
+                        <strong>Group members:</strong> ${members}<br>
+                        <strong>AI tool &amp; verification sources:</strong> ${tools}<br>
+                        <strong>Assigned format:</strong> ${escapeHtml(fmtName)}<br>
+                        <strong>Selected topic:</strong> ${escapeHtml(topTitle)}<br>
+                        <strong>Ratio check:</strong> ${stats.trueCount} True anchors / ${stats.falseCount} False or manipulated (${stats.isValid ? 'Ratio Rule Satisfied' : 'Ratio Rule Incomplete'})
+                    </p>
+                    <hr>
+                    <h2 style="font-size:14pt; color:#0369a1;">1. Constructed publication (Step 2)</h2>
+                    <div style="border:1px solid #94a3b8; padding:12px; background:#f8fafc;">
+                        ${generatePublicationHTML(appState)}
+                    </div>
+                    <hr>
+                    <h2 style="font-size:14pt; color:#0369a1;">2. Secret author verification key (Step 2)</h2>
+                    <table style="width:100%; border-collapse:collapse; font-size:9.5pt;">
+                        <thead>
+                            <tr style="background:#e2e8f0;">
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Block</th>
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Core claim</th>
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Status</th>
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Technique</th>
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Primary source / Manipulation note</th>
+                            </tr>
+                        </thead>
+                        <tbody>${authorKeyRows}</tbody>
+                    </table>
+                    <hr>
+                    <h2 style="font-size:14pt; color:#0369a1;">3. Forensic peer audit log (Step 3 – Audited team: ${escapeHtml(appState.peerPacket?.createdByTeam || 'None')})</h2>
+                    <table style="width:100%; border-collapse:collapse; font-size:9.5pt;">
+                        <thead>
+                            <tr style="background:#e2e8f0;">
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Block</th>
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Claim (discovered)</th>
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Verdict</th>
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Technique</th>
+                                <th style="border:1px solid #cbd5e1; padding:6px; text-align:left;">Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>${peerAuditTableRows}</tbody>
+                    </table>
+                    <hr>
+                    <h2 style="font-size:14pt; color:#0369a1;">4. Unlocked verification results &amp; scoreboard (Step 4)</h2>
+                    ${resultsSectionHtml}
+                    <hr>
+                    <h2 style="font-size:14pt; color:#0369a1;">5. Debrief synthesis (Step 4)</h2>
+                    <p style="font-size:10.5pt;"><strong>1. How visual formatting and true anchoring facts disguised manipulation:</strong><br>${d1 || '–'}</p>
+                    <p style="font-size:10.5pt;"><strong>2. Verification rule preventing false alarms without falling for framing:</strong><br>${d2 || '–'}</p>
+                </div>`;
+
+            const plainDoc = `WORKSHOP 4: SPOTTING MANIPULATION – TEAM LOG\nTeam: ${teamName}\nMembers: ${members}\nTools: ${tools}\nFormat: ${fmtName}\nTopic: ${topTitle}\n\n1. PUBLICATION: ${appState.pubTitle}\n` +
+                appState.blocks.map((b, i) => `${i + 1}. ${stripLeadingNumberPrefix(b.heading)} [${b.truthStatus}]: Core claim: ${b.targetClaim} (${b.technique} – ${b.authorNote})`).join('\n') +
+                `\n\n${resultsPlainText}`;
+
+            copyRichData(htmlDoc, plainDoc, 'Completed Workshop 4 log (including results table) copied for Word');
+        }
+
+        function copyBlankTemplate() {
+            const blankHtml = `
+                <div style="font-family:Calibri, Arial, sans-serif; color:#0f172a;">
+                    <h1 style="font-size:18pt; border-bottom:2px solid #0284c7; padding-bottom:6px;">Workshop 4: Spotting manipulation – Blank log template</h1>
+                    <p><strong>Team name:</strong> ______________________ &nbsp;&nbsp; <strong>Group members:</strong> ______________________</p>
+                    <p><strong>AI tool &amp; primary sources used:</strong> ______________________</p>
+                    <h2 style="font-size:14pt; color:#0369a1;">1. Secret author verification key (Step 2)</h2>
+                    <table style="width:100%; border-collapse:collapse; font-size:9.5pt;">
+                        <tr style="background:#e2e8f0;">
+                            <th style="border:1px solid #cbd5e1; padding:6px;">Block</th>
+                            <th style="border:1px solid #cbd5e1; padding:6px;">Core verifiable claim</th>
+                            <th style="border:1px solid #cbd5e1; padding:6px;">TRUE / FALSE</th>
+                            <th style="border:1px solid #cbd5e1; padding:6px;">Technique &amp; primary source</th>
+                        </tr>
+                        <tr><td style="border:1px solid #cbd5e1; padding:12px;">1.</td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td></tr>
+                        <tr><td style="border:1px solid #cbd5e1; padding:12px;">2.</td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td></tr>
+                        <tr><td style="border:1px solid #cbd5e1; padding:12px;">3.</td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td></tr>
+                        <tr><td style="border:1px solid #cbd5e1; padding:12px;">4.</td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td></tr>
+                        <tr><td style="border:1px solid #cbd5e1; padding:12px;">5.</td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td></tr>
+                    </table>
+                    <h2 style="font-size:14pt; color:#0369a1; margin-top:16px;">2. Forensic peer audit log (Step 3)</h2>
+                    <table style="width:100%; border-collapse:collapse; font-size:9.5pt;">
+                        <tr style="background:#e2e8f0;">
+                            <th style="border:1px solid #cbd5e1; padding:6px;">Block</th>
+                            <th style="border:1px solid #cbd5e1; padding:6px;">Claim (discovered)</th>
+                            <th style="border:1px solid #cbd5e1; padding:6px;">Verdict</th>
+                            <th style="border:1px solid #cbd5e1; padding:6px;">Technique</th>
+                            <th style="border:1px solid #cbd5e1; padding:6px;">Comments</th>
+                        </tr>
+                        <tr><td style="border:1px solid #cbd5e1; padding:12px;">1.</td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td></tr>
+                        <tr><td style="border:1px solid #cbd5e1; padding:12px;">2.</td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td></tr>
+                        <tr><td style="border:1px solid #cbd5e1; padding:12px;">3.</td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td></tr>
+                        <tr><td style="border:1px solid #cbd5e1; padding:12px;">4.</td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td></tr>
+                        <tr><td style="border:1px solid #cbd5e1; padding:12px;">5.</td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td><td style="border:1px solid #cbd5e1;"></td></tr>
+                    </table>
+                </div>`;
+            copyRichData(blankHtml, 'Workshop 4 Blank Log Template', 'Blank template copied for Word');
+        }
+
+        // Autosave, Restore, Reset Modal & beforeunload Protection
+        function syncInputsToState() {
+            appState.teamName = document.getElementById('team-name').value;
+            appState.aiToolsUsed = document.getElementById('ai-tools-used').value;
+            appState.members = [1, 2, 3, 4, 5, 6].map(n => document.getElementById(`member-${n}`).value);
+            appState.assignedFormat = document.getElementById('assigned-format').value;
+            appState.selectedTopic = document.getElementById('selected-topic').value;
+            appState.pubTitle = document.getElementById('pub-title').value;
+            appState.pubSubtitle = document.getElementById('pub-subtitle').value;
+            appState.pubAuthor = document.getElementById('pub-author').value;
+            appState.debrief1 = document.getElementById('debrief-1').value;
+            appState.debrief2 = document.getElementById('debrief-2').value;
+        }
+
+        function triggerAutosave() {
+            syncInputsToState();
+            const statusText = document.getElementById('autosave-text');
+            if (statusText) statusText.textContent = 'Saving...';
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+                    if (statusText) statusText.textContent = 'Draft saved';
+                } catch (e) {
+                    if (statusText) statusText.textContent = 'Save unavailable';
+                }
+            }, 300);
+        }
+
+        function renderAuthorPinDisplay() {
+            if (!appState.authorPin || !/^\d{4}$/.test(appState.authorPin)) {
+                appState.authorPin = generateRandomPin();
+            }
+            const pinDisplay = document.getElementById('author-pin-display');
+            if (pinDisplay) {
+                pinDisplay.textContent = appState.authorPin;
+            }
+        }
+
+        function restoreDraft() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (!saved) {
+                    appState.authorPin = generateRandomPin();
+                    renderAuthorPinDisplay();
+                    syncEnforcedThemeBadge();
+                    renderBlocksEditor();
+                    updatePreviewAndSave();
+                    renderPeerAuditWorkspace();
+                    syncStep4LockUI();
+                    return;
+                }
+                const parsed = JSON.parse(saved);
+                appState = { ...appState, ...parsed };
+                if (!appState.authorPin || !/^\d{4}$/.test(appState.authorPin)) {
+                    appState.authorPin = generateRandomPin();
+                }
+
+                document.getElementById('team-name').value = appState.teamName || '';
+                document.getElementById('ai-tools-used').value = appState.aiToolsUsed || '';
+                (appState.members || []).forEach((m, i) => {
+                    const el = document.getElementById(`member-${i + 1}`);
+                    if (el) el.value = m || '';
+                });
+
+                if (appState.assignedFormat && FORMAT_DATA[appState.assignedFormat]) {
+                    document.getElementById('assigned-format').value = appState.assignedFormat;
+                    appState.previewTheme = FORMAT_DATA[appState.assignedFormat].theme;
+                    const topicSelect = document.getElementById('selected-topic');
+                    topicSelect.disabled = false;
+                    let opts = '<option value="">Choose one of the 3 scenario topics...</option>';
+                    Object.entries(FORMAT_DATA[appState.assignedFormat].topics).forEach(([tKey, tVal]) => {
+                        opts += `<option value="${tKey}">${escapeHtml(tVal.title)}</option>`;
+                    });
+                    topicSelect.innerHTML = opts;
+                    topicSelect.value = appState.selectedTopic || '';
+                }
+
+                document.getElementById('pub-title').value = appState.pubTitle || '';
+                document.getElementById('pub-subtitle').value = appState.pubSubtitle || '';
+                document.getElementById('pub-author').value = appState.pubAuthor || '';
+                document.getElementById('debrief-1').value = appState.debrief1 || '';
+                document.getElementById('debrief-2').value = appState.debrief2 || '';
+
+                renderAuthorPinDisplay();
+                syncEnforcedThemeBadge();
+                renderScenarioBriefBox();
+                renderBlocksEditor();
+                updatePreviewAndSave();
+                renderPeerAuditWorkspace();
+                syncStep4LockUI();
+            } catch (e) {
+                appState.authorPin = generateRandomPin();
+                renderAuthorPinDisplay();
+                syncEnforcedThemeBadge();
+                renderBlocksEditor();
+                updatePreviewAndSave();
+                renderPeerAuditWorkspace();
+                syncStep4LockUI();
+            }
+        }
+
+        function hasUnsavedWork() {
+            return Boolean(
+                appState.teamName ||
+                appState.pubTitle ||
+                appState.blocks.length > 0 ||
+                appState.peerPacket ||
+                appState.debrief1 ||
+                appState.debrief2
+            );
+        }
+
+        function openResetModal() {
+            if (!hasUnsavedWork()) {
+                showToast('Form is already empty');
+                return;
+            }
+            document.getElementById('reset-modal').classList.add('open');
+        }
+
+        function closeResetModal() {
+            document.getElementById('reset-modal').classList.remove('open');
+        }
+
+        function executeResetForm() {
+            localStorage.removeItem(STORAGE_KEY);
+            appState = {
+                teamName: '',
+                aiToolsUsed: '',
+                members: ['', '', '', '', '', ''],
+                assignedFormat: '',
+                selectedTopic: '',
+                previewTheme: 'academic',
+                pubTitle: '',
+                pubSubtitle: '',
+                pubAuthor: '',
+                authorPin: generateRandomPin(),
+                blocks: [],
+                peerPacket: null,
+                peerAuditRows: [],
+                keyRevealed: false,
+                unlockedScoreSummary: null,
+                debrief1: '',
+                debrief2: ''
+            };
+
+            document.getElementById('team-name').value = '';
+            document.getElementById('ai-tools-used').value = '';
+            [1, 2, 3, 4, 5, 6].forEach(n => {
+                document.getElementById(`member-${n}`).value = '';
+            });
+            document.getElementById('assigned-format').value = '';
+            const topicSelect = document.getElementById('selected-topic');
+            topicSelect.innerHTML = '<option value="">Select an assigned format first...</option>';
+            topicSelect.disabled = true;
+
+            document.getElementById('pub-title').value = '';
+            document.getElementById('pub-subtitle').value = '';
+            document.getElementById('pub-author').value = '';
+            document.getElementById('peer-json-file').value = '';
+            document.getElementById('unlock-pin-input').value = '';
+            document.getElementById('debrief-1').value = '';
+            document.getElementById('debrief-2').value = '';
+
+            renderAuthorPinDisplay();
+            syncEnforcedThemeBadge();
+            renderScenarioBriefBox();
+            renderBlocksEditor();
+            updatePreviewAndSave();
+            renderPeerAuditWorkspace();
+            syncStep4LockUI();
+            closeResetModal();
+            showToast('Form cleared');
+        }
+
+        window.addEventListener('beforeunload', (e) => {
+            if (hasUnsavedWork()) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            restoreDraft();
+        });
+    </script>
+</body>
+</html>
