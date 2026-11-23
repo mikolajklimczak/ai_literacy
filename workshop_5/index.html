@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workshop 5: Capstone business brief – AI Literacy and Critical Thinking</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            surface: {
+              950: '#090d16',
+              900: '#0f172a',
+              850: '#162033',
+              800: '#1e293b',
+              700: '#334155',
+              600: '#475569',
+            },
+            accent: {
+              DEFAULT: '#38bdf8',
+              hover: '#0ea5e9',
+              muted: 'rgba(56, 189, 248, 0.14)',
+            },
+            emeraldAccent: '#10b981',
+            amberAccent: '#f59e0b',
+            roseAccent: '#f43f5e',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #090d16;
+      color: #e2e8f0;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+    .no-copy {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-sky-500/30 selection:text-sky-200">
+
+  <!-- Sticky Top Navigation Bar -->
+  <header class="sticky top-0 z-40 border-b border-slate-800/90 bg-surface-950/90 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-accent-muted border border-sky-400/30 text-sky-400 font-mono font-semibold text-sm shrink-0">
+          W5
+        </span>
+        <div class="min-w-0">
+          <h1 class="text-sm sm:text-base font-semibold text-white truncate">Workshop 5: Capstone business brief</h1>
+          <p class="text-xs text-slate-400 truncate">AI literacy and critical thinking</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div class="hidden md:flex items-center gap-2 text-xs">
+          <span id="autosave-indicator" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-850 border border-slate-700/80 text-slate-400 whitespace-nowrap">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            Draft saved
+          </span>
+          <button type="button" onclick="openResetModal()" class="text-slate-400 hover:text-rose-400 transition-colors px-1.5 py-1 whitespace-nowrap">
+            Reset form
+          </button>
+        </div>
+
+        <a href="https://www.office.com/launch/word" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-slate-700 transition-colors whitespace-nowrap">
+          <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+          <span class="hidden sm:inline">Open Word Online</span>
+          <span class="sm:hidden">Word</span>
+        </a>
+
+        <button type="button" onclick="copyReport(true)"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-slate-700 transition-colors whitespace-nowrap">
+          <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span class="hidden lg:inline">Copy blank template</span>
+          <span class="lg:hidden">Blank</span>
+        </button>
+
+        <button type="button" onclick="copyReport(false)"
+                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-slate-950 shadow-sm shadow-sky-500/20 transition-colors whitespace-nowrap">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+          </svg>
+          <span>Copy completed log</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Overview & Team Setup -->
+    <section class="rounded-2xl bg-surface-900 border border-slate-800 p-6 sm:p-7 shadow-xl">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div class="lg:col-span-5 space-y-3">
+          <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            Solving a management decision problem for Żabka Group
+          </h2>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            Every team works on the same organization using the shared <span class="text-slate-100 font-medium">Company Context Dossier</span> distributed by your instructor, while solving a distinct operational or strategic case with three alternatives.
+          </p>
+          <p class="text-sm text-slate-400 leading-relaxed">
+            Use your preferred AI tools to structure the decision, separate relevant facts from background clutter, substantiate every figure and rule you rely on, and prepare a concise 5-minute team briefing.
+          </p>
+          <div class="pt-1 flex items-center gap-3 md:hidden">
+            <button type="button" onclick="openResetModal()" class="text-xs text-rose-400 hover:text-rose-300 underline">
+              Reset all fields
+            </button>
+          </div>
+        </div>
+
+        <!-- Team Members & Tools Panel -->
+        <div class="lg:col-span-7 rounded-xl bg-surface-850 border border-slate-700/80 p-5 space-y-4">
+          <div>
+            <label for="tools-used" class="block text-xs font-semibold uppercase tracking-wider text-sky-400 mb-1.5">
+              AI tools & modes used by your team
+            </label>
+            <input type="text" id="tools-used" data-save="toolsUsed"
+                   placeholder="e.g., Microsoft Copilot (Work/Web), ChatGPT, Claude, Gemini (Thinking/Search)..."
+                   class="w-full rounded-lg bg-surface-900 border border-slate-700 px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400" />
+          </div>
+
+          <div>
+            <span class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              Team members (up to 6 students)
+            </span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <input type="text" id="member-1" data-save="member1" placeholder="Member 1 (Full name)"
+                     class="rounded-lg bg-surface-900 border border-slate-700 px-3 py-1.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400" />
+              <input type="text" id="member-2" data-save="member2" placeholder="Member 2 (Full name)"
+                     class="rounded-lg bg-surface-900 border border-slate-700 px-3 py-1.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400" />
+              <input type="text" id="member-3" data-save="member3" placeholder="Member 3 (Full name)"
+                     class="rounded-lg bg-surface-900 border border-slate-700 px-3 py-1.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400" />
+              <input type="text" id="member-4" data-save="member4" placeholder="Member 4 (Full name)"
+                     class="rounded-lg bg-surface-900 border border-slate-700 px-3 py-1.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400" />
+              <input type="text" id="member-5" data-save="member5" placeholder="Member 5 (Full name)"
+                     class="rounded-lg bg-surface-900 border border-slate-700 px-3 py-1.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400" />
+              <input type="text" id="member-6" data-save="member6" placeholder="Member 6 (Full name)"
+                     class="rounded-lg bg-surface-900 border border-slate-700 px-3 py-1.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 1: Case Selection & Context Filtering -->
+    <section class="rounded-2xl bg-surface-900 border border-slate-800 p-6 sm:p-7 space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <span class="px-2.5 py-1 rounded-md bg-sky-500/15 border border-sky-400/30 text-sky-400 font-mono text-xs font-semibold">
+            STEP 1
+          </span>
+          <h3 class="text-lg font-semibold text-white">Assigned case & context filtering</h3>
+        </div>
+      </div>
+
+      <p class="text-sm text-slate-300 leading-relaxed">
+        Select the case number assigned to your team, read the Company Context Dossier carefully, and extract only the facts that bear on your decision.
+      </p>
+
+      <!-- Case Dropdown -->
+      <div class="max-w-2xl">
+        <label for="case-selector" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+          Assigned team case (1–10)
+        </label>
+        <select id="case-selector" data-save="selectedCase" onchange="renderSelectedCase()"
+                class="w-full rounded-lg bg-surface-850 border border-slate-700 px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400">
+          <option value="">Choose your assigned case (1–10)...</option>
+          <option value="1">Case 1: Opening a regular Żabka franchise store near the UEW campus</option>
+          <option value="2">Case 2: Expanding Żabka Jush 15-minute delivery to Psie Pole in Wrocław</option>
+          <option value="3">Case 3: Handling Poland's deposit-return system in compact 60 m² stores</option>
+          <option value="4">Case 4: Dynamic evening markdowns in the Żappka app for short-dated meals</option>
+          <option value="5">Case 5: Revising franchise recruitment ads after UOKiK scrutiny</option>
+          <option value="6">Case 6: Launching a paid monthly subscription tier in the Żappka app</option>
+          <option value="7">Case 7: Renewing delivery van leases for Clean Transport Zones in Warsaw and Kraków</option>
+          <option value="8">Case 8: Allocating 2027 international expansion capital between Romania and Czechia</option>
+          <option value="9">Case 9: Cutting store electricity costs via solar panels vs. corporate power agreements</option>
+          <option value="10">Case 10: Responding to a synthetic TikTok rumor about Sanepid store closures</option>
+        </select>
+      </div>
+
+      <!-- Case Brief Card -->
+      <div id="case-display-container" class="no-copy rounded-xl bg-surface-850 border border-slate-700/90 p-5 sm:p-6">
+        <div id="case-placeholder" class="text-sm text-slate-400 italic py-4 text-center">
+          Select your assigned case from the dropdown above to display the business problem and three alternatives.
+        </div>
+        <div id="case-content" class="hidden space-y-4"></div>
+      </div>
+
+      <!-- Relevant Facts Input -->
+      <div class="pt-1">
+        <label for="relevant-facts" class="block text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1.5">
+          Relevant facts extracted from the dossier
+        </label>
+        <textarea id="relevant-facts" data-save="relevantFacts" rows="4"
+                  placeholder="List only the figures, divisions, and operational facts from the Company Context Dossier that actually affect your case..."
+                  class="w-full rounded-lg bg-surface-850 border border-slate-700 px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-400"></textarea>
+      </div>
+    </section>
+
+    <!-- STEP 2: AI Process & Prompt Iteration Log -->
+    <section class="rounded-2xl bg-surface-900 border border-slate-800 p-6 sm:p-7 space-y-5">
+      <div class="flex items-center gap-3 border-b border-slate-800 pb-4">
+        <span class="px-2.5 py-1 rounded-md bg-sky-500/15 border border-sky-400/30 text-sky-400 font-mono text-xs font-semibold">
+          STEP 2
+        </span>
+        <h3 class="text-lg font-semibold text-white">AI process & prompt iteration log</h3>
+      </div>
+
+      <p class="text-sm text-slate-300 leading-relaxed">
+        Document your prompts and comments as you refine your analysis across stages. Add as many stages as your team needs.
+      </p>
+
+      <div id="stages-container" class="space-y-4"></div>
+
+      <div>
+        <button type="button" onclick="addStage()"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold bg-surface-800 hover:bg-surface-700 text-sky-400 border border-slate-700 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Add another stage
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 3: External Verification -->
+    <section class="rounded-2xl bg-surface-900 border border-slate-800 p-6 sm:p-7 space-y-5">
+      <div class="flex items-center gap-3 border-b border-slate-800 pb-4">
+        <span class="px-2.5 py-1 rounded-md bg-sky-500/15 border border-sky-400/30 text-sky-400 font-mono text-xs font-semibold">
+          STEP 3
+        </span>
+        <h3 class="text-lg font-semibold text-white">External verification</h3>
+      </div>
+
+      <p class="text-sm text-slate-300 leading-relaxed">
+        Record your verification comments, the primary sources and registries you checked, and any errors or outdated assumptions you caught before finalizing your recommendation.
+      </p>
+
+      <div>
+        <label for="verification-notes" class="block text-xs font-semibold uppercase tracking-wider text-sky-400 mb-1.5">
+          Verification comments & sources checked
+        </label>
+        <textarea id="verification-notes" data-save="verificationNotes" rows="6"
+                  placeholder="Summarize the legal rules, numbers, and market facts you verified, the primary sources consulted (such as ISAP, UOKiK, KRS, municipal resolutions, or official sites), and any AI mistakes caught..."
+                  class="w-full rounded-lg bg-surface-850 border border-slate-700 px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400"></textarea>
+      </div>
+    </section>
+
+    <!-- STEP 4: Recommendation -->
+    <section class="rounded-2xl bg-surface-900 border border-slate-800 p-6 sm:p-7 space-y-5">
+      <div class="flex items-center gap-3 border-b border-slate-800 pb-4">
+        <span class="px-2.5 py-1 rounded-md bg-sky-500/15 border border-sky-400/30 text-sky-400 font-mono text-xs font-semibold">
+          STEP 4
+        </span>
+        <h3 class="text-lg font-semibold text-white">Recommendation</h3>
+      </div>
+
+      <div class="rounded-xl bg-surface-850 border border-slate-700/80 p-5 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <label for="chosen-alternative" class="text-xs font-semibold uppercase tracking-wider text-emerald-400">
+            Selected recommendation
+          </label>
+          <select id="chosen-alternative" data-save="chosenAlternative"
+                  class="sm:w-72 rounded-lg bg-surface-900 border border-slate-700 px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-400">
+            <option value="">Choose recommended option...</option>
+            <option value="Alternative A">Alternative A</option>
+            <option value="Alternative B">Alternative B</option>
+            <option value="Alternative C">Alternative C</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="exec-memo" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+            Recommendation rationale & implementation notes
+          </label>
+          <textarea id="exec-memo" data-save="execMemo" rows="6"
+                    placeholder="Justify why your selected option outperforms the other two alternatives using verified figures and legal rules, outline next steps, and note its main risk..."
+                    class="w-full rounded-lg bg-surface-900 border border-slate-700 px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 5: Critical Reflection & Pitch Outline -->
+    <section class="rounded-2xl bg-surface-900 border border-slate-800 p-6 sm:p-7 space-y-5">
+      <div class="flex items-center gap-3 border-b border-slate-800 pb-4">
+        <span class="px-2.5 py-1 rounded-md bg-sky-500/15 border border-sky-400/30 text-sky-400 font-mono text-xs font-semibold">
+          STEP 5
+        </span>
+        <h3 class="text-lg font-semibold text-white">Critical reflection & 5-minute pitch preparation</h3>
+      </div>
+
+      <p class="text-sm text-slate-300 leading-relaxed">
+        Reflect on how your team worked with AI during this case, and prepare three concise points for your 5-minute presentation and live Q&A.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="flex flex-col">
+          <label for="refl-tech" class="block text-xs font-semibold uppercase tracking-wider text-sky-400 mb-1.5">
+            5A. Technical AI limitation encountered
+          </label>
+          <textarea id="refl-tech" data-save="reflTech" rows="5"
+                    placeholder="Describe one error, omission, or stale assumption produced by an AI tool during your work and explain the underlying technical mechanism..."
+                    class="w-full flex-1 rounded-lg bg-surface-850 border border-slate-700 px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400"></textarea>
+        </div>
+
+        <div class="flex flex-col">
+          <label for="refl-bias" class="block text-xs font-semibold uppercase tracking-wider text-amber-400 mb-1.5">
+            5B. Cognitive trap in human judgment
+          </label>
+          <textarea id="refl-bias" data-save="reflBias" rows="5"
+                    placeholder="Explain which cognitive bias or interface cue made the unverified AI output look convincing at first glance..."
+                    class="w-full flex-1 rounded-lg bg-surface-850 border border-slate-700 px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400"></textarea>
+        </div>
+
+        <div class="flex flex-col">
+          <label for="refl-ethics" class="block text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1.5">
+            5C. Managerial & regulatory accountability
+          </label>
+          <textarea id="refl-ethics" data-save="reflEthics" rows="5"
+                    placeholder="Explain who bears legal, financial, and ethical responsibility if a manager acts on unverified AI advice under EU digital and consumer rules..."
+                    class="w-full flex-1 rounded-lg bg-surface-850 border border-slate-700 px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-400"></textarea>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <label for="pitch-notes" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+          5D. 5-minute pitch speaking notes (Decision, 2 verified numbers/rules, and main risk)
+        </label>
+        <textarea id="pitch-notes" data-save="pitchNotes" rows="3"
+                  placeholder="Bullet your 5-minute pitch structure so your team can present clearly without reading raw screen text..."
+                  class="w-full rounded-lg bg-surface-850 border border-slate-700 px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400"></textarea>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-slate-800/80 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+    <span>AI Literacy and Critical Thinking – Workshop 5 Capstone</span>
+    <span>All entries save automatically in your local browser storage.</span>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-surface-800 border border-slate-700 shadow-2xl text-sm text-white">
+      <span id="toast-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+      <span id="toast-message">Copied to clipboard</span>
+    </div>
+  </div>
+
+  <!-- Reset Confirmation Modal -->
+  <div id="reset-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+    <div class="w-full max-w-md rounded-2xl bg-surface-900 border border-slate-700 p-6 shadow-2xl space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <div>
+          <h4 class="text-base font-semibold text-white">Reset all Workshop 5 fields?</h4>
+          <p class="text-xs text-slate-400">This permanently clears your team's saved draft from this browser.</p>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" onclick="closeResetModal()"
+                class="px-4 py-2 rounded-lg text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-slate-700 transition-colors">
+          Cancel
+        </button>
+        <button type="button" onclick="confirmReset()"
+                class="px-4 py-2 rounded-lg text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white transition-colors">
+          Clear everything
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Remove Stage Confirmation Modal -->
+  <div id="remove-stage-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+    <div class="w-full max-w-md rounded-2xl bg-surface-900 border border-slate-700 p-6 shadow-2xl space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </div>
+        <div>
+          <h4 id="remove-stage-title" class="text-base font-semibold text-white">Remove this stage?</h4>
+          <p class="text-xs text-slate-400">Any prompt text and comments entered in this stage will be deleted.</p>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" onclick="closeRemoveStageModal()"
+                class="px-4 py-2 rounded-lg text-xs font-medium bg-surface-800 hover:bg-surface-700 text-slate-200 border border-slate-700 transition-colors">
+          Cancel
+        </button>
+        <button type="button" onclick="confirmRemoveStage()"
+                class="px-4 py-2 rounded-lg text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white transition-colors">
+          Remove stage
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'ail_w5_capstone_zabka_v2';
+    let stages = [{ prompt: '', comments: '' }];
+    let pendingRemoveStageIndex = null;
+    let saveTimer = null;
+    let toastTimer = null;
+
+    const CASES = {
+      '1': {
+        title: 'Case 1: Opening a regular Żabka franchise store near the UEW campus',
+        context: 'An autonomous Żabka Nano unit already operates near the Wrocław University of Economics and Business. Regional expansion managers want to open a regular staffed Żabka franchise store (55–75 m²) within 400 meters of the campus before the autumn semester to capture hot-food and evening grocery demand. Three candidate sites are under review.',
+        alternatives: [
+          {
+            label: 'Alternative A',
+            text: 'Lease a 68 m² ground-floor unit on ul. Komandorska directly across from the university entrance, where two other Żabka outlets already operate within 250 m and the housing community has not yet voted on alcohol sales consent.'
+          },
+          {
+            label: 'Alternative B',
+            text: 'Lease a 75 m² corner unit in a modern commercial-office building on ul. Ślężna (380 m from campus) with full building-owner consent for alcohol and signage, at 22% higher rent per square meter.'
+          },
+          {
+            label: 'Alternative C',
+            text: 'Lease a 55 m² unit on ul. Wielka and open quickly without installing a Żabka Café hot-food and coffee counter so the store fits municipal ventilation rules.'
+          }
+        ]
+      },
+      '2': {
+        title: 'Case 2: Expanding Żabka Jush 15-minute delivery to Psie Pole in Wrocław',
+        context: 'Lite e-Commerce currently operates Żabka Jush 15-minute delivery in central and southern Wrocław districts from existing dark stores. Logistics managers must decide how to serve northern Wrocław (Psie Pole and Zakrzów) over the next two quarters.',
+        alternatives: [
+          {
+            label: 'Alternative A',
+            text: 'Lease and equip a dedicated dark store in Psie Pole to offer 15-minute e-bike and moped delivery across northern Wrocław.'
+          },
+          {
+            label: 'Alternative B',
+            text: 'Do not expand 15-minute Jush to Psie Pole and serve northern Wrocław exclusively through scheduled delivery via delio.'
+          },
+          {
+            label: 'Alternative C',
+            text: 'Fulfill 15-minute quick-commerce orders in Psie Pole from existing physical Żabka franchise stores using third-party couriers (Glovo and Wolt).'
+          }
+        ]
+      },
+      '3': {
+        title: 'Case 3: Handling Poland\'s deposit-return system in compact 60 m² stores',
+        context: 'Compact urban Żabka outlets (typically 50–70 m²) have minimal backroom storage space for empty beverage bottles and cans under Poland\'s deposit-return system. Store operations must select a standardized handling model for small-format locations.',
+        alternatives: [
+          {
+            label: 'Alternative A',
+            text: 'Install compact reverse-vending machines inside stores larger than 65 m² and require manual over-the-counter container collection in all smaller outlets.'
+          },
+          {
+            label: 'Alternative B',
+            text: 'Place shared outdoor collection kiosks in partnership with housing cooperatives and retail parks for clusters of 3–4 nearby Żabka stores.'
+          },
+          {
+            label: 'Alternative C',
+            text: 'Remove deposit-bearing single-use plastic bottles and metal cans from stores under 55 m² and sell only exempt beverage formats.'
+          }
+        ]
+      },
+      '4': {
+        title: 'Case 4: Dynamic evening markdowns in the Żappka app for short-dated meals',
+        context: 'Chilled ready-to-eat meals (such as Szamamm lunches and Tomcio Paluch sandwiches) generate unsold evening waste. The digital product team is evaluating automated markdowns during the final two hours before store closing.',
+        alternatives: [
+          {
+            label: 'Alternative A',
+            text: 'Introduce algorithmic personalized discounts (30% to 50% off) inside the Żappka app tailored to each user\'s purchase history and price sensitivity.'
+          },
+          {
+            label: 'Alternative B',
+            text: 'Apply uniform, non-personalized evening markdowns visible to all Żappka app users in the local store.'
+          },
+          {
+            label: 'Alternative C',
+            text: 'Withdraw evening food-to-go discounting from Żappka and sell short-dated items exclusively as surprise bags via Too Good To Go.'
+          }
+        ]
+      },
+      '5': {
+        title: 'Case 5: Revising franchise recruitment ads after UOKiK scrutiny',
+        context: 'The franchise recruitment team is launching a new digital campaign aimed at prospective franchisees in Polish towns with fewer than 30,000 inhabitants and must choose how to present financial terms.',
+        alternatives: [
+          {
+            label: 'Alternative A',
+            text: 'Headline the guaranteed minimum monthly revenue support pool (przychód gwarantowany) while placing staff wages, ZUS, and tax deductions in a footnote.'
+          },
+          {
+            label: 'Alternative B',
+            text: 'Publish an interactive net-income estimator on the recruitment landing page showing median franchisee take-home pay after minimum-wage payroll, ZUS, and taxes.'
+          },
+          {
+            label: 'Alternative C',
+            text: 'Remove all monetary figures from recruitment ads and highlight only turnkey store fit-out, IT infrastructure, and supply logistics.'
+          }
+        ]
+      },
+      '6': {
+        title: 'Case 6: Launching a paid monthly subscription tier in the Żappka app',
+        context: 'Following the expansion of paid retail memberships in Poland, the Żappka loyalty team is evaluating whether to introduce a recurring monthly subscription for frequent commuters.',
+        alternatives: [
+          {
+            label: 'Alternative A',
+            text: 'Launch a 19.99 PLN/month plan covering one Żabka Café hot drink per day plus free Żabka Jush delivery on baskets above 35 PLN.'
+          },
+          {
+            label: 'Alternative B',
+            text: 'Launch a 9.99 PLN/month plan offering a flat 15% discount on private-label food-to-go items (Żabka Café, Szamamm, and Tomcio Paluch).'
+          },
+          {
+            label: 'Alternative C',
+            text: 'Keep Żappka entirely free and instead lower Żappsy point redemption thresholds for hot drinks and hot dogs.'
+          }
+        ]
+      },
+      '7': {
+        title: 'Case 7: Renewing delivery van leases for Clean Transport Zones in Warsaw and Kraków',
+        context: 'Urban logistics managers must renew expiring 3-year fleet contracts for 3.5-tonne refrigerated delivery vans supplying central stores inside the Clean Transport Zones (Strefa Czystego Transportu) in Warsaw and Kraków.',
+        alternatives: [
+          {
+            label: 'Alternative A',
+            text: 'Transition 100% of inner-city routes in Warsaw and Kraków to battery-electric refrigerated vans.'
+          },
+          {
+            label: 'Alternative B',
+            text: 'Sign new 3-year leases for Euro 6 diesel refrigerated vans for daytime multi-drop routes while using electric vans only for night-time deliveries.'
+          },
+          {
+            label: 'Alternative C',
+            text: 'Consolidate shipments at suburban micro-hubs outside both zones and complete final-kilometer store replenishment using electric cargo bikes.'
+          }
+        ]
+      },
+      '8': {
+        title: 'Case 8: Allocating 2027 international expansion capital between Romania and Czechia',
+        context: 'Following the rollout of the Froo convenience chain in Romania, corporate strategy must decide where to allocate 2027 international store-opening capital.',
+        alternatives: [
+          {
+            label: 'Alternative A',
+            text: 'Concentrate 2027 expansion capital in Romania (Bucharest and regional cities) under the Froo banner to maximize warehouse and brand density.'
+          },
+          {
+            label: 'Alternative B',
+            text: 'Enter Czechia (Prague and Brno) through organic store openings under the Żabka brand supplied from Polish distribution centers.'
+          },
+          {
+            label: 'Alternative C',
+            text: 'Enter Czechia by acquiring an existing local convenience or kiosk chain and rebranding its outlets.'
+          }
+        ]
+      },
+      '9': {
+        title: 'Case 9: Cutting store electricity costs via solar panels vs. corporate power agreements',
+        context: 'Refrigeration and lighting account for the majority of store electricity usage (3,200–4,100 kWh/month per standard outlet). Operations must choose a 2027–2029 electricity cost-reduction program.',
+        alternatives: [
+          {
+            label: 'Alternative A',
+            text: 'Co-finance rooftop solar panel installations across the Polish store network to offset daytime refrigeration demand.'
+          },
+          {
+            label: 'Alternative B',
+            text: 'Sign a long-term corporate Power Purchase Agreement (cPPA) with a Polish renewable energy generator covering logistics centers and corporate accounts.'
+          },
+          {
+            label: 'Alternative C',
+            text: 'Install smart IoT refrigeration load-shifting controllers across all stores without investing in renewable power generation.'
+          }
+        ]
+      },
+      '10': {
+        title: 'Case 10: Responding to a synthetic TikTok rumor about Sanepid store closures',
+        context: 'A coordinated wave of TikTok videos and local Facebook posts using synthetic voiceovers claims that Sanepid shut down 40 Żabka stores in Lower Silesia for food-safety violations. Communications and operations must choose an immediate Friday-afternoon response.',
+        alternatives: [
+          {
+            label: 'Alternative A',
+            text: 'Publish an immediate factual rebuttal on Żabka\'s newsroom and social channels linking to official Sanepid inspection registries, backed by geo-targeted local ads in Lower Silesia.'
+          },
+          {
+            label: 'Alternative B',
+            text: 'Avoid public comment so the brand does not amplify the rumor while filing illegal-content takedown notices with platforms under the EU Digital Services Act (DSA).'
+          },
+          {
+            label: 'Alternative C',
+            text: 'Launch an emergency weekend promotional coupon inside the Żappka app ("2 PLN hot dog weekend") across Lower Silesia to bring customers back into stores.'
+          }
+        ]
+      }
+    };
+
+    // Dynamic Stages Renderer & Handlers
+    function renderStages() {
+      const container = document.getElementById('stages-container');
+      if (!container) return;
+
+      container.innerHTML = stages.map((stage, idx) => {
+        const removeButtonHtml = idx > 0
+          ? `<button type="button" onclick="openRemoveStageModal(${idx})"
+                     class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 transition-colors">
+               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+               </svg>
+               Remove stage
+             </button>`
+          : '';
+
+        return `
+          <div class="rounded-xl bg-surface-850 border border-slate-700/80 p-4 sm:p-5 space-y-3.5">
+            <div class="flex items-center justify-between gap-2 border-b border-slate-700/70 pb-2.5">
+              <span class="font-mono text-xs font-semibold uppercase tracking-wider text-sky-400">
+                Stage ${idx + 1}
+              </span>
+              ${removeButtonHtml}
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <label for="stage-prompt-${idx}" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                  Prompt
+                </label>
+                <textarea id="stage-prompt-${idx}" rows="4"
+                          oninput="updateStageField(${idx}, 'prompt', this.value)"
+                          placeholder="Paste the exact prompt you sent in Stage ${idx + 1}..."
+                          class="w-full rounded-lg bg-surface-900 border border-slate-700 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400">${escapeHtml(stage.prompt)}</textarea>
+              </div>
+              <div>
+                <label for="stage-comments-${idx}" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+                  Comments
+                </label>
+                <textarea id="stage-comments-${idx}" rows="4"
+                          oninput="updateStageField(${idx}, 'comments', this.value)"
+                          placeholder="Note what the model returned, what was missing or flawed, and why you moved to the next step..."
+                          class="w-full rounded-lg bg-surface-900 border border-slate-700 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400">${escapeHtml(stage.comments)}</textarea>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addStage() {
+      stages.push({ prompt: '', comments: '' });
+      renderStages();
+      scheduleSave();
+      const newPrompt = document.getElementById(`stage-prompt-${stages.length - 1}`);
+      if (newPrompt) newPrompt.focus();
+      showToast(`Stage ${stages.length} added`, 'emerald');
+    }
+
+    function updateStageField(idx, field, value) {
+      if (!stages[idx]) return;
+      stages[idx][field] = value;
+      scheduleSave();
+    }
+
+    function openRemoveStageModal(idx) {
+      if (idx <= 0 || idx >= stages.length) return;
+      pendingRemoveStageIndex = idx;
+      const titleEl = document.getElementById('remove-stage-title');
+      if (titleEl) {
+        titleEl.textContent = `Remove Stage ${idx + 1}?`;
+      }
+      const modal = document.getElementById('remove-stage-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeRemoveStageModal() {
+      pendingRemoveStageIndex = null;
+      const modal = document.getElementById('remove-stage-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function confirmRemoveStage() {
+      if (pendingRemoveStageIndex !== null && pendingRemoveStageIndex > 0 && pendingRemoveStageIndex < stages.length) {
+        stages.splice(pendingRemoveStageIndex, 1);
+        renderStages();
+        scheduleSave();
+        showToast('Stage removed', 'emerald');
+      }
+      closeRemoveStageModal();
+    }
+
+    // Selected Case Renderer
+    function renderSelectedCase() {
+      const selector = document.getElementById('case-selector');
+      const placeholder = document.getElementById('case-placeholder');
+      const content = document.getElementById('case-content');
+      const val = selector.value;
+
+      if (!val || !CASES[val]) {
+        placeholder.classList.remove('hidden');
+        content.classList.add('hidden');
+        content.innerHTML = '';
+        return;
+      }
+
+      const item = CASES[val];
+      placeholder.classList.add('hidden');
+      content.classList.remove('hidden');
+
+      const altHtml = item.alternatives.map(alt => `
+        <div class="rounded-lg bg-surface-900/90 border border-slate-700/80 p-3.5">
+          <div class="text-xs font-semibold uppercase tracking-wider text-sky-400 mb-1">${escapeHtml(alt.label)}</div>
+          <p class="text-sm text-slate-200 leading-relaxed">${escapeHtml(alt.text)}</p>
+        </div>
+      `).join('');
+
+      content.innerHTML = `
+        <div class="border-b border-slate-700/80 pb-3">
+          <h4 class="text-base font-semibold text-white">${escapeHtml(item.title)}</h4>
+          <p class="text-sm text-slate-300 mt-1.5 leading-relaxed">${escapeHtml(item.context)}</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          ${altHtml}
+        </div>
+      `;
+    }
+
+    // Autosave & Restore
+    function setAutosaveState(isSaving) {
+      const indicator = document.getElementById('autosave-indicator');
+      if (!indicator) return;
+      if (isSaving) {
+        indicator.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Saving...';
+      } else {
+        indicator.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Draft saved';
+      }
+    }
+
+    function scheduleSave() {
+      setAutosaveState(true);
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(saveDraft, 250);
+    }
+
+    function saveDraft() {
+      const data = { fields: {}, stages: stages };
+      document.querySelectorAll('[data-save]').forEach(el => {
+        const key = el.getAttribute('data-save');
+        data.fields[key] = el.value;
+      });
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (err) {
+        console.warn('Unable to save draft to localStorage:', err);
+      }
+      setAutosaveState(false);
+    }
+
+    function restoreDraft() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.fields) {
+            document.querySelectorAll('[data-save]').forEach(el => {
+              const key = el.getAttribute('data-save');
+              if (Object.prototype.hasOwnProperty.call(parsed.fields, key)) {
+                el.value = parsed.fields[key];
+              }
+            });
+          }
+          if (parsed && Array.isArray(parsed.stages) && parsed.stages.length > 0) {
+            stages = parsed.stages.map(s => ({
+              prompt: typeof s.prompt === 'string' ? s.prompt : '',
+              comments: typeof s.comments === 'string' ? s.comments : ''
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn('Unable to restore draft from localStorage:', err);
+      }
+      renderStages();
+      renderSelectedCase();
+    }
+
+    function hasUnsavedInput() {
+      let hasFieldData = false;
+      document.querySelectorAll('[data-save]').forEach(el => {
+        if (el.value && el.value.trim().length > 0) {
+          hasFieldData = true;
+        }
+      });
+      const hasStageData = stages.length > 1 || stages.some(s => (s.prompt && s.prompt.trim().length > 0) || (s.comments && s.comments.trim().length > 0));
+      return hasFieldData || hasStageData;
+    }
+
+    window.addEventListener('beforeunload', function (e) {
+      if (hasUnsavedInput()) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+
+    // Reset Modal
+    function openResetModal() {
+      if (!hasUnsavedInput()) {
+        showToast('Form is already empty', 'amber');
+        return;
+      }
+      const modal = document.getElementById('reset-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeResetModal() {
+      const modal = document.getElementById('reset-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function confirmReset() {
+      document.querySelectorAll('[data-save]').forEach(el => {
+        el.value = '';
+      });
+      stages = [{ prompt: '', comments: '' }];
+      renderStages();
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {
+        console.warn('Unable to clear localStorage:', err);
+      }
+      renderSelectedCase();
+      closeResetModal();
+      showToast('All fields cleared', 'emerald');
+    }
+
+    // Toast
+    function showToast(message, color = 'emerald') {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toast-message');
+      const dotEl = document.getElementById('toast-dot');
+
+      msgEl.textContent = message;
+      dotEl.className = `w-2 h-2 rounded-full ${color === 'amber' ? 'bg-amber-400' : color === 'rose' ? 'bg-rose-400' : 'bg-emerald-400'}`;
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2800);
+    }
+
+    // HTML Escaping
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatMultiline(str) {
+      if (!str || !str.trim()) return '&nbsp;';
+      return escapeHtml(str).replace(/\n/g, '<br>');
+    }
+
+    // Cross-platform Rich HTML + Plain Text Word Export
+    function buildExportPayload(isBlank) {
+      const val = (id) => {
+        if (isBlank) return '';
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : '';
+      };
+
+      const members = [1, 2, 3, 4, 5, 6]
+        .map(n => val(`member-${n}`))
+        .filter(Boolean);
+      const membersStr = members.length ? members.join(', ') : (isBlank ? ' ' : 'Not entered');
+
+      const toolsStr = val('tools-used') || (isBlank ? ' ' : 'Not specified');
+      const caseVal = isBlank ? '' : document.getElementById('case-selector').value;
+      const caseTitle = caseVal && CASES[caseVal] ? CASES[caseVal].title : (isBlank ? ' ' : 'Not selected');
+      const chosenAlt = val('chosen-alternative') || (isBlank ? ' ' : 'Not selected');
+
+      const tableStyle = 'width:100%; border-collapse:collapse; margin-bottom:16px; font-family:Calibri, Arial, sans-serif; font-size:10.5pt;';
+      const thStyle = 'border:1px solid #94a3b8; background-color:#e2e8f0; color:#0f172a; font-weight:bold; padding:8px; text-align:left;';
+      const tdStyle = 'border:1px solid #cbd5e1; padding:8px; vertical-align:top; color:#1e293b;';
+
+      const exportStages = isBlank
+        ? [{ prompt: '', comments: '' }, { prompt: '', comments: '' }]
+        : stages;
+
+      const stageRowsHtml = exportStages.map((s, idx) => `
+        <tr>
+          <td style="${tdStyle}"><strong>Stage ${idx + 1}</strong></td>
+          <td style="${tdStyle}">${formatMultiline(s.prompt)}</td>
+          <td style="${tdStyle}">${formatMultiline(s.comments)}</td>
+        </tr>
+      `).join('');
+
+      const stageRowsPlain = exportStages
+        .map((s, idx) => `Stage ${idx + 1}\nPrompt: ${s.prompt}\nComments: ${s.comments}`)
+        .join('\n\n');
+
+      const html = `
+        <div style="font-family:Calibri, Arial, sans-serif; color:#0f172a; line-height:1.45;">
+          <h1 style="font-size:18pt; color:#0f172a; margin-bottom:4px;">Workshop 5: Capstone business brief – Żabka Group</h1>
+          <p style="font-size:10pt; color:#475569; margin-top:0; margin-bottom:16px;">AI Literacy and Critical Thinking</p>
+
+          <table style="${tableStyle}">
+            <tr>
+              <th style="${thStyle} width:28%;">Team members</th>
+              <td style="${tdStyle}">${escapeHtml(membersStr)}</td>
+            </tr>
+            <tr>
+              <th style="${thStyle}">AI tools & modes used</th>
+              <td style="${tdStyle}">${escapeHtml(toolsStr)}</td>
+            </tr>
+            <tr>
+              <th style="${thStyle}">Assigned case</th>
+              <td style="${tdStyle}">${escapeHtml(caseTitle)}</td>
+            </tr>
+            <tr>
+              <th style="${thStyle}">Selected recommendation</th>
+              <td style="${tdStyle}"><strong>${escapeHtml(chosenAlt)}</strong></td>
+            </tr>
+          </table>
+
+          <h2 style="font-size:13pt; color:#0f172a; margin-top:18px; margin-bottom:8px;">1. Relevant facts extracted from the dossier</h2>
+          <div style="border:1px solid #cbd5e1; padding:10px; background-color:#f8fafc; margin-bottom:16px;">
+            ${formatMultiline(val('relevant-facts'))}
+          </div>
+
+          <h2 style="font-size:13pt; color:#0f172a; margin-top:18px; margin-bottom:8px;">2. AI process & prompt iteration log</h2>
+          <table style="${tableStyle}">
+            <tr>
+              <th style="${thStyle} width:16%;">Stage</th>
+              <th style="${thStyle} width:46%;">Prompt</th>
+              <th style="${thStyle} width:38%;">Comments</th>
+            </tr>
+            ${stageRowsHtml}
+          </table>
+
+          <h2 style="font-size:13pt; color:#0f172a; margin-top:18px; margin-bottom:8px;">3. External verification comments & sources</h2>
+          <div style="border:1px solid #cbd5e1; padding:10px; background-color:#f8fafc; margin-bottom:16px;">
+            ${formatMultiline(val('verification-notes'))}
+          </div>
+
+          <h2 style="font-size:13pt; color:#0f172a; margin-top:18px; margin-bottom:8px;">4. Recommendation (${escapeHtml(chosenAlt)})</h2>
+          <div style="border:1px solid #cbd5e1; padding:10px; background-color:#f8fafc; margin-bottom:16px;">
+            ${formatMultiline(val('exec-memo'))}
+          </div>
+
+          <h2 style="font-size:13pt; color:#0f172a; margin-top:18px; margin-bottom:8px;">5. Critical reflection & 5-minute pitch notes</h2>
+          <table style="${tableStyle}">
+            <tr>
+              <th style="${thStyle} width:30%;">5A. Technical AI limitation</th>
+              <td style="${tdStyle}">${formatMultiline(val('refl-tech'))}</td>
+            </tr>
+            <tr>
+              <th style="${thStyle}">5B. Cognitive trap in judgment</th>
+              <td style="${tdStyle}">${formatMultiline(val('refl-bias'))}</td>
+            </tr>
+            <tr>
+              <th style="${thStyle}">5C. Managerial & legal accountability</th>
+              <td style="${tdStyle}">${formatMultiline(val('refl-ethics'))}</td>
+            </tr>
+            <tr>
+              <th style="${thStyle}">5D. 5-minute pitch speaking notes</th>
+              <td style="${tdStyle}">${formatMultiline(val('pitch-notes'))}</td>
+            </tr>
+          </table>
+        </div>
+      `;
+
+      const plain = `WORKSHOP 5: CAPSTONE BUSINESS BRIEF – ŻABKA GROUP\n` +
+        `Team members: ${membersStr}\n` +
+        `AI tools & modes: ${toolsStr}\n` +
+        `Assigned case: ${caseTitle}\n` +
+        `Selected recommendation: ${chosenAlt}\n\n` +
+        `1. RELEVANT FACTS EXTRACTED FROM THE DOSSIER\n${val('relevant-facts')}\n\n` +
+        `2. AI PROCESS & PROMPT ITERATION LOG\n${stageRowsPlain}\n\n` +
+        `3. EXTERNAL VERIFICATION COMMENTS & SOURCES\n${val('verification-notes')}\n\n` +
+        `4. RECOMMENDATION (${chosenAlt})\n${val('exec-memo')}\n\n` +
+        `5. CRITICAL REFLECTION\n5A Technical mechanism: ${val('refl-tech')}\n5B Cognitive trap: ${val('refl-bias')}\n5C Accountability: ${val('refl-ethics')}\n5D Pitch notes: ${val('pitch-notes')}`;
+
+      return { html, plain };
+    }
+
+    async function copyReport(isBlank) {
+      const { html, plain } = buildExportPayload(isBlank);
+
+      try {
+        if (navigator.clipboard && window.ClipboardItem) {
+          const htmlBlob = new Blob([html], { type: 'text/html' });
+          const textBlob = new Blob([plain], { type: 'text/plain' });
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              'text/html': htmlBlob,
+              'text/plain': textBlob
+            })
+          ]);
+          showToast(isBlank ? 'Blank Word template copied' : 'Completed log copied for Word', 'emerald');
+          return;
+        }
+      } catch (err) {
+        console.warn('ClipboardItem API fallback triggered', err);
+      }
+
+      // Safari / WebKit / iFrame DOM selection fallback
+      const container = document.createElement('div');
+      container.innerHTML = html;
+      container.style.position = 'fixed';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      container.style.backgroundColor = '#ffffff';
+      container.style.color = '#000000';
+      container.setAttribute('contenteditable', 'true');
+      document.body.appendChild(container);
+
+      const range = document.createRange();
+      range.selectNodeContents(container);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      try {
+        document.execCommand('copy');
+        showToast(isBlank ? 'Blank Word template copied' : 'Completed log copied for Word', 'emerald');
+      } catch (fallbackErr) {
+        showToast('Copy failed – please select and copy manually', 'rose');
+      } finally {
+        selection.removeAllRanges();
+        document.body.removeChild(container);
+      }
+    }
+
+    // Initialization & Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      restoreDraft();
+
+      document.querySelectorAll('[data-save]').forEach(el => {
+        el.addEventListener('input', scheduleSave);
+        el.addEventListener('change', scheduleSave);
+      });
+
+      const caseBox = document.getElementById('case-display-container');
+      if (caseBox) {
+        ['copy', 'cut', 'contextmenu'].forEach(evt => {
+          caseBox.addEventListener(evt, (e) => {
+            e.preventDefault();
+            showToast('Direct copying from the case box is disabled', 'amber');
+          });
+        });
+      }
+
+      const resetModal = document.getElementById('reset-modal');
+      if (resetModal) {
+        resetModal.addEventListener('click', (e) => {
+          if (e.target === resetModal) closeResetModal();
+        });
+      }
+
+      const removeStageModal = document.getElementById('remove-stage-modal');
+      if (removeStageModal) {
+        removeStageModal.addEventListener('click', (e) => {
+          if (e.target === removeStageModal) closeRemoveStageModal();
+        });
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeResetModal();
+          closeRemoveStageModal();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
